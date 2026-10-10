@@ -1012,7 +1012,7 @@ function contenuPanneau() {
     <div class="panneau-tete">
       <div>
         <h2 id="titre-palettes">Palette de couleurs</h2>
-        <p>Survolez une palette pour la voir sur le site, cliquez pour l'appliquer. Le choix est mémorisé sur cet appareil.</p>
+        <p>Cliquez sur une palette pour l'appliquer ; sur ordinateur, le survol la prévisualise sur le site. Le choix est mémorisé sur cet appareil.</p>
       </div>
       <button type="button" class="bouton-fermer" data-action="fermer-palettes" aria-label="Fermer le panneau des palettes">${ICONES.fermer}</button>
     </div>
