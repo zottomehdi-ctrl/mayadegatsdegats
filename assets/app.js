@@ -73,7 +73,7 @@ async function demarrer() {
 
 async function charger() {
   const [contenu, decisions] = await Promise.allSettled([
-    chargerJson('/contenu/propositions.json'),
+    chargerJson('contenu/propositions.json'),
     chargerJson('/api/decisions'),
   ]);
 
