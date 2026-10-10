@@ -1,8 +1,9 @@
 {
-  "name": "registre-propositions-doj",
+  "name": "liaison-maya",
   "version": "1.0.0",
   "private": true,
-  "description": "Registre des propositions du Département de la Justice (État de San Andreas, serveur Last Gate).",
+  "type": "module",
+  "description": "Liaison Maya : registre des propositions de textes (serveur GTA RP Last Gate).",
   "scripts": {
     "dev": "netlify dev",
     "verifier": "node scripts/verifier.mjs"

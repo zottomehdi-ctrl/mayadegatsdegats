@@ -1,9 +1,10 @@
-# Registre des propositions · DOJ San Andreas
+# Liaison Maya
 
-Site interne du Département de la Justice (serveur Last Gate). Il présente les propositions de textes (décrets, amendements) et recueille les décisions de la fondatrice.
+Registre des propositions de textes du serveur GTA RP Last Gate (État de San Andreas). Le site présente chaque proposition et recueille les décisions de la fondatrice : valider, refuser ou rediscuter en appel.
 
 - `contenu/propositions.json` : toutes les propositions. C'est le seul fichier à modifier.
-- `netlify/functions/decisions.mjs` : enregistre les décisions dans Netlify Blobs, une clé par identifiant de proposition.
+- `netlify/functions/decisions.mjs` : enregistre les décisions dans Netlify Blobs, une clé par `id` de proposition.
+- `assets/registre.js` : lecture et vérification du fichier, partagées par le site et par `npm run verifier`.
 - `index.html`, `assets/` : le site.
 
 ## Déployer sur Netlify
@@ -25,54 +26,48 @@ netlify dev
 
 Ouvrir http://localhost:8888. En local, les décisions sont stockées dans `.netlify/` et restent séparées de celles du site en ligne.
 
-## Ajouter des propositions
+## Ajouter ou modifier des propositions
 
-Ajouter un objet à la liste de `contenu/propositions.json` :
+Remplacer `contenu/propositions.json`, lancer `npm run verifier`, puis commit et push : Netlify redéploie automatiquement.
 
 ```json
 {
-  "id": "P-014",
-  "type": "Amendement",
-  "code": "Code pénal",
+  "id": "vol-a-main-armee",
   "titre": "Titre court",
-  "article": "12",
-  "texteActuel": [
-    "Première ligne du texte actuel.",
-    "",
-    "    Alinéa en retrait."
-  ],
-  "textePropose": [
-    "Première ligne du texte proposé.",
-    "",
-    "    Alinéa en retrait."
-  ],
-  "justification": [
-    "Pourquoi ce changement, en quelques lignes."
-  ],
-  "priorite": "normale"
+  "texte": "Code pénal",
+  "article": "Article 12 :",
+  "urgent": false,
+  "resume": "Le changement, en une phrase.",
+  "changements": ["Premier point concret.", "Deuxième point concret."],
+  "pourquoi": "La justification, en quelques lignes.",
+  "effets": { "lspd": "…", "doj": "…", "entreprises": "…" },
+  "avant": "Texte actuel.\nDeuxième ligne.",
+  "apres": "Texte proposé.\nDeuxième ligne."
 }
 ```
 
-| Champ | Valeurs |
-| --- | --- |
-| `id` | Unique, par exemple `P-014`. Ne jamais réutiliser l'identifiant d'une proposition retirée : sa décision y resterait attachée. |
-| `type` | `Décret` ou `Amendement` |
-| `code` | Pour un amendement : `Code pénal`, `Code de police`, `Code de la route`, `Code du travail`, `Code civil`, `Constitution`, `Autre` |
-| `article` | Le numéro seul (`12`, `12 bis`). Il s'affiche sous la forme « Article 12 : ». |
-| `texteActuel` | Uniquement pour une modification ou une abrogation |
-| `textePropose` | Le texte proposé. S'il est absent alors que `texteActuel` est rempli, la proposition est présentée comme une abrogation. |
-| `justification` | Quelques lignes |
-| `priorite` | `normale` ou `urgente` |
+| Champ | Obligatoire | Contenu |
+| --- | --- | --- |
+| `id` | oui | Clé interne en slug (minuscules, chiffres, tirets), unique, jamais affichée. Ne jamais la modifier ni la réutiliser : les décisions y sont rattachées. |
+| `titre` | oui | Titre court. |
+| `texte` | oui | `Code pénal`, `Code de police`, `Code de la route`, `Code du travail`, `Code civil`, `Code électoral`, `Constitution`, `Décret` ou `Autre`. |
+| `article` | oui, sauf pour un décret | Sous la forme « Article 12 : ». |
+| `urgent` | non | `true` ou `false` (faux par défaut). |
+| `resume` | oui | En une phrase. |
+| `changements` | oui | 1 à 4 points concrets. |
+| `pourquoi` | oui | Quelques lignes. |
+| `effets` | non | Sous-champs facultatifs `lspd`, `doj`, `entreprises` ; seuls les sous-champs remplis s'affichent. |
+| `avant` | non | Texte actuel. Absent : ajout pur. |
+| `apres` | oui, sauf abrogation | Texte proposé. Absent alors que `avant` est rempli : abrogation. |
 
-- Les textes s'écrivent ligne par ligne, avec une chaîne par ligne. `""` donne une ligne vide. Les espaces en début de ligne sont conservés.
-- Dans un texte, les en-têtes d'articles s'écrivent « Article 12 : » (numéro, espace, deux points, sans tiret).
-- Avant de publier, lancer `npm run verifier` : la commande signale les erreurs de format, les identifiants en double et les en-têtes d'articles mal formés.
-
-Pour retirer les exemples, supprimer `EX-01` à `EX-03` du fichier. Leurs décisions de démonstration ne s'afficheront plus.
+- Retours à la ligne en `\n` ; espaces et alinéas conservés à l'identique.
+- Champs vides omis plutôt que laissés à `""`.
+- Si le fichier est mal formé ou qu'un champ obligatoire manque, le site l'indique en haut de la page (numéro et titre de la proposition, champ en cause) et affiche les autres propositions normalement.
+- Les propositions d'exemple ont un `id` qui commence par `exemple-`. Pour les retirer, il suffit de les supprimer du fichier.
 
 ## Palettes
 
-Le bandeau propose cinq palettes : Nuit (par défaut), Ardoise, Forêt, Bordeaux (sombres) et Pierre (claire). Le choix est mémorisé dans le navigateur de chaque personne et n'affecte pas les autres. Les couleurs sont définies en tête de `assets/style.css`.
+Le bouton « Palette » de l'en-tête propose 8 palettes claires, 4 sombres et un mode automatique (Bleu nuit ou Nuit marine selon le réglage de l'appareil). Le choix est mémorisé dans le navigateur de chaque personne. Les couleurs sont définies en tête de `assets/style.css`, sous forme de variables CSS.
 
 ## Accès
 

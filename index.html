@@ -1,17 +1,21 @@
 <!doctype html>
-<html lang="fr" data-palette="nuit">
+<html lang="fr" data-palette="bleu-nuit">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
-  <meta name="theme-color" content="#141c30">
-  <title>Registre des propositions · Département de la Justice</title>
+  <meta name="theme-color" content="#F6F5F2">
+  <title>Liaison Maya · Registre des propositions</title>
   <script>
     (function () {
-      var palette = "nuit";
-      try { palette = localStorage.getItem("registre-doj:palette") || palette; } catch (e) {}
-      if (!/^(nuit|ardoise|foret|bordeaux|pierre)$/.test(palette)) palette = "nuit";
-      document.documentElement.setAttribute("data-palette", palette);
+      var palettes = ["bleu-nuit", "bordeaux-ivoire", "vert-sapin", "ardoise", "bleu-petrole", "sable-brun", "prune", "terracotta", "graphite", "nuit-marine", "anthracite-or", "bordeaux-nocturne", "auto"];
+      var choix = "bleu-nuit";
+      try { choix = localStorage.getItem("liaison-maya:palette") || choix; } catch (e) {}
+      if (palettes.indexOf(choix) === -1) choix = "bleu-nuit";
+      if (choix === "auto") {
+        choix = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "nuit-marine" : "bleu-nuit";
+      }
+      document.documentElement.setAttribute("data-palette", choix);
     })();
   </script>
   <link rel="icon" href="data:,">
@@ -24,26 +28,29 @@
 <body>
   <header class="entete">
     <div class="cadre entete-haut">
-      <div class="entete-titres">
-        <span class="sceau" aria-hidden="true">DOJ</span>
-        <div>
-          <p class="entete-institution">Département de la Justice — <span class="insecable">État de San Andreas</span></p>
-          <p class="entete-registre">Registre des propositions</p>
-        </div>
-      </div>
-      <div class="palettes" role="group" aria-label="Palette de couleurs">
-        <span class="palettes-libelle" aria-hidden="true">Palette</span>
-        <button type="button" class="choix-palette" data-palette-choix="nuit" aria-pressed="true" title="Nuit" style="--sw-fond: #141c30; --sw-accent: #a9bce6;"><span class="masque">Nuit</span></button>
-        <button type="button" class="choix-palette" data-palette-choix="ardoise" aria-pressed="false" title="Ardoise" style="--sw-fond: #1d1b19; --sw-accent: #ddd6ca;"><span class="masque">Ardoise</span></button>
-        <button type="button" class="choix-palette" data-palette-choix="foret" aria-pressed="false" title="Forêt" style="--sw-fond: #11241b; --sw-accent: #a8cfc6;"><span class="masque">Forêt</span></button>
-        <button type="button" class="choix-palette" data-palette-choix="bordeaux" aria-pressed="false" title="Bordeaux" style="--sw-fond: #2b131b; --sw-accent: #e8cfc4;"><span class="masque">Bordeaux</span></button>
-        <button type="button" class="choix-palette" data-palette-choix="pierre" aria-pressed="false" title="Pierre (clair)" style="--sw-fond: #e5e1da; --sw-accent: #1f2c4c;"><span class="masque">Pierre, palette claire</span></button>
+      <a class="marque" href="#/">
+        <span class="sceau" aria-hidden="true">LM</span>
+        <span class="marque-textes">
+          <span class="marque-nom">Liaison Maya</span>
+          <span class="marque-sous">Registre des propositions</span>
+        </span>
+      </a>
+      <div class="entete-actions">
+        <button type="button" class="bouton-entete bouton-aide" data-action="aide" aria-label="Afficher l'aide de démarrage" title="Aide">?</button>
+        <button type="button" class="bouton-entete bouton-palette" data-action="ouvrir-palettes" aria-haspopup="dialog" aria-controls="panneau-palettes" aria-label="Palette de couleurs">
+          <svg class="icone-palette" viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" focusable="false">
+            <circle class="icone-palette-a" cx="7" cy="8" r="4.5"></circle>
+            <circle class="icone-palette-b" cx="13" cy="8" r="4.5"></circle>
+            <circle class="icone-palette-c" cx="10" cy="13" r="4.5"></circle>
+          </svg>
+          <span>Palette</span>
+        </button>
       </div>
     </div>
     <nav class="nav" aria-label="Sections">
       <div class="cadre nav-cadre">
         <a class="nav-lien" href="#/" data-vue="recap">Récapitulatif</a>
-        <a class="nav-lien" href="#/rediscuter" data-vue="rediscuter">À rediscuter <span class="nav-compte" id="compte-rediscuter" aria-label="points restants"></span></a>
+        <a class="nav-lien" href="#/rediscuter" data-vue="rediscuter">À rediscuter <span class="nav-compte" id="compte-rediscuter"></span></a>
         <a class="nav-lien" href="#/valides" data-vue="valides">Textes validés</a>
       </div>
     </nav>
@@ -56,10 +63,22 @@
     </div>
   </main>
 
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <dialog class="panneau" id="panneau-palettes" aria-labelledby="titre-palettes"></dialog>
+
+  <div class="toast" id="toast">
+    <p class="toast-message" role="status" aria-live="polite"></p>
+    <button type="button" class="toast-annuler" data-action="annuler-toast" hidden>Annuler</button>
+    <span class="toast-delai" aria-hidden="true"></span>
+  </div>
+
+  <p class="raccourcis" id="raccourcis" hidden>
+    <span><kbd>V</kbd> valider</span>
+    <span><kbd>R</kbd> refuser</span>
+    <span><kbd>←</kbd> <kbd>→</kbd> point précédent ou suivant</span>
+  </p>
 
   <noscript>
-    <div class="cadre"><p class="bandeau">Ce registre nécessite JavaScript pour s'afficher.</p></div>
+    <div class="cadre"><p class="bandeau bandeau--erreur">Liaison Maya nécessite JavaScript pour s'afficher.</p></div>
   </noscript>
 </body>
 </html>
