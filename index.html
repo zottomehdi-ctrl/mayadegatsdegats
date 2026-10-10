@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#f5f5f2">
+  <title>Registre des propositions · Département de la Justice</title>
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="/assets/style.css">
+  <script type="module" src="/assets/app.js"></script>
+</head>
+<body>
+  <header class="entete">
+    <div class="cadre">
+      <p class="entete-institution">Département de la Justice — <span class="insecable">État de San Andreas</span></p>
+      <p class="entete-registre">Registre des propositions</p>
+    </div>
+    <nav class="nav" aria-label="Sections">
+      <div class="cadre nav-cadre">
+        <a class="nav-lien" href="#/" data-vue="recap">Récapitulatif</a>
+        <a class="nav-lien" href="#/rediscuter" data-vue="rediscuter">À rediscuter <span class="nav-compte" id="compte-rediscuter" aria-label="points restants"></span></a>
+        <a class="nav-lien" href="#/valides" data-vue="valides">Textes validés</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="app" class="cadre" tabindex="-1">
+    <div aria-hidden="true">
+      <div class="squelette" style="width: 38%; height: 30px;"></div>
+      <div class="squelette" style="width: 62%; margin-top: 18px;"></div>
+    </div>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <noscript>
+    <div class="cadre"><p class="bandeau">Ce registre nécessite JavaScript pour s'afficher.</p></div>
+  </noscript>
+</body>
+</html>

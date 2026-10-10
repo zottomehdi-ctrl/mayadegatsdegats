@@ -1,0 +1,25 @@
+[build]
+  publish = "."
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[dev]
+  framework = "#static"
+  port = 8888
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Referrer-Policy = "same-origin"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/contenu/*"
+  [headers.values]
+    Cache-Control = "no-cache"

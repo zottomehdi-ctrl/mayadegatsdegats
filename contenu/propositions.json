@@ -1,0 +1,74 @@
+[
+  {
+    "id": "EX-01",
+    "type": "Décret",
+    "titre": "Création d'une permanence judiciaire en soirée",
+    "textePropose": [
+      "Article 1 :",
+      "Une permanence judiciaire est instituée au palais de justice de Los Santos.",
+      "",
+      "Article 2 :",
+      "La permanence est assurée chaque jour de 18 h à 23 h par un juge désigné selon un tableau de roulement établi par le président du tribunal.",
+      "",
+      "Article 3 :",
+      "Le juge de permanence statue sur :",
+      "    - les demandes de mandat de perquisition ;",
+      "    - les prolongations de garde à vue ;",
+      "    - les mesures urgentes de protection des victimes.",
+      "",
+      "Article 4 :",
+      "Le présent décret entre en vigueur le jour de sa publication."
+    ],
+    "justification": [
+      "Les demandes urgentes formulées en soirée restent aujourd'hui sans réponse faute de juge joignable, ce qui bloque des enquêtes en cours.",
+      "Une permanence fixe garantit une réponse rapide et répartit la charge entre les juges."
+    ],
+    "priorite": "urgente"
+  },
+  {
+    "id": "EX-02",
+    "type": "Amendement",
+    "code": "Code pénal",
+    "titre": "Révision des peines applicables au vol",
+    "article": "27",
+    "texteActuel": [
+      "Le vol est puni d'une amende de 5 000 $ et d'une peine de 10 mois d'emprisonnement.",
+      "",
+      "Le vol commis avec violence est puni d'une amende de 15 000 $ et d'une peine de 25 mois d'emprisonnement."
+    ],
+    "textePropose": [
+      "Le vol est puni d'une amende de 7 500 $ et d'une peine de 10 mois d'emprisonnement.",
+      "",
+      "Le vol commis avec violence ou à l'aide d'une arme est puni d'une amende de 20 000 $ et d'une peine de 30 mois d'emprisonnement.",
+      "",
+      "La tentative est punie des mêmes peines."
+    ],
+    "justification": [
+      "Les montants actuels n'ont pas suivi l'évolution de l'économie du serveur et ne dissuadent plus.",
+      "Le vol à main armée n'était pas distingué du vol avec violence, ce qui laissait les juges sans base claire.",
+      "L'alinéa sur la tentative comble un vide signalé par le parquet."
+    ],
+    "priorite": "normale"
+  },
+  {
+    "id": "EX-03",
+    "type": "Amendement",
+    "code": "Code de police",
+    "titre": "Encadrement des contrôles d'identité",
+    "article": "8",
+    "texteActuel": [
+      "Tout agent peut procéder à un contrôle d'identité sur la voie publique.",
+      "La personne contrôlée présente une pièce d'identité ou décline son identité."
+    ],
+    "textePropose": [
+      "Tout agent peut procéder à un contrôle d'identité sur la voie publique lorsqu'il existe une raison plausible de soupçonner que la personne a commis ou tenté de commettre une infraction.",
+      "La personne contrôlée présente une pièce d'identité ou décline son identité.",
+      "Le refus de se soumettre au contrôle est puni d'une amende de 2 500 $."
+    ],
+    "justification": [
+      "Les contrôles sans motif se multiplient et génèrent des plaintes, en jeu comme hors jeu.",
+      "Exiger une raison plausible encadre la pratique sans priver les agents de l'outil. En contrepartie, le refus de contrôle devient sanctionné, ce qui n'existait pas."
+    ],
+    "priorite": "normale"
+  }
+]

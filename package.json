@@ -1,0 +1,16 @@
+{
+  "name": "registre-propositions-doj",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Registre des propositions du Département de la Justice (État de San Andreas, serveur Last Gate).",
+  "scripts": {
+    "dev": "netlify dev",
+    "verifier": "node scripts/verifier.mjs"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^11.1.4"
+  },
+  "engines": {
+    "node": ">=22.12"
+  }
+}
