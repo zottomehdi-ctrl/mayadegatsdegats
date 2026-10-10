@@ -340,11 +340,11 @@ function blocTexte(p, niveau) {
         </div>
         <div class="comparaison">
           <div class="colonne">
-            <${hc} class="colonne-titre">Texte actuel</${hc}>
+            <${hc} class="colonne-titre colonne-titre--avant">Texte actuel</${hc}>
             <div class="corps">${avant}</div>
           </div>
           <div class="colonne">
-            <${hc} class="colonne-titre">Texte proposé</${hc}>
+            <${hc} class="colonne-titre colonne-titre--apres">Texte proposé</${hc}>
             ${droite}
           </div>
         </div>
