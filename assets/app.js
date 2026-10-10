@@ -26,6 +26,15 @@ const TITRES = {
 };
 const LIMITE_DISCORD = 2000;
 const CLE_MODE = 'registre-doj:mode-rediscuter';
+const CLE_PALETTE = 'registre-doj:palette';
+// Couleur du bandeau de chaque palette, reprise par la barre du navigateur mobile.
+const PALETTES = {
+  nuit: '#141c30',
+  ardoise: '#1d1b19',
+  foret: '#11241b',
+  bordeaux: '#2b131b',
+  pierre: '#19223a',
+};
 const RE_ARTICLE = /^(\s*)(Article\s+[^\s:]+(?:\s+(?:bis|ter|quater|quinquies|sexies))?\s*:)(.*)$/;
 
 const FMT_DATE_HEURE = new Intl.DateTimeFormat('fr-FR', {
@@ -54,6 +63,7 @@ async function demarrer() {
   document.addEventListener('click', surClic);
   document.addEventListener('input', surSaisie);
   document.addEventListener('keydown', surTouche);
+  appliquerPalette(document.documentElement.dataset.palette);
   rendre();
   await charger();
   rendre();
@@ -679,6 +689,17 @@ function changerPoint(delta) {
 /* Événements */
 
 function surClic(e) {
+  const choix = e.target.closest('[data-palette-choix]');
+  if (choix) {
+    const palette = appliquerPalette(choix.dataset.paletteChoix);
+    try {
+      localStorage.setItem(CLE_PALETTE, palette);
+    } catch {
+      /* préférence non mémorisée */
+    }
+    return;
+  }
+
   const el = e.target.closest('[data-action]');
   if (!el || el.disabled) return;
   const { action } = el.dataset;
@@ -716,6 +737,16 @@ function surTouche(e) {
     e.preventDefault();
     changerPoint(-1);
   }
+}
+
+function appliquerPalette(nom) {
+  const palette = PALETTES[nom] ? nom : 'nuit';
+  document.documentElement.dataset.palette = palette;
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', PALETTES[palette]);
+  document.querySelectorAll('[data-palette-choix]').forEach((bouton) => {
+    bouton.setAttribute('aria-pressed', String(bouton.dataset.paletteChoix === palette));
+  });
+  return palette;
 }
 
 let minuteurToast;

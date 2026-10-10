@@ -1,11 +1,19 @@
 <!doctype html>
-<html lang="fr">
+<html lang="fr" data-palette="nuit">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
-  <meta name="theme-color" content="#19223a">
+  <meta name="theme-color" content="#141c30">
   <title>Registre des propositions · Département de la Justice</title>
+  <script>
+    (function () {
+      var palette = "nuit";
+      try { palette = localStorage.getItem("registre-doj:palette") || palette; } catch (e) {}
+      if (!/^(nuit|ardoise|foret|bordeaux|pierre)$/.test(palette)) palette = "nuit";
+      document.documentElement.setAttribute("data-palette", palette);
+    })();
+  </script>
   <link rel="icon" href="data:,">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,10 +24,20 @@
 <body>
   <header class="entete">
     <div class="cadre entete-haut">
-      <span class="sceau" aria-hidden="true">DOJ</span>
-      <div>
-        <p class="entete-institution">Département de la Justice — <span class="insecable">État de San Andreas</span></p>
-        <p class="entete-registre">Registre des propositions</p>
+      <div class="entete-titres">
+        <span class="sceau" aria-hidden="true">DOJ</span>
+        <div>
+          <p class="entete-institution">Département de la Justice — <span class="insecable">État de San Andreas</span></p>
+          <p class="entete-registre">Registre des propositions</p>
+        </div>
+      </div>
+      <div class="palettes" role="group" aria-label="Palette de couleurs">
+        <span class="palettes-libelle" aria-hidden="true">Palette</span>
+        <button type="button" class="choix-palette" data-palette-choix="nuit" aria-pressed="true" title="Nuit" style="--sw-fond: #141c30; --sw-accent: #a9bce6;"><span class="masque">Nuit</span></button>
+        <button type="button" class="choix-palette" data-palette-choix="ardoise" aria-pressed="false" title="Ardoise" style="--sw-fond: #1d1b19; --sw-accent: #ddd6ca;"><span class="masque">Ardoise</span></button>
+        <button type="button" class="choix-palette" data-palette-choix="foret" aria-pressed="false" title="Forêt" style="--sw-fond: #11241b; --sw-accent: #a8cfc6;"><span class="masque">Forêt</span></button>
+        <button type="button" class="choix-palette" data-palette-choix="bordeaux" aria-pressed="false" title="Bordeaux" style="--sw-fond: #2b131b; --sw-accent: #e8cfc4;"><span class="masque">Bordeaux</span></button>
+        <button type="button" class="choix-palette" data-palette-choix="pierre" aria-pressed="false" title="Pierre (clair)" style="--sw-fond: #e5e1da; --sw-accent: #1f2c4c;"><span class="masque">Pierre, palette claire</span></button>
       </div>
     </div>
     <nav class="nav" aria-label="Sections">

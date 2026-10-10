@@ -70,6 +70,10 @@ Ajouter un objet à la liste de `contenu/propositions.json` :
 
 Pour retirer les exemples, supprimer `EX-01` à `EX-03` du fichier. Leurs décisions de démonstration ne s'afficheront plus.
 
+## Palettes
+
+Le bandeau propose cinq palettes : Nuit (par défaut), Ardoise, Forêt, Bordeaux (sombres) et Pierre (claire). Le choix est mémorisé dans le navigateur de chaque personne et n'affecte pas les autres. Les couleurs sont définies en tête de `assets/style.css`.
+
 ## Accès
 
 Le site n'a ni connexion ni code. Toute personne qui connaît l'adresse peut consulter le registre et enregistrer une décision, donc ne la partagez qu'avec la fondatrice. Le site n'est pas indexé par les moteurs de recherche (`noindex` et `robots.txt`).
