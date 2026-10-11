@@ -3,7 +3,7 @@
   {
     "id": "cpp-creation-onglet",
     "titre": "Création d'un Code de Procédure Pénale",
-    "texte": "Autre",
+    "texte": "Code de procédure pénale",
     "article": "Article Sommaire :",
     "urgent": true,
     "resume": "Un nouvel onglet « C.P.P. – Code de Procédure Pénale » regroupe toutes les règles du DOJ, de la plainte au jugement.",
@@ -23,7 +23,7 @@
   {
     "id": "cpp-206-communication-pieces",
     "titre": "C.P.P. : communication des preuves à la défense",
-    "texte": "Code pénal",
+    "texte": "Code de procédure pénale",
     "article": "Article 206 :",
     "resume": "Toutes les preuves sont communiquées à la défense au moins 24 heures avant l'audience.",
     "changements": [
@@ -40,7 +40,7 @@
   {
     "id": "cpp-302-temoins",
     "titre": "C.P.P. : témoins et parole des agents",
-    "texte": "Code pénal",
+    "texte": "Code de procédure pénale",
     "article": "Article 302 :",
     "resume": "Les témoins prêtent serment, et la parole d'un agent ne fait foi que pour les infractions légères.",
     "changements": [
@@ -58,7 +58,7 @@
   {
     "id": "cpp-105-recidive",
     "titre": "C.P.P. : récidive",
-    "texte": "Code pénal",
+    "texte": "Code de procédure pénale",
     "article": "Article 105 :",
     "urgent": true,
     "resume": "La récidive est définie : même infraction ou même section du Livret dans les 14 jours suivant une condamnation.",
@@ -77,7 +77,7 @@
   {
     "id": "cpp-108-casier-judiciaire",
     "titre": "C.P.P. : casier judiciaire",
-    "texte": "Code pénal",
+    "texte": "Code de procédure pénale",
     "article": "Article 108 :",
     "resume": "Le DOJ tient un casier pour chaque citoyen, effacé après 30 jours pour les infractions légères.",
     "changements": [
@@ -95,7 +95,7 @@
   {
     "id": "cpp-106-circonstances-aggravantes",
     "titre": "C.P.P. : circonstances aggravantes",
-    "texte": "Code pénal",
+    "texte": "Code de procédure pénale",
     "article": "Article 106 :",
     "resume": "Sept circonstances placent l'amende dans la moitié haute de la fourchette.",
     "changements": [
@@ -113,7 +113,7 @@
   {
     "id": "cpp-107-circonstances-attenuantes",
     "titre": "C.P.P. : circonstances atténuantes",
-    "texte": "Code pénal",
+    "texte": "Code de procédure pénale",
     "article": "Article 107 :",
     "resume": "Cinq circonstances placent l'amende dans la moitié basse de la fourchette.",
     "changements": [
@@ -128,7 +128,7 @@
   {
     "id": "cpp-304-jugement",
     "titre": "C.P.P. : jugement écrit et motivé",
-    "texte": "Code pénal",
+    "texte": "Code de procédure pénale",
     "article": "Article 304 :",
     "resume": "Chaque jugement est écrit, motivé, et inscrit au registre des jugements et au casier.",
     "changements": [
@@ -144,7 +144,7 @@
   {
     "id": "cpp-401-appel",
     "titre": "C.P.P. : appel",
-    "texte": "Code pénal",
+    "texte": "Code de procédure pénale",
     "article": "Article 401 :",
     "resume": "Le condamné ou le parquet peut faire appel sous 48 heures devant un autre juge.",
     "changements": [

@@ -8,7 +8,7 @@ const STATUTS = {
   rediscuter: { libelle: 'À rediscuter', compteur: 'À rediscuter' },
 };
 const ORDRE_STATUTS = ['attente', 'validee', 'refusee', 'rediscuter'];
-const GROUPES = ['Code pénal', 'Code de police', 'Code de la route', 'Code du travail', 'Code civil', 'Code électoral', 'Constitution', 'Décrets', 'Autre'];
+const GROUPES = ['Code pénal', 'Code de procédure pénale', 'Code de police', 'Code de la route', 'Code du travail', 'Code civil', 'Code électoral', 'Constitution', 'Décrets', 'Autre'];
 
 const DECISIONS = {
   validee: {

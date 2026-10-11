@@ -3,6 +3,7 @@
 
 export const TEXTES = [
   'Code pénal',
+  'Code de procédure pénale',
   'Code de police',
   'Code de la route',
   'Code du travail',

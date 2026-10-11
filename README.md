@@ -50,7 +50,7 @@ Remplacer `contenu/propositions.json`, lancer `npm run verifier`, puis commit et
 | --- | --- | --- |
 | `id` | oui | Clé interne en slug (minuscules, chiffres, tirets), unique, jamais affichée. Ne jamais la modifier ni la réutiliser : les décisions y sont rattachées. |
 | `titre` | oui | Titre court. |
-| `texte` | oui | `Code pénal`, `Code de police`, `Code de la route`, `Code du travail`, `Code civil`, `Code électoral`, `Constitution`, `Décret` ou `Autre`. |
+| `texte` | oui | `Code pénal`, `Code de procédure pénale`, `Code de police`, `Code de la route`, `Code du travail`, `Code civil`, `Code électoral`, `Constitution`, `Décret` ou `Autre`. |
 | `article` | oui, sauf pour un décret | Sous la forme « Article 12 : ». |
 | `urgent` | non | `true` ou `false` (faux par défaut). |
 | `resume` | oui | En une phrase. |
