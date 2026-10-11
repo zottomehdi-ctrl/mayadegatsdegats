@@ -1,61 +1,181 @@
+
 [
   {
-    "id": "exemple-permanence-judiciaire",
-    "titre": "Création d'une permanence judiciaire en soirée",
-    "texte": "Décret",
+    "id": "cpp-creation-onglet",
+    "titre": "Création d'un Code de Procédure Pénale",
+    "texte": "Autre",
+    "article": "Article Sommaire :",
     "urgent": true,
-    "resume": "Un juge de permanence répond chaque soir, de 18 h à 23 h, aux demandes urgentes.",
+    "resume": "Un nouvel onglet « C.P.P. – Code de Procédure Pénale » regroupe toutes les règles du DOJ, de la plainte au jugement.",
     "changements": [
-      "Un juge est joignable chaque soir de 18 h à 23 h au palais de justice de Los Santos.",
-      "Il statue sur les mandats de perquisition, les prolongations de garde à vue et les mesures urgentes de protection des victimes.",
-      "Les juges se relaient selon un tableau établi par le président du tribunal."
+      "Nouvel onglet « C.P.P. – Code de Procédure Pénale » dans le corpus.",
+      "Quatre chapitres : principes, avant le procès, l'audience, après le jugement.",
+      "Cette salve propose ses premiers articles : 105 à 108, 206, 302, 304 et 401.",
+      "Option possible : un Titre V « De la justice pénale » à la fin du Code civil."
     ],
-    "pourquoi": "Les demandes urgentes formulées en soirée restent aujourd'hui sans réponse faute de juge joignable, ce qui bloque des enquêtes en cours.\nUne permanence fixe garantit une réponse rapide et répartit la charge entre les juges.",
+    "pourquoi": "La Constitution nomme le Juge et le Procureur, mais aucun texte n'organise ce qui se passe entre l'interpellation et le verdict : ni plainte, ni audience, ni jugement, ni recours. Chaque juge et chaque procureur applique donc ses propres règles, et deux affaires identiques peuvent être jugées de deux façons différentes.\nUn onglet dédié rassemble ces règles au même endroit, sans toucher aux codes existants. Les articles de cette salve en sont le premier socle ; les autres viendront ensuite.",
     "effets": {
-      "lspd": "Les demandes de mandat déposées en soirée obtiennent une réponse le soir même.",
-      "doj": "Chaque juge assure des soirées de permanence selon le tableau de roulement."
+      "doj": "Toute la procédure judiciaire est écrite au même endroit, consultable par tous.",
+      "lspd": "Les agents savent ce que devient un dossier après l'interpellation."
     },
-    "apres": "Article 1 :\nUne permanence judiciaire est instituée au palais de justice de Los Santos.\n\nArticle 2 :\nLa permanence est assurée chaque jour de 18 h à 23 h par un juge désigné selon un tableau de roulement établi par le président du tribunal.\n\nArticle 3 :\nLe juge de permanence statue sur :\n    - les demandes de mandat de perquisition ;\n    - les prolongations de garde à vue ;\n    - les mesures urgentes de protection des victimes.\n\nArticle 4 :\nLe présent décret entre en vigueur le jour de sa publication."
+    "apres": "C.P.P. – Code de Procédure Pénale : Règles de la procédure pénale, de la plainte à l'exécution des peines.\nChapitre 1 : Principes\nChapitre 2 : Avant le procès\nChapitre 3 : L'audience\nChapitre 4 : Après le jugement"
   },
   {
-    "id": "exemple-peines-vol",
-    "titre": "Révision des peines applicables au vol",
+    "id": "cpp-206-communication-pieces",
+    "titre": "C.P.P. : communication des preuves à la défense",
     "texte": "Code pénal",
-    "article": "Article 27 :",
-    "urgent": false,
-    "resume": "Les amendes pour vol augmentent et le vol à l'aide d'une arme est puni comme le vol avec violence.",
+    "article": "Article 206 :",
+    "resume": "Toutes les preuves sont communiquées à la défense au moins 24 heures avant l'audience.",
     "changements": [
-      "Vol simple : l'amende passe de 5 000 $ à 7 500 $, la peine reste de 10 mois.",
-      "Vol avec violence : 20 000 $ et 30 mois, au lieu de 15 000 $ et 25 mois.",
-      "Le vol commis à l'aide d'une arme reçoit les mêmes peines que le vol avec violence.",
-      "La tentative est punie des mêmes peines que le vol."
+      "Délai minimal de 24 heures.",
+      "À défaut, la pièce est écartée ou l'audience renvoyée, au choix de la défense."
     ],
-    "pourquoi": "Les montants actuels n'ont pas suivi l'évolution de l'économie du serveur et ne dissuadent plus.\nLe vol à main armée n'était pas distingué du vol avec violence, ce qui laissait les juges sans base claire.\nL'alinéa sur la tentative comble un vide signalé par le parquet.",
+    "pourquoi": "Aucun texte ne fixe de délai pour transmettre les preuves à la défense. Il est déjà arrivé qu'elles soient communiquées 30 minutes avant l'audience.\nDans ces conditions, l'avocat découvre le dossier en même temps qu'il plaide : il ne peut ni vérifier une pièce, ni préparer une contestation, ni conseiller son client. Le procès est joué d'avance, quel que soit l'avocat.\nUn délai de 24 heures laisse le temps de préparer une défense sans retarder les affaires. La sanction (pièce écartée ou audience renvoyée, au choix de la défense) rend la règle effective : sans elle, le délai ne serait qu'une recommandation.",
+    "apres": "Communication des pièces\nToutes les preuves sont communiquées à la défense au moins 24 heures avant l'audience. À défaut, la pièce est écartée ou l'audience renvoyée, au choix de la défense.",
     "effets": {
-      "lspd": "Les agents qualifient le vol à main armée selon l'alinéa 2 de l'article 27.",
-      "doj": "Les juges disposent d'une base claire pour le vol armé et pour la tentative.",
-      "entreprises": "Les commerces victimes de vols bénéficient de sanctions plus dissuasives."
-    },
-    "avant": "Le vol est puni d'une amende de 5 000 $ et d'une peine de 10 mois d'emprisonnement.\n\nLe vol commis avec violence est puni d'une amende de 15 000 $ et d'une peine de 25 mois d'emprisonnement.",
-    "apres": "Le vol est puni d'une amende de 7 500 $ et d'une peine de 10 mois d'emprisonnement.\n\nLe vol commis avec violence ou à l'aide d'une arme est puni d'une amende de 20 000 $ et d'une peine de 30 mois d'emprisonnement.\n\nLa tentative est punie des mêmes peines."
+      "doj": "Le parquet transmet ses pièces au plus tard 24 heures avant l'audience.",
+      "lspd": "Les rapports et preuves doivent être remis au parquet assez tôt pour respecter ce délai."
+    }
   },
   {
-    "id": "exemple-controles-identite",
-    "titre": "Encadrement des contrôles d'identité",
-    "texte": "Code de police",
-    "article": "Article 8 :",
-    "urgent": false,
-    "resume": "Un contrôle d'identité exige désormais une raison plausible, et refuser le contrôle devient sanctionné.",
+    "id": "cpp-302-temoins",
+    "titre": "C.P.P. : témoins et parole des agents",
+    "texte": "Code pénal",
+    "article": "Article 302 :",
+    "resume": "Les témoins prêtent serment, et la parole d'un agent ne fait foi que pour les infractions légères.",
     "changements": [
-      "Un agent ne peut contrôler l'identité d'une personne que s'il a une raison plausible de la soupçonner d'une infraction ou d'une tentative.",
-      "Le refus de se soumettre au contrôle est puni d'une amende de 2 500 $."
+      "Serment obligatoire avant d'être entendu.",
+      "Parole d'un agent : fait foi jusqu'à preuve contraire pour Mineure et Infraction.",
+      "Au-delà, témoignage soumis au débat."
     ],
-    "pourquoi": "Les contrôles sans motif se multiplient et génèrent des plaintes, en jeu comme hors jeu.\nExiger une raison plausible encadre la pratique sans priver les agents de l'outil. En contrepartie, le refus de contrôle devient sanctionné, ce qui n'existait pas.",
+    "pourquoi": "Aucun texte ne dit ce que vaut la parole d'un agent. En audience, il a déjà été soutenu que la parole d'un agent assermenté valait preuve à elle seule.\nSi cette lecture s'impose, l'accusé ne peut plus gagner face au LSPD : tout ce que dit l'agent est acquis, et la défense n'a plus rien à débattre. L'issue d'une scène dépend alors du camp du joueur, pas des faits.\nLa règle proposée garde un avantage aux agents là où il est justifié : sur les infractions Mineure et Infraction, souvent constatées sans autre preuve, leur parole fait foi sauf preuve contraire. Au-delà, elle devient un témoignage débattu comme les autres. Le serment de tous les témoins donne en plus une base au faux témoignage.",
+    "apres": "Témoins\nLes témoins prêtent serment avant d'être entendus. La déclaration d'un agent assermenté fait foi jusqu'à preuve contraire pour les infractions de catégorie Mineure et Infraction ; au-delà, elle constitue un témoignage soumis au débat.",
     "effets": {
-      "lspd": "Chaque contrôle doit pouvoir être justifié par un motif précis.",
-      "doj": "Les contestations de contrôle se jugent sur l'existence d'une raison plausible."
+      "lspd": "Sur les petites infractions, le constat de l'agent suffit ; au-delà, il faut des éléments à l'appui.",
+      "doj": "Le juge apprécie chaque témoignage au lieu de tenir la parole d'un camp pour acquise."
+    }
+  },
+  {
+    "id": "cpp-105-recidive",
+    "titre": "C.P.P. : récidive",
+    "texte": "Code pénal",
+    "article": "Article 105 :",
+    "urgent": true,
+    "resume": "La récidive est définie : même infraction ou même section du Livret dans les 14 jours suivant une condamnation.",
+    "changements": [
+      "Délai de 14 jours après une condamnation définitive.",
+      "Amende au maximum et sanctions « si récidive » applicables.",
+      "Deuxième récidive : catégorie supérieure et déclassement possible."
+    ],
+    "pourquoi": "22 lignes du Livret prévoient une aggravation « si récidive » (tenue de la honte, TIG, humiliation publique, amende à 2 000 $, peine doublée), mais aucun texte ne dit ce qu'est une récidive : ni délai, ni infractions concernées, ni moyen de la prouver.\nEn l'état, ces aggravations sont inapplicables : un avocat peut contester chacune d'elles, et un même fait est aggravé par un agent et pas par un autre.\nLa règle proposée fixe un délai court, 14 jours, adapté au rythme d'un serveur RP, et une escalade claire : amende au maximum, puis catégorie supérieure et déclassement possible à la deuxième récidive. Elle s'appuie sur le casier (Article 108) pour être vérifiable.",
+    "effets": {
+      "lspd": "Le casier permet de vérifier la récidive au moment de l'interpellation.",
+      "doj": "Les aggravations « si récidive » deviennent applicables."
     },
-    "avant": "Tout agent peut procéder à un contrôle d'identité sur la voie publique.\nLa personne contrôlée présente une pièce d'identité ou décline son identité.",
-    "apres": "Tout agent peut procéder à un contrôle d'identité sur la voie publique lorsqu'il existe une raison plausible de soupçonner que la personne a commis ou tenté de commettre une infraction.\nLa personne contrôlée présente une pièce d'identité ou décline son identité.\nLe refus de se soumettre au contrôle est puni d'une amende de 2 500 $."
+    "apres": "Récidive\nEst en récidive la personne condamnée à nouveau pour la même infraction, ou pour une infraction de la même section du Livret des Peines, dans les 14 jours suivant une condamnation définitive. L'amende est alors fixée au montant maximal et les sanctions prévues « si récidive » s'appliquent. À la deuxième récidive dans ce délai, l'infraction est jugée dans la catégorie supérieure et le Juge peut prononcer un déclassement."
+  },
+  {
+    "id": "cpp-108-casier-judiciaire",
+    "titre": "C.P.P. : casier judiciaire",
+    "texte": "Code pénal",
+    "article": "Article 108 :",
+    "resume": "Le DOJ tient un casier pour chaque citoyen, effacé après 30 jours pour les infractions légères.",
+    "changements": [
+      "Contenu : date, ligne du Livret, sanction.",
+      "Consultable par le LSPD, le parquet, le Juge et l'avocat de l'intéressé.",
+      "Mineure, Infraction et Délit effacés après 30 jours sans nouvelle condamnation."
+    ],
+    "pourquoi": "Aucun registre des condamnations n'existe. Sans lui, impossible de prouver une récidive, ni, à l'inverse, de montrer qu'un accusé a un casier vierge.\nChaque agent et chaque juge se fie à sa mémoire : le même personnage est traité en récidiviste par l'un et en primo-délinquant par l'autre.\nLe casier tenu par le DOJ rend la récidive et les circonstances atténuantes vérifiables. L'effacement après 30 jours pour les infractions légères évite qu'une vieille contravention pèse indéfiniment sur un personnage ; les infractions graves restent inscrites.",
+    "effets": {
+      "lspd": "Consultation du casier lors des interpellations.",
+      "doj": "Le DOJ tient et met à jour le casier."
+    },
+    "apres": "Casier judiciaire\nLe DOJ tient un casier pour chaque citoyen, mentionnant la date, la ligne du Livret des Peines et la sanction prononcée. Il est consultable par le LSPD, le parquet, le Juge et l'avocat de l'intéressé. Les condamnations de catégorie Mineure, Infraction et Délit sont effacées après 30 jours sans nouvelle condamnation ; les autres ne s'effacent pas."
+  },
+  {
+    "id": "cpp-106-circonstances-aggravantes",
+    "titre": "C.P.P. : circonstances aggravantes",
+    "texte": "Code pénal",
+    "article": "Article 106 :",
+    "resume": "Sept circonstances placent l'amende dans la moitié haute de la fourchette.",
+    "changements": [
+      "Arme, groupe de trois ou plus, visage dissimulé, préméditation.",
+      "Victime représentant de l'État ou mineure, DEFCON 3 ou supérieur.",
+      "En cas de cumul, amende au maximum possible."
+    ],
+    "pourquoi": "Le Livret donne une fourchette par infraction (par exemple de 500 à 2 000 $ pour une conduite dangereuse), mais rien ne dit comment choisir un montant à l'intérieur, et le préambule du Code de police permet une réduction jusqu'à 75 % sans aucun critère.\nPour les mêmes faits, deux agents ou deux juges peuvent donc appliquer des montants qui vont du simple au quadruple, et la négociation entre parquet et avocat se fait sans repère.\nLes circonstances aggravantes donnent un critère objectif pour monter dans la fourchette. Elles reprennent des éléments déjà présents dans le corpus : arme, visage dissimulé, DEFCON, représentant de l'État.",
+    "apres": "Circonstances aggravantes\nL'amende est fixée dans la moitié haute de la fourchette lorsque l'infraction est commise avec une arme, à trois personnes ou plus, le visage dissimulé, avec préméditation, sur un représentant de l'État ou un mineur, ou pendant un DEFCON 3 ou supérieur. En cas de cumul de circonstances, elle peut être fixée au maximum.",
+    "effets": {
+      "lspd": "Les agents justifient un montant élevé par une circonstance écrite.",
+      "doj": "Les réquisitions s'appuient sur des critères communs."
+    }
+  },
+  {
+    "id": "cpp-107-circonstances-attenuantes",
+    "titre": "C.P.P. : circonstances atténuantes",
+    "texte": "Code pénal",
+    "article": "Article 107 :",
+    "resume": "Cinq circonstances placent l'amende dans la moitié basse de la fourchette.",
+    "changements": [
+      "Aveu, coopération, casier vierge, réparation du préjudice, provocation par la victime."
+    ],
+    "pourquoi": "C'est le pendant de l'Article 106 : sans critère pour descendre dans la fourchette, la réduction jusqu'à 75 % dépend entièrement de la personne en face.\nLes circonstances atténuantes donnent ce critère. Elles récompensent les joueurs qui jouent le jeu de la procédure (aveu, coopération, réparation du préjudice) au lieu de pousser chaque scène au conflit, et donnent une base écrite à la négociation entre le parquet et l'avocat.",
+    "apres": "Circonstances atténuantes\nL'amende est fixée dans la moitié basse de la fourchette en cas d'aveu, de coopération avec l'enquête, de casier vierge, de réparation du préjudice avant jugement ou de provocation par la victime.",
+    "effets": {
+      "doj": "La négociation avec la défense s'appuie sur des critères écrits."
+    }
+  },
+  {
+    "id": "cpp-304-jugement",
+    "titre": "C.P.P. : jugement écrit et motivé",
+    "texte": "Code pénal",
+    "article": "Article 304 :",
+    "resume": "Chaque jugement est écrit, motivé, et inscrit au registre des jugements et au casier.",
+    "changements": [
+      "Faits retenus, lignes du Livret appliquées et sanction écrits dans le jugement.",
+      "Registre des jugements tenu par le DOJ."
+    ],
+    "pourquoi": "Aucun texte n'impose que le jugement soit écrit ni motivé. Une décision orale ne laisse aucune trace : on ne peut ni la contester, ni l'inscrire au casier, ni s'en servir pour juger la même chose de la même façon la fois suivante.\nLe jugement écrit, avec les faits retenus et les lignes du Livret appliquées, rend l'appel possible (Article 401) et le casier fiable (Article 108). Le registre des jugements devient la jurisprudence du serveur.",
+    "effets": {
+      "doj": "Un registre des jugements à tenir."
+    },
+    "apres": "Jugement\nLe jugement est écrit et motivé : il mentionne les faits retenus, les lignes du Livret des Peines appliquées et la sanction prononcée. Il est inscrit au registre des jugements et au casier."
+  },
+  {
+    "id": "cpp-401-appel",
+    "titre": "C.P.P. : appel",
+    "texte": "Code pénal",
+    "article": "Article 401 :",
+    "resume": "Le condamné ou le parquet peut faire appel sous 48 heures devant un autre juge.",
+    "changements": [
+      "Délai d'appel de 48 heures.",
+      "Appel jugé par un autre juge.",
+      "Pas d'aggravation de la peine sur le seul appel du condamné."
+    ],
+    "pourquoi": "Aucune voie de recours n'existe. Plusieurs textes citent une « Cour suprême » (Articles L.405.1 et 1-303) qui ne figure pas dans l'organisation judiciaire de la Constitution.\nAujourd'hui, une erreur de jugement ne peut être corrigée qu'en sortant du jeu, par un ticket au staff.\nL'appel devant un autre juge règle ces contestations en RP. Le délai de 48 heures est court pour ne pas laisser les affaires ouvertes, et l'interdiction d'aggraver la peine sur le seul appel du condamné évite qu'il renonce à faire appel par peur.",
+    "apres": "Appel\nLe condamné ou le parquet peut faire appel dans les 48 heures suivant le jugement. L'appel est jugé par un autre juge, et la peine ne peut être aggravée sur le seul appel du condamné.",
+    "effets": {
+      "doj": "Un second juge examine les jugements contestés.",
+      "lspd": "Moins de contestations remontent au staff en ticket."
+    }
+  },
+  {
+    "id": "controle-vehicule-unique",
+    "titre": "Une seule règle pour le contrôle des véhicules",
+    "texte": "Code de la route",
+    "article": "Article L.211 :",
+    "urgent": true,
+    "resume": "Le Code de la route renvoie aux cas de contrôle prévus par le Code civil au lieu d'autoriser le contrôle de tout véhicule.",
+    "changements": [
+      "Un véhicule n'est contrôlé qu'en cas d'infraction, de DEFCON, de mauvais état ou de stationnement gênant (Article 4-204 du Code civil).",
+      "Option inverse possible : autoriser tout contrôle et modifier l'Article 4-204."
+    ],
+    "pourquoi": "Deux textes en vigueur se contredisent. L'Article L.211 du Code de la route permet de contrôler tout véhicule sur la route ; l'Article 4-204 du Code civil l'interdit, sauf en cas d'infraction, de DEFCON, de véhicule en mauvais état ou de stationnement gênant.\nChaque contrôle routier, la scène la plus fréquente du serveur, peut donc être contesté avec l'un ou l'autre texte. Et tout ce qui en découle (fouille, saisie, arrestation) tombe avec lui si le contrôle est jugé irrégulier (Article L.403.6).\nRetenir la règle du Code civil encadre les contrôles sans les supprimer et met fin aux contrôles sans motif. Option inverse possible : autoriser tout contrôle et modifier l'Article 4-204.",
+    "effets": {
+      "lspd": "Les agents savent dans quels cas ils peuvent arrêter un véhicule, et leurs contrôles ne sont plus contestables.",
+      "doj": "Plus de débat sur la régularité du contrôle initial."
+    },
+    "avant": "Dans l’ensemble de la route tout véhicule peut être soumis à un contrôle de police pour vérifier les normes de sécurités à bord. Seul les véhicules propriété de Neuralis sont inviolables.",
+    "apres": "Un véhicule ne peut être soumis à un contrôle de police que dans les cas prévus à l'article 4-204 du Code civil. Seuls les véhicules propriété de Neuralis sont inviolables."
   }
 ]
