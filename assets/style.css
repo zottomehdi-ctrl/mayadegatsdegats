@@ -371,6 +371,11 @@ button { -webkit-tap-highlight-color: transparent; }
 
 .nav-compte:empty { display: none; }
 
+.nav-compte--neutre {
+  background: color-mix(in srgb, var(--muted) 16%, var(--surface));
+  color: var(--text);
+}
+
 /* Structure des pages */
 
 main {
@@ -459,6 +464,11 @@ main {
 .badge--urgent {
   background: var(--accent);
   color: var(--on-accent);
+}
+
+.badge--salve {
+  border: 1px solid var(--border-strong);
+  color: var(--muted);
 }
 
 .badge--nouveau {
@@ -1751,6 +1761,60 @@ kbd {
   gap: 10px 14px;
 }
 
+/* Archives : salves précédentes, acceptées ou refusées */
+
+.segment--archives { margin-bottom: 36px; }
+
+.segment-compte {
+  margin-left: 4px;
+  font: 500 12.5px var(--mono);
+}
+
+.bloc-archives + .bloc-archives { margin-top: 44px; }
+
+.archive {
+  padding: 20px 24px 22px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border-strong);
+  border-radius: var(--radius-grand);
+  background: var(--surface);
+  box-shadow: var(--ombre);
+}
+
+.archive + .archive { margin-top: 12px; }
+.archive--acceptee { border-left-color: var(--st-validee); }
+.archive--refusee { border-left-color: var(--st-refusee); }
+
+.archive-titre {
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.archive-resume {
+  margin-top: 6px;
+  max-width: 72ch;
+  color: var(--muted);
+}
+
+.archive .decision-commentaire { margin: 14px 0 0; }
+
+.boutons--compacts {
+  align-items: center;
+  gap: 8px 10px;
+}
+
+.boutons--compacts .btn-decision {
+  padding: 8px 14px;
+  font-size: 14px;
+}
+
+/* Sur écran tactile, les explications restent sur la fiche : la carte d'archive reste compacte. */
+@media (hover: none) {
+  .boutons--compacts .infobulle { display: none; }
+}
+
 /* Détails des thèmes roses : propositions validées (en vert), barre de progression et filet sous l'en-tête */
 
 :is([data-palette="petale"], [data-palette="poudre"], [data-palette="quartz"], [data-palette="velours"], [data-palette="minuit"]) .entete { border-bottom-color: color-mix(in srgb, var(--accent) 55%, var(--border)); }
@@ -2068,6 +2132,19 @@ kbd {
   .marque-sous { font-size: 13px; }
   .bouton-entete { height: 38px; padding: 0 11px; }
   .bouton-aide { width: 38px; padding: 0; }
+
+  /* Quatre onglets : deux par ligne, sans défilement horizontal */
+  .nav-cadre {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 16px;
+    overflow: visible;
+  }
+
+  .nav-lien {
+    justify-content: center;
+    padding: 10px 0 11px;
+  }
 
   .point-tete { grid-template-columns: minmax(0, 1fr); }
   .point-num { margin-bottom: 10px; }

@@ -2,6 +2,8 @@
 
 Registre des propositions de textes du serveur GTA RP Last Gate (État de San Andreas). Le site présente chaque proposition et recueille les décisions de la fondatrice : valider, refuser ou rediscuter en appel. Une proposition validée peut ensuite être marquée « Traitée » une fois appliquée au texte du serveur.
 
+Les propositions arrivent par salves. Le Récapitulatif montre la salve en cours, plus les propositions plus anciennes encore sans décision ; l'onglet Archives range les propositions acceptées ou refusées des salves précédentes.
+
 - `contenu/propositions.json` : toutes les propositions. C'est le seul fichier à modifier.
 - `netlify/functions/decisions.mjs` : enregistre les décisions dans Netlify Blobs, une clé par `id` de proposition.
 - `assets/registre.js` : lecture et vérification du fichier, partagées par le site et par `npm run verifier`.
@@ -37,6 +39,7 @@ Remplacer `contenu/propositions.json`, lancer `npm run verifier`, puis commit et
   "texte": "Code pénal",
   "article": "Article 12 :",
   "urgent": false,
+  "salve": 2,
   "resume": "Le changement, en une phrase.",
   "changements": ["Premier point concret.", "Deuxième point concret."],
   "pourquoi": "La justification, en quelques lignes.",
@@ -53,6 +56,7 @@ Remplacer `contenu/propositions.json`, lancer `npm run verifier`, puis commit et
 | `texte` | oui | `Code pénal`, `Code de procédure pénale`, `Code de police`, `Code de la route`, `Code du travail`, `Code civil`, `Code électoral`, `Constitution`, `Décret` ou `Autre`. |
 | `article` | oui, sauf pour un décret | Sous la forme « Article 12 : ». |
 | `urgent` | non | `true` ou `false` (faux par défaut). |
+| `salve` | non | Numéro de la salve : nombre entier supérieur ou égal à 1, sans guillemets (1 par défaut). |
 | `resume` | oui | En une phrase. |
 | `changements` | oui | 1 à 4 points concrets. |
 | `pourquoi` | oui | Quelques lignes. |
@@ -63,6 +67,15 @@ Remplacer `contenu/propositions.json`, lancer `npm run verifier`, puis commit et
 - Retours à la ligne en `\n` ; espaces et alinéas conservés à l'identique.
 - Champs vides omis plutôt que laissés à `""`.
 - Si le fichier est mal formé ou qu'un champ obligatoire manque, le site l'indique en haut de la page (numéro et titre de la proposition, champ en cause) et affiche les autres propositions normalement.
+- Salves : la salve en cours est le plus grand numéro présent dans le fichier. Une nouvelle salve prend le numéro suivant ; ne jamais changer la salve d'une proposition existante.
+
+| Onglet | Contenu |
+| --- | --- |
+| Récapitulatif | La salve en cours (même décidée), plus les propositions des salves précédentes encore sans décision. |
+| À rediscuter | Toutes les propositions à rediscuter, quelle que soit leur salve. |
+| Textes validés | Toutes les propositions validées ou traitées. |
+| Archives | Les propositions des salves précédentes validées, traitées ou refusées, groupées par salve. Une proposition acceptée figure aussi dans Textes validés. |
+
 - Les propositions d'exemple ont un `id` qui commence par `exemple-`. Pour les retirer, il suffit de les supprimer du fichier.
 
 ## Palettes

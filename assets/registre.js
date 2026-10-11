@@ -23,7 +23,7 @@ export const EFFETS = [
 export const LONGUEUR_ID_MAX = 100;
 export const CHANGEMENTS_MAX = 4;
 
-const CHAMPS = ['id', 'titre', 'texte', 'article', 'urgent', 'resume', 'changements', 'pourquoi', 'effets', 'avant', 'apres'];
+const CHAMPS = ['id', 'titre', 'texte', 'article', 'urgent', 'salve', 'resume', 'changements', 'pourquoi', 'effets', 'avant', 'apres'];
 const RE_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const SUFFIXES = '(?: (?:bis|ter|quater|quinquies|sexies))?';
 const RE_ARTICLE_CONFORME = new RegExp(`^Article [^\\s:]+${SUFFIXES} :$`);
@@ -200,6 +200,16 @@ function validerProposition(brut, numero) {
   }
   const urgent = brut.urgent === true;
 
+  // salve : entier ≥ 1, facultatif (1 par défaut)
+  let salve = 1;
+  if (brut.salve !== undefined && brut.salve !== null) {
+    if (typeof brut.salve !== 'number' || !Number.isInteger(brut.salve) || brut.salve < 1) {
+      erreur(`« salve » vaut ${JSON.stringify(brut.salve)} : ce doit être un nombre entier supérieur ou égal à 1, sans guillemets (par exemple 2).`);
+    } else {
+      salve = brut.salve;
+    }
+  }
+
   const resume = lireTexte('resume', { obligatoire: true });
 
   // changements : 1 à 4 points
@@ -281,6 +291,7 @@ function validerProposition(brut, numero) {
       groupe: texteConcerne === 'Décret' ? 'Décrets' : texteConcerne,
       article,
       urgent,
+      salve,
       resume,
       changements,
       pourquoi,
