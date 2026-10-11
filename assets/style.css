@@ -466,11 +466,6 @@ main {
   color: var(--on-accent);
 }
 
-.badge--salve {
-  border: 1px solid var(--border-strong);
-  color: var(--muted);
-}
-
 .badge--nouveau {
   border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
   color: var(--accent);
@@ -671,6 +666,12 @@ main {
 }
 
 .compteur--tous { --st: var(--accent); --st-texte: var(--text); }
+
+/* Traitées et Refusées : le compteur est un lien vers les Archives */
+a.compteur {
+  color: var(--text);
+  text-decoration: none;
+}
 
 .compteur:hover { background: var(--surface-2); }
 
@@ -1680,7 +1681,6 @@ kbd {
 /* Statut Traitée : fine bordure gauche rose bonbon */
 
 .ligne--traitee { box-shadow: inset 3px 0 0 var(--st-traitee); }
-.valide--traitee { border-left: 3px solid var(--st-traitee); }
 
 .fiche--traitee .fiche-tete,
 .fiche--validee .fiche-tete { padding-left: 16px; }
@@ -1713,35 +1713,8 @@ kbd {
 .lien-action:hover:not(:disabled) { color: var(--text); }
 .lien-action:disabled { opacity: 0.45; cursor: not-allowed; }
 
-/* Groupes repliables (traitées) */
+/* Textes validés : « À appliquer » */
 
-.repli > summary {
-  list-style: none;
-  cursor: pointer;
-}
-
-.repli > summary::-webkit-details-marker { display: none; }
-
-.repli-tete::before {
-  content: "";
-  flex: none;
-  width: 8px;
-  height: 8px;
-  margin-right: 2px;
-  border-right: 1.6px solid var(--muted);
-  border-bottom: 1.6px solid var(--muted);
-  transform: rotate(-45deg);
-  transition: transform 0.15s var(--ease);
-}
-
-.repli[open] > .repli-tete::before { transform: rotate(45deg); }
-.repli:not([open]) > .repli-tete { margin-bottom: 0; }
-
-.repli > summary:focus-visible { outline-offset: 4px; }
-
-/* Textes validés : « À appliquer », puis « Traitées » */
-
-.bloc-valides + .bloc-valides { margin-top: 48px; }
 .sous-groupe + .sous-groupe { margin-top: 28px; }
 
 .sous-groupe-titre {
@@ -1761,7 +1734,7 @@ kbd {
   gap: 10px 14px;
 }
 
-/* Archives : salves précédentes, acceptées ou refusées */
+/* Archives : traitées et refusées, groupées par salve */
 
 .segment--archives { margin-bottom: 36px; }
 
@@ -1782,7 +1755,7 @@ kbd {
 }
 
 .archive + .archive { margin-top: 12px; }
-.archive--acceptee { border-left-color: var(--st-validee); }
+.archive--traitee { border-left-color: var(--st-traitee); }
 .archive--refusee { border-left-color: var(--st-refusee); }
 
 .archive-titre {

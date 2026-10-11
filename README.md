@@ -2,7 +2,7 @@
 
 Registre des propositions de textes du serveur GTA RP Last Gate (État de San Andreas). Le site présente chaque proposition et recueille les décisions de la fondatrice : valider, refuser ou rediscuter en appel. Une proposition validée peut ensuite être marquée « Traitée » une fois appliquée au texte du serveur.
 
-Les propositions arrivent par salves. Le Récapitulatif montre la salve en cours, plus les propositions plus anciennes encore sans décision ; l'onglet Archives range les propositions acceptées ou refusées des salves précédentes.
+Les propositions arrivent par salves. Les propositions traitées et refusées sont rangées dans l'onglet Archives, groupées par salve.
 
 - `contenu/propositions.json` : toutes les propositions. C'est le seul fichier à modifier.
 - `netlify/functions/decisions.mjs` : enregistre les décisions dans Netlify Blobs, une clé par `id` de proposition.
@@ -56,7 +56,7 @@ Remplacer `contenu/propositions.json`, lancer `npm run verifier`, puis commit et
 | `texte` | oui | `Code pénal`, `Code de procédure pénale`, `Code de police`, `Code de la route`, `Code du travail`, `Code civil`, `Code électoral`, `Constitution`, `Décret` ou `Autre`. |
 | `article` | oui, sauf pour un décret | Sous la forme « Article 12 : ». |
 | `urgent` | non | `true` ou `false` (faux par défaut). |
-| `salve` | non | Numéro de la salve : nombre entier supérieur ou égal à 1, sans guillemets (1 par défaut). |
+| `salve` | non | Numéro de la salve : nombre entier supérieur ou égal à 1, sans guillemets (1 par défaut). Sert seulement à grouper les Archives et à afficher la salve en cours. |
 | `resume` | oui | En une phrase. |
 | `changements` | oui | 1 à 4 points concrets. |
 | `pourquoi` | oui | Quelques lignes. |
@@ -71,10 +71,10 @@ Remplacer `contenu/propositions.json`, lancer `npm run verifier`, puis commit et
 
 | Onglet | Contenu |
 | --- | --- |
-| Récapitulatif | La salve en cours (même décidée), plus les propositions des salves précédentes encore sans décision. |
-| À rediscuter | Toutes les propositions à rediscuter, quelle que soit leur salve. |
-| Textes validés | Toutes les propositions validées ou traitées. |
-| Archives | Les propositions des salves précédentes validées, traitées ou refusées, groupées par salve. Une proposition acceptée figure aussi dans Textes validés. |
+| Récapitulatif | Les propositions en attente, validées ou à rediscuter, et la salve en cours. Les compteurs portent sur tout le registre ; Traitées et Refusées ouvrent les Archives. |
+| À rediscuter | Les propositions à rediscuter. |
+| Textes validés | Les propositions validées, pas encore traitées (« À appliquer »). |
+| Archives | Les propositions traitées et refusées, groupées par salve (la plus récente en premier), avec un filtre Toutes / Traitées / Refusées. |
 
 - Les propositions d'exemple ont un `id` qui commence par `exemple-`. Pour les retirer, il suffit de les supprimer du fichier.
 

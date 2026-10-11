@@ -9,8 +9,8 @@ const STATUTS = {
   rediscuter: { libelle: 'À rediscuter', compteur: 'À rediscuter' },
 };
 const ORDRE_STATUTS = ['attente', 'validee', 'traitee', 'refusee', 'rediscuter'];
-const ACCEPTEES = ['validee', 'traitee'];
-const ARCHIVABLES = [...ACCEPTEES, 'refusee'];
+// Statuts rangés dans « Archives », et retirés de la liste du Récapitulatif.
+const ARCHIVABLES = ['traitee', 'refusee'];
 const GROUPES = ['Code pénal', 'Code de procédure pénale', 'Code de police', 'Code de la route', 'Code du travail', 'Code civil', 'Code électoral', 'Constitution', 'Décrets', 'Autre'];
 
 const DECISIONS = {
@@ -22,7 +22,7 @@ const DECISIONS = {
   refusee: {
     libelle: 'Refuser définitivement',
     message: 'proposition refusée',
-    aide: "Refus catégorique : la proposition est écartée et ne repasse pas en appel. Vous pourrez changer d'avis.",
+    aide: "Refus catégorique : la proposition est écartée, ne repasse pas en appel et rejoint les Archives. Vous pourrez changer d'avis.",
   },
   rediscuter: {
     libelle: 'À rediscuter en appel',
@@ -32,7 +32,7 @@ const DECISIONS = {
   traitee: {
     libelle: 'Marquer comme traitée',
     message: 'proposition marquée comme traitée',
-    aide: 'Le texte a été appliqué et intégré au texte du serveur. Vous pourrez la remettre en validée.',
+    aide: 'Le texte a été appliqué et intégré au texte du serveur : la proposition rejoint les Archives. Vous pourrez la remettre en validée.',
   },
 };
 
@@ -200,17 +200,14 @@ function salveCourante() {
   return etat.propositions.reduce((max, p) => Math.max(max, p.salve), 1);
 }
 
-// Récapitulatif : la salve en cours, plus les propositions des salves précédentes encore sans décision.
+// Liste du Récapitulatif : tout sauf les traitées et les refusées, quelle que soit la salve.
 function propositionsRecap() {
-  const courante = salveCourante();
-  return etat.propositions.filter((p) => p.salve === courante || statutDe(p.id) === 'attente');
+  return etat.propositions.filter((p) => !ARCHIVABLES.includes(statutDe(p.id)));
 }
 
-// Archives : les propositions des salves précédentes acceptées (validées ou traitées) ou refusées.
-// Une proposition à rediscuter n'y entre jamais.
+// Archives : les traitées et les refusées, quelle que soit la salve.
 function propositionsArchivees() {
-  const courante = salveCourante();
-  return etat.propositions.filter((p) => p.salve < courante && ARCHIVABLES.includes(statutDe(p.id)));
+  return etat.propositions.filter((p) => ARCHIVABLES.includes(statutDe(p.id)));
 }
 
 function dateValidation(id) {
@@ -390,26 +387,26 @@ function bandeaux() {
 /* Récapitulatif */
 
 function vueRecap() {
-  const recap = propositionsRecap();
-  const courante = salveCourante();
-  const total = recap.length;
+  const total = etat.propositions.length;
   const comptes = Object.fromEntries(ORDRE_STATUTS.map((s) => [s, 0]));
-  for (const p of recap) comptes[statutDe(p.id)]++;
-  const prioritaires = recap.filter((p) => p.urgent && statutDe(p.id) === 'attente');
-  const chapo = courante > 1
-    ? `Les propositions de la salve ${courante}, et celles des salves précédentes encore sans décision, groupées par texte. Les compteurs filtrent la liste par statut.`
-    : 'Toutes les propositions soumises, groupées par texte. Les compteurs filtrent la liste par statut.';
+  for (const p of etat.propositions) comptes[statutDe(p.id)]++;
+  const prioritaires = etat.propositions.filter((p) => p.urgent && statutDe(p.id) === 'attente');
 
-  const compteur = (cle, libelle, nombre) => `
-    <button type="button" class="compteur ${cle === 'tous' ? 'compteur--tous' : `st-${cle}`}" data-action="filtre" data-statut="${cle}" aria-pressed="${etat.filtre === cle}">
+  // Les compteurs portent sur tout le registre. Traitées et Refusées ouvrent les Archives, où ces propositions sont rangées.
+  const compteur = (cle, libelle, nombre) => {
+    const contenu = `
       <span class="compteur-libelle">${cle === 'tous' ? '' : ICONES[cle]}${libelle}</span>
-      <span class="compteur-nombre">${nombre}</span>
-    </button>`;
+      <span class="compteur-nombre">${nombre}</span>`;
+    if (ARCHIVABLES.includes(cle)) {
+      return `<a class="compteur st-${cle}" href="#/archives" data-action="voir-archives" data-filtre="${cle === 'traitee' ? 'traitees' : 'refusees'}" aria-label="${libelle} : ${nombre}, voir dans les Archives">${contenu}</a>`;
+    }
+    return `<button type="button" class="compteur ${cle === 'tous' ? 'compteur--tous' : `st-${cle}`}" data-action="filtre" data-statut="${cle}" aria-pressed="${etat.filtre === cle}">${contenu}</button>`;
+  };
 
   return `
     <header class="page-tete">
       <h1>Récapitulatif</h1>
-      <p class="chapo">${chapo}</p>
+      <p class="chapo"><strong>Salve ${salveCourante()} en cours.</strong> Les propositions en attente, validées ou à rediscuter, groupées par texte. Les traitées et les refusées sont rangées dans les Archives.</p>
     </header>
     <section class="priorite" aria-labelledby="titre-priorite">
       <div class="section-tete">
@@ -451,6 +448,9 @@ function listeRecap() {
       const precision = etat.filtre === 'tous' ? '' : ` parmi les propositions « ${STATUTS[etat.filtre].libelle} »`;
       return vide(`Aucun résultat pour « ${esc(etat.recherche.trim())} »${precision}.`, 'La recherche porte sur le titre, l\'article et le texte concerné.', '<button type="button" class="btn" data-action="effacer-recherche">Effacer la recherche</button>');
     }
+    if (etat.filtre === 'tous') {
+      return vide('Aucune proposition en cours.', 'Les propositions traitées et refusées sont rangées dans les Archives.', '<a class="btn" href="#/archives">Voir les Archives</a>');
+    }
     return vide(`Aucune proposition « ${STATUTS[etat.filtre].libelle} » pour l'instant.`);
   }
   const groupes = (liste) => grouper(liste).map(([nom, items]) => `
@@ -462,20 +462,7 @@ function listeRecap() {
       <ul class="liste">${items.map((p) => `<li>${ligne(p, false)}</li>`).join('')}</ul>
     </section>`).join('');
 
-  if (etat.filtre !== 'tous') return groupes(visibles);
-
-  // Sans filtre, les traitées sont repliées dans un groupe fermé en bas de la liste.
-  const actives = visibles.filter((p) => statutDe(p.id) !== 'traitee');
-  const traitees = visibles.filter((p) => statutDe(p.id) === 'traitee');
-  const repli = traitees.length ? `
-    <details class="repli groupe"${etat.recherche.trim() ? ' open' : ''}>
-      <summary class="section-tete repli-tete">
-        <h2>Traitées</h2>
-        <span class="compte">${traitees.length}</span>
-      </summary>
-      <ul class="liste">${traitees.map((p) => `<li>${ligne(p, true)}</li>`).join('')}</ul>
-    </details>` : '';
-  return groupes(actives) + repli;
+  return groupes(visibles);
 }
 
 function majListeRecap() {
@@ -489,7 +476,7 @@ function ligne(p, avecTexte) {
   const sous = [avecTexte ? esc(p.texte) : '', p.article ? `<span class="mono">${esc(p.article)}</span>` : '']
     .filter(Boolean)
     .join('<span class="sep" aria-hidden="true">·</span>');
-  const marques = `${p.salve < salveCourante() ? badgeSalve(p.salve) : ''}${estNouvelle(p.id) ? badgeNouveau() : ''}${p.urgent ? badgeUrgent() : ''}`;
+  const marques = `${estNouvelle(p.id) ? badgeNouveau() : ''}${p.urgent ? badgeUrgent() : ''}`;
   return `
     <a class="ligne ligne--${statutDe(p.id)}" href="${lienFiche(p.id)}">
       <span class="ligne-corps">
@@ -515,7 +502,6 @@ function vueDetail(id) {
       <header class="fiche-tete">
         <div class="meta">
           ${metaTexte(p)}
-          ${p.salve < salveCourante() ? badgeSalve(p.salve) : ''}
           ${p.urgent ? badgeUrgent() : ''}
           ${pastille(statutDe(p.id))}
         </div>
@@ -743,7 +729,6 @@ function cartePoint(p, index) {
         <div>
           <div class="meta">
             ${metaTexte(p)}
-            ${p.salve < salveCourante() ? badgeSalve(p.salve) : ''}
             ${nouvelle ? badgeNouveau() : ''}
             ${p.urgent ? badgeUrgent() : ''}
           </div>
@@ -768,21 +753,20 @@ function cartePoint(p, index) {
 function vueValides() {
   const parDate = (a, b) => horodatage(dateValidation(a.id)) - horodatage(dateValidation(b.id)) || a.numero - b.numero;
   const aAppliquer = etat.propositions.filter((p) => statutDe(p.id) === 'validee').sort(parDate);
-  const traitees = etat.propositions.filter((p) => statutDe(p.id) === 'traitee').sort(parDate);
 
   const tete = `
     <header class="page-tete">
       <h1>Textes validés</h1>
-      <p class="chapo">D'abord les textes à appliquer sur le serveur, puis ceux déjà traités. Classés par texte puis par date de validation, prêts à coller sur Discord.</p>
+      <p class="chapo">Les textes validés à appliquer sur le serveur, classés par texte puis par date de validation, prêts à coller sur Discord. Une fois marqués comme traités, ils rejoignent les Archives.</p>
     </header>`;
 
-  if (!aAppliquer.length && !traitees.length) {
-    return tete + vide("Aucun texte validé pour l'instant.", 'Les propositions que vous validez apparaîtront ici.');
+  if (!aAppliquer.length) {
+    return tete + vide("Aucun texte à appliquer pour l'instant.", 'Les propositions que vous validez apparaîtront ici.');
   }
 
-  const groupes = (liste, prefixe) => grouper(liste).map(([nom, items]) => `
-    <section class="groupe sous-groupe" aria-labelledby="${prefixe}-${slug(nom)}">
-      <h3 class="sous-groupe-titre" id="${prefixe}-${slug(nom)}">${esc(nom)} <span class="compte">${items.length}</span></h3>
+  const groupes = grouper(aAppliquer).map(([nom, items]) => `
+    <section class="groupe sous-groupe" aria-labelledby="a-appliquer-${slug(nom)}">
+      <h3 class="sous-groupe-titre" id="a-appliquer-${slug(nom)}">${esc(nom)} <span class="compte">${items.length}</span></h3>
       ${items.map(carteValide).join('')}
     </section>`).join('');
 
@@ -792,15 +776,8 @@ function vueValides() {
         <h2 id="titre-a-appliquer">À appliquer</h2>
         <span class="compte">${aAppliquer.length}</span>
       </div>
-      ${aAppliquer.length ? groupes(aAppliquer, 'a-appliquer') : '<p class="priorite-vide">Aucun texte à appliquer pour l\'instant.</p>'}
-    </section>
-    <details class="repli bloc-valides">
-      <summary class="section-tete repli-tete">
-        <h2>Traitées</h2>
-        <span class="compte">${traitees.length}</span>
-      </summary>
-      ${traitees.length ? groupes(traitees, 'traitees') : '<p class="priorite-vide">Aucun texte traité pour l\'instant.</p>'}
-    </details>`;
+      ${groupes}
+    </section>`;
 }
 
 function carteValide(p) {
@@ -814,23 +791,21 @@ function carteValide(p) {
     ? `<p class="alerte-discord">Ce texte fait ${longueur.toLocaleString('fr-FR')} caractères une fois mis en forme. Discord limite un message à 2 000 caractères (4 000 avec Nitro) : il faudra le publier en plusieurs messages.</p>`
     : '';
 
-  const traitee = decision.statut === 'traitee';
-  const actions = traitee
-    ? `<button type="button" class="btn" data-action="copier" data-id="${esc(p.id)}">Copier le texte</button>${lienRemettre(p.id)}`
-    : `<button type="button" class="btn" data-action="copier" data-id="${esc(p.id)}">Copier le texte</button>${boutonDecision(p.id, 'traitee', false)}`;
-
   return `
-    <article class="valide valide--${decision.statut}">
+    <article class="valide valide--validee">
       <div class="valide-tete">
         <div>
           <div class="meta">
             ${metaTexte(p)}
-            ${pastille(decision.statut)}
-            <span>${traitee ? `Traitée le ${dateLongue(decision.date)}` : `Validée le ${dateLongue(decision.date)}`}</span>
+            ${pastille('validee')}
+            <span>Validée le ${dateLongue(decision.date)}</span>
           </div>
           <h4 class="valide-titre"><a href="${lienFiche(p.id)}" class="lien-discret">${esc(p.titre)}</a></h4>
         </div>
-        <div class="valide-actions">${actions}</div>
+        <div class="valide-actions">
+          <button type="button" class="btn" data-action="copier" data-id="${esc(p.id)}">Copier le texte</button>
+          ${boutonDecision(p.id, 'traitee', false)}
+        </div>
       </div>
       <div class="corps">${article}${texte}</div>
       ${alerte}
@@ -841,7 +816,7 @@ function carteValide(p) {
 
 const FILTRES_ARCHIVES = {
   toutes: { libelle: 'Toutes', garde: () => true },
-  acceptees: { libelle: 'Acceptées', garde: (statut) => ACCEPTEES.includes(statut) },
+  traitees: { libelle: 'Traitées', garde: (statut) => statut === 'traitee' },
   refusees: { libelle: 'Refusées', garde: (statut) => statut === 'refusee' },
 };
 
@@ -850,11 +825,11 @@ function vueArchives() {
   const tete = `
     <header class="page-tete">
       <h1>Archives</h1>
-      <p class="chapo">Les propositions décidées des salves précédentes, acceptées ou refusées, de la salve la plus récente à la plus ancienne. Une proposition renvoyée en appel quitte les archives pour « À rediscuter ».</p>
+      <p class="chapo">Les propositions traitées et refusées, groupées par salve, de la plus récente à la plus ancienne. Une traitée remise en validée retourne dans « Textes validés » ; une refusée peut encore être validée ou renvoyée en appel.</p>
     </header>`;
 
   if (!archivees.length) {
-    return tete + vide("Aucune proposition archivée pour l'instant.", 'À la publication d\'une nouvelle salve, les propositions acceptées ou refusées des salves précédentes seront rangées ici.');
+    return tete + vide("Aucune proposition archivée pour l'instant.", 'Les propositions traitées ou refusées seront rangées ici.');
   }
 
   const filtre = FILTRES_ARCHIVES[etat.filtreArchives] ? etat.filtreArchives : 'toutes';
@@ -866,7 +841,7 @@ function vueArchives() {
 
   const visibles = archivees.filter((p) => FILTRES_ARCHIVES[filtre].garde(statutDe(p.id)));
   if (!visibles.length) {
-    return tete + segment + vide(`Aucune proposition ${filtre === 'acceptees' ? 'acceptée' : 'refusée'} dans les archives.`);
+    return tete + segment + vide(`Aucune proposition ${filtre === 'traitees' ? 'traitée' : 'refusée'} dans les archives.`);
   }
 
   const salves = [...new Set(visibles.map((p) => p.salve))].sort((a, b) => b - a);
@@ -886,29 +861,25 @@ function vueArchives() {
 function carteArchive(p) {
   const decision = decisionDe(p.id);
   const statut = statutDe(p.id);
-  const acceptee = ACCEPTEES.includes(statut);
-  const verdict = acceptee
-    ? `<span class="pastille st-validee">${ICONES.validee}Acceptée</span>`
-    : `<span class="pastille st-refusee">${ICONES.refusee}Refusée</span>`;
   const commentaire = decision.commentaire
     ? `<p class="decision-commentaire st-${statut}">${esc(decision.commentaire)}</p>`
     : '';
-  // Une proposition traitée se remet en validée par le lien, comme sur sa fiche.
-  const boutons = statut === 'traitee'
-    ? `${boutonDecision(p.id, 'refusee', false)}${boutonDecision(p.id, 'rediscuter', false)}${lienRemettre(p.id)}`
-    : ['validee', 'refusee', 'rediscuter'].map((s) => boutonDecision(p.id, s, statut === s)).join('');
+  // Une traitée se remet en validée par le lien, comme sur sa fiche ; une refusée garde ses boutons de décision.
+  const actions = statut === 'traitee'
+    ? `<p class="decision-traitee">Appliquée et intégrée au texte du serveur. ${lienRemettre(p.id)}</p>`
+    : `<div class="boutons boutons--compacts">${['validee', 'refusee', 'rediscuter'].map((s) => boutonDecision(p.id, s, statut === s)).join('')}</div>`;
 
   return `
-    <article class="archive archive--${acceptee ? 'acceptee' : 'refusee'}">
+    <article class="archive archive--${statut}">
       <div class="meta">
-        ${verdict}
+        ${pastille(statut)}
         ${metaTexte(p)}
         <span>${STATUTS[statut].libelle} le ${dateLongue(decision.date)}</span>
       </div>
       <h3 class="archive-titre"><a href="${lienFiche(p.id)}" class="lien-discret">${esc(p.titre)}</a></h3>
       <p class="archive-resume">${esc(p.resume)}</p>
       ${commentaire}
-      <div class="boutons boutons--compacts">${boutons}</div>
+      ${actions}
     </article>`;
 }
 
@@ -1228,6 +1199,8 @@ function surClic(e) {
   } else if (action === 'filtre-archives') {
     etat.filtreArchives = el.dataset.filtre;
     rendre({ garderPosition: true });
+  } else if (action === 'voir-archives') {
+    etat.filtreArchives = el.dataset.filtre; // le lien ouvre ensuite « Archives » sur ce filtre
   } else if (action === 'effacer-recherche') {
     etat.recherche = '';
     const champ = document.getElementById('recherche');
@@ -1346,10 +1319,6 @@ function pastille(statut) {
 
 function badgeUrgent() {
   return '<span class="badge badge--urgent">Urgent</span>';
-}
-
-function badgeSalve(n) {
-  return `<span class="badge badge--salve">Salve ${n}</span>`;
 }
 
 function badgeNouveau() {
