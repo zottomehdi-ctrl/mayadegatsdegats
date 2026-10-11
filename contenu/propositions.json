@@ -3,6 +3,7 @@
   {
     "id": "cpp-creation-onglet",
     "titre": "Création d'un Code de Procédure Pénale",
+    "salve": 1,
     "texte": "Code de procédure pénale",
     "article": "Article Sommaire :",
     "urgent": true,
@@ -23,6 +24,7 @@
   {
     "id": "cpp-206-communication-pieces",
     "titre": "C.P.P. : communication des preuves à la défense",
+    "salve": 1,
     "texte": "Code de procédure pénale",
     "article": "Article 206 :",
     "resume": "Toutes les preuves sont communiquées à la défense au moins 24 heures avant l'audience.",
@@ -40,6 +42,7 @@
   {
     "id": "cpp-302-temoins",
     "titre": "C.P.P. : témoins et parole des agents",
+    "salve": 1,
     "texte": "Code de procédure pénale",
     "article": "Article 302 :",
     "resume": "Les témoins prêtent serment, et la parole d'un agent ne fait foi que pour les infractions légères.",
@@ -58,6 +61,7 @@
   {
     "id": "cpp-105-recidive",
     "titre": "C.P.P. : récidive",
+    "salve": 1,
     "texte": "Code de procédure pénale",
     "article": "Article 105 :",
     "urgent": true,
@@ -77,6 +81,7 @@
   {
     "id": "cpp-108-casier-judiciaire",
     "titre": "C.P.P. : casier judiciaire",
+    "salve": 1,
     "texte": "Code de procédure pénale",
     "article": "Article 108 :",
     "resume": "Le DOJ tient un casier pour chaque citoyen, effacé après 30 jours pour les infractions légères.",
@@ -95,6 +100,7 @@
   {
     "id": "cpp-106-circonstances-aggravantes",
     "titre": "C.P.P. : circonstances aggravantes",
+    "salve": 1,
     "texte": "Code de procédure pénale",
     "article": "Article 106 :",
     "resume": "Sept circonstances placent l'amende dans la moitié haute de la fourchette.",
@@ -113,6 +119,7 @@
   {
     "id": "cpp-107-circonstances-attenuantes",
     "titre": "C.P.P. : circonstances atténuantes",
+    "salve": 1,
     "texte": "Code de procédure pénale",
     "article": "Article 107 :",
     "resume": "Cinq circonstances placent l'amende dans la moitié basse de la fourchette.",
@@ -128,6 +135,7 @@
   {
     "id": "cpp-304-jugement",
     "titre": "C.P.P. : jugement écrit et motivé",
+    "salve": 1,
     "texte": "Code de procédure pénale",
     "article": "Article 304 :",
     "resume": "Chaque jugement est écrit, motivé, et inscrit au registre des jugements et au casier.",
@@ -144,6 +152,7 @@
   {
     "id": "cpp-401-appel",
     "titre": "C.P.P. : appel",
+    "salve": 1,
     "texte": "Code de procédure pénale",
     "article": "Article 401 :",
     "resume": "Le condamné ou le parquet peut faire appel sous 48 heures devant un autre juge.",
@@ -162,13 +171,15 @@
   {
     "id": "controle-vehicule-unique",
     "titre": "Une seule règle pour le contrôle des véhicules",
+    "salve": 1,
     "texte": "Code de la route",
     "article": "Article L.211 :",
     "urgent": true,
     "resume": "Le Code de la route renvoie aux cas de contrôle prévus par le Code civil au lieu d'autoriser le contrôle de tout véhicule.",
     "changements": [
       "Un véhicule n'est contrôlé qu'en cas d'infraction, de DEFCON, de mauvais état ou de stationnement gênant (Article 4-204 du Code civil).",
-      "Option inverse possible : autoriser tout contrôle et modifier l'Article 4-204."
+      "Option inverse possible : autoriser tout contrôle et modifier l'Article 4-204.",
+      "Faute corrigée : « Seul les véhicules » devient « Seuls les véhicules »."
     ],
     "pourquoi": "Deux textes en vigueur se contredisent. L'Article L.211 du Code de la route permet de contrôler tout véhicule sur la route ; l'Article 4-204 du Code civil l'interdit, sauf en cas d'infraction, de DEFCON, de véhicule en mauvais état ou de stationnement gênant.\nChaque contrôle routier, la scène la plus fréquente du serveur, peut donc être contesté avec l'un ou l'autre texte. Et tout ce qui en découle (fouille, saisie, arrestation) tombe avec lui si le contrôle est jugé irrégulier (Article L.403.6).\nRetenir la règle du Code civil encadre les contrôles sans les supprimer et met fin aux contrôles sans motif. Option inverse possible : autoriser tout contrôle et modifier l'Article 4-204.",
     "effets": {
@@ -181,14 +192,15 @@
   {
     "id": "signature-mandat-perquisition",
     "titre": "Une seule autorité pour signer un mandat",
+    "salve": 2,
     "texte": "Code de police",
     "article": "Article L.405 :",
-    "salve": 2,
     "resume": "Le mandat est signé par le Procureur, ou par le Juge en son absence, au lieu des deux à la fois.",
     "changements": [
       "Le Procureur signe seul les mandats, comme le prévoit la Constitution.",
       "Le Juge signe en l'absence du Procureur.",
-      "Le danger imminent pour la vie d'autrui rejoint le flagrant délit comme exception."
+      "Le danger imminent pour la vie d'autrui rejoint le flagrant délit comme exception.",
+      "Fautes d'orthographe corrigées (« à l'interdiction » devient « a l'interdiction », « mandats accordé » devient « mandat accordé »)."
     ],
     "pourquoi": "L'Article L.405 exige un mandat signé par le juge et par le procureur, alors que la Constitution (Article 4, Section 10) donne au seul Procureur le pouvoir d'autoriser une perquisition.\nUn mandat signé d'une seule personne viole donc L.405, et un mandat signé des deux dépasse la répartition des pouvoirs fixée par la Constitution. Aucun mandat n'est pleinement régulier : toute perquisition peut être contestée, et avec elle tout ce qu'elle a permis de saisir (Article L.403.6).\nLa correction aligne le code sur la Constitution : le Procureur signe, le Juge le supplée en son absence. Le danger imminent pour la vie d'autrui rejoint le flagrant délit, pour que les agents puissent intervenir sans attendre une signature quand une vie est en jeu.",
     "effets": {
@@ -201,9 +213,9 @@
   {
     "id": "mandat-arret",
     "titre": "Mandat d'arrêt et avis de recherche",
+    "salve": 2,
     "texte": "Code civil",
     "article": "Article 1-105.2 :",
-    "salve": 2,
     "resume": "Le mandat d'arrêt est émis par le Juge ou le Procureur, enregistré au DOJ et levé dès l'interpellation.",
     "changements": [
       "Émission par le Juge ou le Procureur.",
@@ -219,46 +231,81 @@
   },
   {
     "id": "cour-remplacee-par-juge",
-    "titre": "La « Cour » remplacée par le Juge",
+    "titre": "La « Cour » remplacée par le Juge (Code de police)",
+    "salve": 2,
     "texte": "Code de police",
     "article": "Article L.403.1 :",
-    "salve": 2,
-    "resume": "Les textes qui citent une « Cour » jamais définie désignent désormais le Juge, et le rôle de Neuralis devient un veto exceptionnel.",
+    "resume": "Dans les Articles L.403.1 et L.403.2, la « Cour » jamais définie devient le Juge, et le rôle de Neuralis devient un veto exceptionnel.",
     "changements": [
-      "Code de police, Articles L.403.1 et L.403.2 : « la Cour » devient « le Juge ».",
-      "Constitution, Article 1, Section 10 : « la Cour » devient « le Juge ».",
-      "Neuralis garde un droit de veto exceptionnel, exercé sur demande du Gouverneur."
+      "Article L.403.1, dernière phrase : « La Cour de justice ainsi que Neuralis » devient « Le Juge », et Neuralis garde un veto exceptionnel sur demande du Gouverneur.",
+      "Article L.403.2, dernière phrase : « La Cour » devient « Le Juge ».",
+      "Le reste des deux articles est inchangé, mot pour mot.",
+      "La même correction dans la Constitution fait l'objet d'une proposition séparée."
     ],
-    "pourquoi": "Les Articles L.403.1 et L.403.2 confient l'avis final sur les vices de procédure à « la Cour de justice » et à Neuralis, et la Constitution (Article 1, Section 10) permet à « la Cour » de libérer quelqu'un. Or l'organisation judiciaire de la Constitution (Article 4) ne connaît que le DOJ, le Procureur et le Juge.\nÀ chaque désaccord entre le parquet et la défense, personne ne sait donc qui tranche, ni comment saisir Neuralis.\nLa correction confie ce rôle au Juge, qui existe, et garde à Neuralis un veto exceptionnel déclenché par le Gouverneur : le lore est préservé, et la procédure devient applicable.",
-    "avant": "La Cour de justice ainsi que Neuralis pourront intervenir en dernier recours pour rendre un avis final.",
-    "apres": "Le Juge pourra intervenir en dernier recours pour rendre un avis final. Neuralis conserve un droit de veto exceptionnel, exercé sur demande du Gouverneur.",
+    "pourquoi": "Les Articles L.403.1 et L.403.2 confient l'avis final sur les vices de procédure à « la Cour de justice » et à Neuralis,. Or l'organisation judiciaire de la Constitution (Article 4) ne connaît que le DOJ, le Procureur et le Juge.\nÀ chaque désaccord entre le parquet et la défense, personne ne sait donc qui tranche, ni comment saisir Neuralis.\nLa correction confie ce rôle au Juge, qui existe, et garde à Neuralis un veto exceptionnel déclenché par le Gouverneur : le lore est préservé, et la procédure devient applicable.",
+    "avant": "Principe général\nLorsqu'un suspect est arrêté pour un délit ou un crime, il doit être obligatoirement assisté d'un avocat durant l'ensemble de la procédure.\nLes vices de procédure n’entraînent plus automatiquement la libération de l’individu.\nToute irrégularité fera désormais l’objet d’une négociation entre le Bureau du Procureur et l’avocat de la défense, pouvant aboutir à une réduction d’amende ou de peine.\nLa Cour de justice ainsi que Neuralis pourront intervenir en dernier recours pour rendre un avis final.\n\nArticle L.403.2 :\nInformation des faits reprochés\nLes forces de l’ordre doivent exposer clairement les faits reprochés à l’individu dans un langage compréhensible.\nEn cas de manquement :\nil ne sera plus question de libération automatique, mais d’un ajustement de la procédure via négociation judiciaire (Procureur + avocat).\nLa Cour pourra intervenir en arbitrage final.",
+    "apres": "Principe général\nLorsqu'un suspect est arrêté pour un délit ou un crime, il doit être obligatoirement assisté d'un avocat durant l'ensemble de la procédure.\nLes vices de procédure n’entraînent plus automatiquement la libération de l’individu.\nToute irrégularité fera désormais l’objet d’une négociation entre le Bureau du Procureur et l’avocat de la défense, pouvant aboutir à une réduction d’amende ou de peine.\nLe Juge pourra intervenir en dernier recours pour rendre un avis final. Neuralis conserve un droit de veto exceptionnel, exercé sur demande du Gouverneur.\n\nArticle L.403.2 :\nInformation des faits reprochés\nLes forces de l’ordre doivent exposer clairement les faits reprochés à l’individu dans un langage compréhensible.\nEn cas de manquement :\nil ne sera plus question de libération automatique, mais d’un ajustement de la procédure via négociation judiciaire (Procureur + avocat).\nLe Juge pourra intervenir en arbitrage final.",
     "effets": {
       "doj": "Le Juge tranche les désaccords sur les vices de procédure."
     }
   },
   {
+    "id": "cour-juge-constitution",
+    "titre": "La « Cour » remplacée par le Juge (Constitution)",
+    "salve": 2,
+    "texte": "Constitution",
+    "article": "Article 1 :",
+    "resume": "Dans la Section 10, la « Cour » jamais définie devient le Juge ; le pouvoir de Neuralis est inchangé.",
+    "changements": [
+      "« à la discrétion de la Cour ou de Neuralis » devient « à la discrétion du Juge ou de Neuralis ».",
+      "Le reste de la Section 10 est inchangé."
+    ],
+    "pourquoi": "La Section 10 permet à « la Cour » de libérer une personne de son engagement, alors que l'organisation judiciaire de la Constitution (Article 4) ne connaît que le DOJ, le Procureur et le Juge.\nUne décision qui revient à une autorité inexistante ne peut être prise par personne. La correction la confie au Juge, comme pour les Articles L.403.1 et L.403.2 du Code de police (proposition liée).",
+    "avant": "Section 10. Une personne peut être libérée de son propre engagement à la discrétion de la Cour ou de Neuralis.",
+    "apres": "Section 10. Une personne peut être libérée de son propre engagement à la discrétion du Juge ou de Neuralis."
+  },
+  {
     "id": "juridictions-inexistantes",
-    "titre": "Suppression des juridictions qui n'existent pas",
+    "titre": "Suppression des juridictions qui n'existent pas (Code civil)",
+    "salve": 2,
     "texte": "Code civil",
     "article": "Article 1-303 :",
-    "salve": 2,
-    "resume": "La Cour suprême, la « Fédérale » et le Procureur général, absents de l'organisation judiciaire, sont remplacés par le Juge ou le Procureur.",
+    "resume": "La « Cour Suprême » de l'Article 1-303 devient le Juge, et le transfert « en Fédérale » de l'Article 4-207 devient un placement en cellule.",
     "changements": [
-      "Code civil, Article 1-303 : « Cour Suprême » devient « Juge ».",
-      "Code civil, Article 4-207 : « mis en Fédérale » devient « transféré ».",
-      "Code du travail, Article 215 : « Procureur général » devient « Procureur ».",
-      "La Cour suprême de l'Article L.405.1 disparaît avec sa réécriture (proposition dédiée)."
+      "Article 1-303 : « la Cour Suprême de l’Etat de San Andreas » devient « le Juge ». Le reste de l'article est inchangé, mot pour mot.",
+      "Article 4-207 : « mis en Fédérale » devient « placé en cellule ».",
+      "Le « Procureur général » du Code du travail fait l'objet d'une proposition séparée.",
+      "La « Cour suprême » de l'Article L.405.1 sera traitée avec la réécriture de cet article, qui n'est pas dans cette salve."
     ],
-    "pourquoi": "Trois textes confient une décision à une autorité qui n'existe pas : la déchéance de citoyenneté à la « Cour Suprême » (Article 1-303), le dernier appel avant un transfert « en Fédérale » (Article 4-207), et la saisie d'une société au « Procureur général » (Article 215 du Code du travail).\nUne décision prise par une autorité inexistante ne peut pas être rendue, ou elle est annulable : la déchéance de citoyenneté et la saisie de société, deux des sanctions les plus lourdes du corpus, sont aujourd'hui impossibles à prononcer régulièrement.\nLa correction attribue chaque décision à l'autorité qui existe. Elle va de pair avec l'appel de la salve précédente, qui crée la seule voie de recours réelle.",
-    "avant": "Toute personne ne répondant pas à ses devoirs de citoyen de l’Etat fédéré de San Andreas ou ayant commis des crime contre l’Etat fédéré de San Andreas peut se faire déchoir de la citoyenneté de ce même État sur décision de la Cour Suprême de l’Etat de San Andreas ou sur décision du Gouvernement si le pouvoir judiciaire est dans l’incapacité de statuer.",
-    "apres": "Toute personne ne répondant pas à ses devoirs de citoyen de l’Etat de San Andreas ou ayant commis des crimes contre l’Etat de San Andreas peut se faire déchoir de la citoyenneté de ce même État sur décision du Juge, ou sur décision du Gouvernement si le pouvoir judiciaire est dans l’incapacité de statuer."
+    "pourquoi": "Deux articles du Code civil confient une décision ou un droit à une autorité qui n'existe pas : la déchéance de citoyenneté à la « Cour Suprême » (Article 1-303), et le dernier appel à un transfert « en Fédérale » (Article 4-207), alors qu'il n'existe ni Cour suprême ni prison fédérale.\nUne décision réservée à une autorité inexistante ne peut être prise par personne : la déchéance de citoyenneté, l'une des sanctions les plus lourdes du corpus, est aujourd'hui impossible à prononcer régulièrement, et le droit au dernier appel ne se déclenche jamais.\nLa correction remplace chaque mention par ce qui existe réellement : le Juge, et le placement en cellule. Elle va de pair avec l'appel de la salve précédente, qui crée la seule voie de recours réelle.",
+    "avant": "Toute personne ne répondant pas à ses devoirs de citoyen de l’Etat fédéré de San Andreas ou ayant commis des crime contre l’Etat fédéré de San Andreas peut se faire déchoir de la citoyenneté de ce même État sur décision de la Cour Suprême de l’Etat de San Andreas ou sur décision du Gouvernement si le pouvoir judiciaire est dans l’incapacité de statuer.\n\nArticle 4-207 :\nVous êtes autorisé à passer un dernier appel si vous devez être mis en Fédérale.",
+    "apres": "Toute personne ne répondant pas à ses devoirs de citoyen de l’Etat fédéré de San Andreas ou ayant commis des crime contre l’Etat fédéré de San Andreas peut se faire déchoir de la citoyenneté de ce même État sur décision du Juge ou sur décision du Gouvernement si le pouvoir judiciaire est dans l’incapacité de statuer.\n\nArticle 4-207 :\nVous êtes autorisé à passer un dernier appel si vous devez être placé en cellule."
+  },
+  {
+    "id": "juridictions-procureur-general",
+    "titre": "Suppression du « Procureur général » (Code du travail)",
+    "salve": 2,
+    "texte": "Code du travail",
+    "article": "Article 215 :",
+    "resume": "La saisie d'une société se fait sur accord du Procureur, le « Procureur général » n'existant pas.",
+    "changements": [
+      "« Procureur général » devient « Procureur ».",
+      "Le reste de l'article est inchangé, mot pour mot."
+    ],
+    "pourquoi": "L'Article 215 permet de saisir la société d'un PDG recherché ou criminel « sur accord du Procureur général ou de Neuralis ». Or la Constitution (Article 4) ne connaît qu'un Procureur, sans Procureur général.\nEn l'état, la saisie d'une société, sanction très lourde pour une entreprise et ses salariés, repose sur l'accord d'une autorité qui n'existe pas, et peut donc être contestée à chaque fois.",
+    "effets": {
+      "entreprises": "Une saisie de société ne peut intervenir que sur accord du Procureur ou de Neuralis.",
+      "doj": "Le Procureur est seul compétent pour donner son accord à une saisie."
+    },
+    "avant": "Si les PDG/CO-PDG sont recherchés par les forces de l’ordre, ou ont commis un crime, leur société pourra être saisie sur accord du Procureur général ou de Neuralis.",
+    "apres": "Si les PDG/CO-PDG sont recherchés par les forces de l’ordre, ou ont commis un crime, leur société pourra être saisie sur accord du Procureur ou de Neuralis."
   },
   {
     "id": "cpp-203-suites-interpellation",
     "titre": "C.P.P. : suites d'une interpellation",
+    "salve": 2,
     "texte": "Code de procédure pénale",
     "article": "Article 203 :",
-    "salve": 2,
     "resume": "Le Procureur choisit entre classement, composition pénale validée par le Juge, et renvoi en audience.",
     "changements": [
       "Trois voies possibles.",
@@ -274,12 +321,13 @@
   {
     "id": "attente-avocat",
     "titre": "Attente de l'avocat et commis d'office",
-    "texte": "Code de police",
-    "article": "Article L.403.1 :",
-    "urgent": true,
     "salve": 2,
+    "texte": "Code de police",
+    "article": "Article L.403.1.1 :",
+    "urgent": true,
     "resume": "Sans avocat présent après 15 minutes, un commis d'office est désigné, et l'audition reste possible si aucun n'est joignable.",
     "changements": [
+      "Nouvel article placé juste après l'Article L.403.1, qui reste inchangé.",
       "L'avocat est prévenu dès l'arrivée au poste.",
       "Commis d'office désigné parmi les avocats de permanence après 15 minutes.",
       "Si aucun avocat n'est joignable, l'audition a lieu et la mention est portée au PV."
@@ -289,14 +337,14 @@
       "lspd": "Une procédure claire quand aucun avocat ne se présente.",
       "doj": "Une permanence d'avocats à organiser."
     },
-    "apres": "L'avocat est prévenu dès l'arrivée au poste. Sans avocat présent après 15 minutes, un avocat commis d'office est désigné parmi les avocats de permanence. Si aucun avocat n'est joignable, l'audition peut avoir lieu, et la mention en est portée au procès-verbal."
+    "apres": "Attente de l'avocat\nL'avocat est prévenu dès l'arrivée au poste. Sans avocat présent après 15 minutes, un avocat commis d'office est désigné parmi les avocats de permanence. Si aucun avocat n'est joignable, l'audition peut avoir lieu, et la mention en est portée au procès-verbal."
   },
   {
     "id": "plainte-contre-agent",
     "titre": "Plainte contre un agent",
+    "salve": 2,
     "texte": "Code de police",
     "article": "Article L.412.1 :",
-    "salve": 2,
     "resume": "La plainte contre un agent est déposée au DOJ, instruite par le parquet et reçoit une réponse sous 7 jours.",
     "changements": [
       "Dépôt au DOJ, instruction par le parquet.",
@@ -308,18 +356,19 @@
       "lspd": "Chaque agent visé par une plainte est entendu.",
       "doj": "Le parquet instruit les plaintes contre les agents."
     },
-    "apres": "La plainte contre un agent est déposée au DOJ et instruite par le parquet. L'agent visé est entendu ; une réponse écrite est donnée au plaignant sous 7 jours. Les sanctions applicables sont celles des articles L.403 et L.413 et du Livret des Peines."
+    "apres": "La plainte contre un agent est déposée au DOJ et instruite par le parquet. L'agent visé est entendu ; une réponse écrite est donnée au plaignant sous 7 jours. Les sanctions applicables sont celles des articles L.401, L.403 et L.413 et du Livret des Peines."
   },
   {
     "id": "usage-arme-police",
     "titre": "Usage de l'arme par la police réécrit",
+    "salve": 2,
     "texte": "Code de police",
     "article": "Article L.408 :",
     "urgent": true,
-    "salve": 2,
     "resume": "L'agent ne fait usage de son arme qu'en légitime défense ou face à un danger de mort.",
     "changements": [
-      "La branche « stopper son activité par la force », qui autorisait le tir sur tout fuyard, est retirée."
+      "La branche « stopper son activité par la force », qui autorisait le tir sur tout fuyard, est retirée.",
+      "La phrase est réécrite au positif : l'agent ne tire que dans ces deux cas."
     ],
     "pourquoi": "L'Article L.408 interdit à l'agent de tirer, sauf en cas de danger de mort, de légitime défense, ou « dans un cas où l'on souhaite stopper son activité par la force ».\nCette troisième branche est si large qu'elle autorise le tir sur n'importe quel suspect qui fuit ou résiste. Pour un joueur civil, c'est se faire abattre en courant sans aucun recours, ce qui relève du fair-play autant que du droit. Pour un agent, c'est l'incertitude totale sur ce qui lui est permis.\nLa correction garde les deux cas où le tir se justifie, la légitime défense et le danger de mort pour l'agent ou pour autrui, et retire celui qui vidait l'interdiction de son sens.",
     "effets": {
@@ -331,10 +380,10 @@
   {
     "id": "majorite-18-ans",
     "titre": "Majorité civile à 18 ans",
+    "salve": 2,
     "texte": "Code civil",
     "article": "Article 1-103 :",
     "urgent": true,
-    "salve": 2,
     "resume": "La majorité passe à 18 ans, l'âge de 21 ans restant requis pour l'alcool, le tabac et le recensement.",
     "changements": [
       "Les 18-20 ans deviennent majeurs : avocat obligatoire, mariage et contrats leur sont ouverts.",
