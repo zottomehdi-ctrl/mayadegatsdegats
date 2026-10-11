@@ -116,24 +116,20 @@
   --ombre-haute: 0 10px 30px rgba(0, 0, 0, 0.45);
 }
 
-/* Statuts propres aux thèmes roses : Validée passe au rose framboise, Refusée au rouge brique. */
+/* Statuts propres aux thèmes roses : Refusée au rouge brique ; Validée reste vert. */
 
 [data-palette="petale"],
 [data-palette="poudre"],
 [data-palette="quartz"] {
   --st-attente: #6E6470;
-  --st-validee: #B8336A;
   --st-refusee: #9C3D2E;
   --st-rediscuter: #A86F12;
   --on-validee: #FFFFFF;
 }
 
-[data-palette="quartz"] { --st-validee: #9A2A5E; }
-
 [data-palette="velours"],
 [data-palette="minuit"] {
   --st-attente: #A99BA2;
-  --st-validee: #F08DB8;
   --st-refusee: #E8876F;
   --st-rediscuter: #E6B45E;
   --on-validee: var(--on-accent);
@@ -1755,9 +1751,11 @@ kbd {
   gap: 10px 14px;
 }
 
-/* Détails roses : propositions validées, notification « Validée », filet sous l'en-tête */
+/* Détails des thèmes roses : propositions validées (en vert), barre de progression et filet sous l'en-tête */
 
 :is([data-palette="petale"], [data-palette="poudre"], [data-palette="quartz"], [data-palette="velours"], [data-palette="minuit"]) .entete { border-bottom-color: color-mix(in srgb, var(--accent) 55%, var(--border)); }
+
+:is([data-palette="petale"], [data-palette="poudre"], [data-palette="quartz"], [data-palette="velours"], [data-palette="minuit"]) .progression-barre span { background: var(--accent); }
 
 :is([data-palette="petale"], [data-palette="poudre"], [data-palette="quartz"], [data-palette="velours"], [data-palette="minuit"]) .ligne--validee {
   background: color-mix(in srgb, var(--st-validee) 6%, var(--surface));
