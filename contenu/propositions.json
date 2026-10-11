@@ -177,5 +177,171 @@
     },
     "avant": "Dans l’ensemble de la route tout véhicule peut être soumis à un contrôle de police pour vérifier les normes de sécurités à bord. Seul les véhicules propriété de Neuralis sont inviolables.",
     "apres": "Un véhicule ne peut être soumis à un contrôle de police que dans les cas prévus à l'article 4-204 du Code civil. Seuls les véhicules propriété de Neuralis sont inviolables."
+  },
+  {
+    "id": "signature-mandat-perquisition",
+    "titre": "Une seule autorité pour signer un mandat",
+    "texte": "Code de police",
+    "article": "Article L.405 :",
+    "salve": 2,
+    "resume": "Le mandat est signé par le Procureur, ou par le Juge en son absence, au lieu des deux à la fois.",
+    "changements": [
+      "Le Procureur signe seul les mandats, comme le prévoit la Constitution.",
+      "Le Juge signe en l'absence du Procureur.",
+      "Le danger imminent pour la vie d'autrui rejoint le flagrant délit comme exception."
+    ],
+    "pourquoi": "L'Article L.405 exige un mandat signé par le juge et par le procureur, alors que la Constitution (Article 4, Section 10) donne au seul Procureur le pouvoir d'autoriser une perquisition.\nUn mandat signé d'une seule personne viole donc L.405, et un mandat signé des deux dépasse la répartition des pouvoirs fixée par la Constitution. Aucun mandat n'est pleinement régulier : toute perquisition peut être contestée, et avec elle tout ce qu'elle a permis de saisir (Article L.403.6).\nLa correction aligne le code sur la Constitution : le Procureur signe, le Juge le supplée en son absence. Le danger imminent pour la vie d'autrui rejoint le flagrant délit, pour que les agents puissent intervenir sans attendre une signature quand une vie est en jeu.",
+    "effets": {
+      "lspd": "Une seule signature à obtenir pour entrer dans une propriété privée.",
+      "doj": "Le Procureur est seul compétent, le Juge le supplée."
+    },
+    "avant": "La police à l'interdiction de pénétrer une propriété privée sans mandats accordé par la juge et le procureur sauf en cas de flagrant délit. La police à l'interdiction de pénétrer dans une propriété Neuralis.",
+    "apres": "La police a l'interdiction de pénétrer dans une propriété privée sans mandat accordé par le Procureur, ou par le Juge en l'absence du Procureur, sauf en cas de flagrant délit ou de danger imminent pour la vie d'autrui. La police a l'interdiction de pénétrer dans une propriété Neuralis."
+  },
+  {
+    "id": "mandat-arret",
+    "titre": "Mandat d'arrêt et avis de recherche",
+    "texte": "Code civil",
+    "article": "Article 1-105.2 :",
+    "salve": 2,
+    "resume": "Le mandat d'arrêt est émis par le Juge ou le Procureur, enregistré au DOJ et levé dès l'interpellation.",
+    "changements": [
+      "Émission par le Juge ou le Procureur.",
+      "Enregistrement au DOJ.",
+      "Levée dès l'interpellation ou sur décision du parquet."
+    ],
+    "pourquoi": "Le Code civil définit le mandat d'arrêt (Article 1-105.1) sans dire qui l'émet, où il est enregistré, ni quand il prend fin. Le Livret en prononce pourtant un (« Non respect d'une décision de Justice »).\nEn pratique, un personnage peut rester recherché indéfiniment, sans savoir par qui ni pourquoi, et deux agents peuvent avoir deux informations différentes sur la même personne.\nLa correction désigne les deux autorités déjà compétentes en matière pénale, centralise les mandats au DOJ pour que tout le monde consulte la même liste, et prévoit leur levée.",
+    "apres": "Le mandat d'arrêt et l'avis de recherche sont émis par le Juge ou le Procureur et enregistrés au DOJ. Ils sont levés dès l'interpellation de la personne visée ou sur décision du parquet.",
+    "effets": {
+      "lspd": "Une liste unique des personnes recherchées, tenue par le DOJ.",
+      "doj": "Le Juge et le Procureur émettent et lèvent les mandats d'arrêt."
+    }
+  },
+  {
+    "id": "cour-remplacee-par-juge",
+    "titre": "La « Cour » remplacée par le Juge",
+    "texte": "Code de police",
+    "article": "Article L.403.1 :",
+    "salve": 2,
+    "resume": "Les textes qui citent une « Cour » jamais définie désignent désormais le Juge, et le rôle de Neuralis devient un veto exceptionnel.",
+    "changements": [
+      "Code de police, Articles L.403.1 et L.403.2 : « la Cour » devient « le Juge ».",
+      "Constitution, Article 1, Section 10 : « la Cour » devient « le Juge ».",
+      "Neuralis garde un droit de veto exceptionnel, exercé sur demande du Gouverneur."
+    ],
+    "pourquoi": "Les Articles L.403.1 et L.403.2 confient l'avis final sur les vices de procédure à « la Cour de justice » et à Neuralis, et la Constitution (Article 1, Section 10) permet à « la Cour » de libérer quelqu'un. Or l'organisation judiciaire de la Constitution (Article 4) ne connaît que le DOJ, le Procureur et le Juge.\nÀ chaque désaccord entre le parquet et la défense, personne ne sait donc qui tranche, ni comment saisir Neuralis.\nLa correction confie ce rôle au Juge, qui existe, et garde à Neuralis un veto exceptionnel déclenché par le Gouverneur : le lore est préservé, et la procédure devient applicable.",
+    "avant": "La Cour de justice ainsi que Neuralis pourront intervenir en dernier recours pour rendre un avis final.",
+    "apres": "Le Juge pourra intervenir en dernier recours pour rendre un avis final. Neuralis conserve un droit de veto exceptionnel, exercé sur demande du Gouverneur.",
+    "effets": {
+      "doj": "Le Juge tranche les désaccords sur les vices de procédure."
+    }
+  },
+  {
+    "id": "juridictions-inexistantes",
+    "titre": "Suppression des juridictions qui n'existent pas",
+    "texte": "Code civil",
+    "article": "Article 1-303 :",
+    "salve": 2,
+    "resume": "La Cour suprême, la « Fédérale » et le Procureur général, absents de l'organisation judiciaire, sont remplacés par le Juge ou le Procureur.",
+    "changements": [
+      "Code civil, Article 1-303 : « Cour Suprême » devient « Juge ».",
+      "Code civil, Article 4-207 : « mis en Fédérale » devient « transféré ».",
+      "Code du travail, Article 215 : « Procureur général » devient « Procureur ».",
+      "La Cour suprême de l'Article L.405.1 disparaît avec sa réécriture (proposition dédiée)."
+    ],
+    "pourquoi": "Trois textes confient une décision à une autorité qui n'existe pas : la déchéance de citoyenneté à la « Cour Suprême » (Article 1-303), le dernier appel avant un transfert « en Fédérale » (Article 4-207), et la saisie d'une société au « Procureur général » (Article 215 du Code du travail).\nUne décision prise par une autorité inexistante ne peut pas être rendue, ou elle est annulable : la déchéance de citoyenneté et la saisie de société, deux des sanctions les plus lourdes du corpus, sont aujourd'hui impossibles à prononcer régulièrement.\nLa correction attribue chaque décision à l'autorité qui existe. Elle va de pair avec l'appel de la salve précédente, qui crée la seule voie de recours réelle.",
+    "avant": "Toute personne ne répondant pas à ses devoirs de citoyen de l’Etat fédéré de San Andreas ou ayant commis des crime contre l’Etat fédéré de San Andreas peut se faire déchoir de la citoyenneté de ce même État sur décision de la Cour Suprême de l’Etat de San Andreas ou sur décision du Gouvernement si le pouvoir judiciaire est dans l’incapacité de statuer.",
+    "apres": "Toute personne ne répondant pas à ses devoirs de citoyen de l’Etat de San Andreas ou ayant commis des crimes contre l’Etat de San Andreas peut se faire déchoir de la citoyenneté de ce même État sur décision du Juge, ou sur décision du Gouvernement si le pouvoir judiciaire est dans l’incapacité de statuer."
+  },
+  {
+    "id": "cpp-203-suites-interpellation",
+    "titre": "C.P.P. : suites d'une interpellation",
+    "texte": "Code de procédure pénale",
+    "article": "Article 203 :",
+    "salve": 2,
+    "resume": "Le Procureur choisit entre classement, composition pénale validée par le Juge, et renvoi en audience.",
+    "changements": [
+      "Trois voies possibles.",
+      "La sanction négociée avec l'avocat est validée par le Juge."
+    ],
+    "pourquoi": "L'Article L.403.1 prévoit une négociation entre le Bureau du Procureur et l'avocat, mais aucun texte ne dit ce qu'il advient d'un dossier après l'interpellation : qui décide de l'abandonner, de négocier ou de juger, et qui valide l'accord trouvé.\nLes dossiers restent donc en suspens, et une sanction négociée n'a aucune valeur établie : rien ne garantit qu'elle soit respectée ni qu'elle soit inscrite quelque part.\nLa correction pose trois voies claires, toutes déjà présentes dans l'esprit du corpus (la Constitution donne au Procureur la décision de classer ou de saisir le tribunal). La validation de la composition pénale par le Juge donne à l'accord négocié la même force qu'un jugement.",
+    "apres": "Suites d'une interpellation\nLe Procureur choisit entre le classement sans suite, la composition pénale, sanction négociée avec l'avocat puis validée par le Juge, et le renvoi en audience.",
+    "effets": {
+      "doj": "Chaque dossier suit l'une des trois voies, décidée par le Procureur.",
+      "lspd": "Les agents savent ce que devient un dossier transmis au parquet."
+    }
+  },
+  {
+    "id": "attente-avocat",
+    "titre": "Attente de l'avocat et commis d'office",
+    "texte": "Code de police",
+    "article": "Article L.403.1 :",
+    "urgent": true,
+    "salve": 2,
+    "resume": "Sans avocat présent après 15 minutes, un commis d'office est désigné, et l'audition reste possible si aucun n'est joignable.",
+    "changements": [
+      "L'avocat est prévenu dès l'arrivée au poste.",
+      "Commis d'office désigné parmi les avocats de permanence après 15 minutes.",
+      "Si aucun avocat n'est joignable, l'audition a lieu et la mention est portée au PV."
+    ],
+    "pourquoi": "L'avocat est obligatoire pour toute personne arrêtée pour un délit ou un crime (Article L.403.1 et Article 1-142 du Code civil), mais aucun texte ne dit quoi faire s'il ne vient pas.\nLes soirs où peu d'avocats sont connectés, la procédure est soit bloquée, avec un joueur qui attend en cellule sans pouvoir jouer, soit menée sans avocat, et donc irrégulière.\nLa correction fixe un délai raisonnable de 15 minutes, organise une permanence de commis d'office, et prévoit le cas où personne n'est joignable : l'audition peut avoir lieu, à condition que l'absence soit écrite au procès-verbal.",
+    "effets": {
+      "lspd": "Une procédure claire quand aucun avocat ne se présente.",
+      "doj": "Une permanence d'avocats à organiser."
+    },
+    "apres": "L'avocat est prévenu dès l'arrivée au poste. Sans avocat présent après 15 minutes, un avocat commis d'office est désigné parmi les avocats de permanence. Si aucun avocat n'est joignable, l'audition peut avoir lieu, et la mention en est portée au procès-verbal."
+  },
+  {
+    "id": "plainte-contre-agent",
+    "titre": "Plainte contre un agent",
+    "texte": "Code de police",
+    "article": "Article L.412.1 :",
+    "salve": 2,
+    "resume": "La plainte contre un agent est déposée au DOJ, instruite par le parquet et reçoit une réponse sous 7 jours.",
+    "changements": [
+      "Dépôt au DOJ, instruction par le parquet.",
+      "L'agent est entendu.",
+      "Réponse écrite au plaignant sous 7 jours."
+    ],
+    "pourquoi": "Aucun texte ne permet à un citoyen de se plaindre d'un agent du LSPD : pas de lieu de dépôt, pas d'instruction, pas de délai de réponse. Les Articles L.401, L.403 et L.413 prévoient pourtant des sanctions pour bavure, vice de procédure et abus de pouvoir.\nCes sanctions ne peuvent donc jamais être déclenchées en RP : la seule voie aujourd'hui est le ticket au staff, qui sort la situation du jeu.\nLa correction confie l'instruction au parquet, cohérent avec l'Article L.412 (le Procureur doit tout savoir de ce qui se passe dans les services de police), et garantit une réponse au plaignant. L'agent visé est entendu, ce qui protège aussi le LSPD contre les plaintes infondées.",
+    "effets": {
+      "lspd": "Chaque agent visé par une plainte est entendu.",
+      "doj": "Le parquet instruit les plaintes contre les agents."
+    },
+    "apres": "La plainte contre un agent est déposée au DOJ et instruite par le parquet. L'agent visé est entendu ; une réponse écrite est donnée au plaignant sous 7 jours. Les sanctions applicables sont celles des articles L.403 et L.413 et du Livret des Peines."
+  },
+  {
+    "id": "usage-arme-police",
+    "titre": "Usage de l'arme par la police réécrit",
+    "texte": "Code de police",
+    "article": "Article L.408 :",
+    "urgent": true,
+    "salve": 2,
+    "resume": "L'agent ne fait usage de son arme qu'en légitime défense ou face à un danger de mort.",
+    "changements": [
+      "La branche « stopper son activité par la force », qui autorisait le tir sur tout fuyard, est retirée."
+    ],
+    "pourquoi": "L'Article L.408 interdit à l'agent de tirer, sauf en cas de danger de mort, de légitime défense, ou « dans un cas où l'on souhaite stopper son activité par la force ».\nCette troisième branche est si large qu'elle autorise le tir sur n'importe quel suspect qui fuit ou résiste. Pour un joueur civil, c'est se faire abattre en courant sans aucun recours, ce qui relève du fair-play autant que du droit. Pour un agent, c'est l'incertitude totale sur ce qui lui est permis.\nLa correction garde les deux cas où le tir se justifie, la légitime défense et le danger de mort pour l'agent ou pour autrui, et retire celui qui vidait l'interdiction de son sens.",
+    "effets": {
+      "lspd": "Une règle claire pour savoir quand le tir est autorisé."
+    },
+    "avant": "Tout agent de police a l'interdiction de tirer dans le cas où il n'est pas en danger de mort, de légitime défense et dans un cas où l'on souhaite stopper son activité par la force.",
+    "apres": "L'agent de police ne fait usage de son arme qu'en état de légitime défense ou face à un danger de mort pour lui-même ou pour autrui."
+  },
+  {
+    "id": "majorite-18-ans",
+    "titre": "Majorité civile à 18 ans",
+    "texte": "Code civil",
+    "article": "Article 1-103 :",
+    "urgent": true,
+    "salve": 2,
+    "resume": "La majorité passe à 18 ans, l'âge de 21 ans restant requis pour l'alcool, le tabac et le recensement.",
+    "changements": [
+      "Les 18-20 ans deviennent majeurs : avocat obligatoire, mariage et contrats leur sont ouverts.",
+      "21 ans reste l'âge pour acheter alcool et cigarettes (Article 4-101) et pour le recensement obligatoire (Article 1-302.3)."
+    ],
+    "pourquoi": "Le Code civil fixe la majorité à 21 ans (Article 1-103) mais définit le mineur comme la personne de moins de 18 ans (Article 1-141.1). Entre 18 et 20 ans, un personnage n'est ni mineur ni majeur.\nOr plusieurs règles dépendent de la majorité : l'avocat obligatoire en cas d'arrestation (Article 1-142), le mariage (Article 1-107.1), la capacité de signer un contrat (Article 3-104). Pour ces personnages, on ne sait pas lesquelles s'appliquent, alors que le Code du travail les autorise à travailler dès 18 ans.\nLa correction fixe la majorité à 18 ans, comme le reste du corpus, et garde 21 ans là où un âge plus élevé a un sens : l'achat d'alcool et de tabac, et le recensement obligatoire.",
+    "avant": "Tout citoyen de l’Etat de San Andreas est considéré comme majeur civilement à partir de 21 ans.",
+    "apres": "Tout citoyen de l’Etat de San Andreas est considéré comme majeur civilement à partir de 18 ans. L'âge de 21 ans reste requis pour l'achat d'alcool et de cigarettes (article 4-101) et pour le recensement obligatoire (article 1-302.3)."
   }
 ]
