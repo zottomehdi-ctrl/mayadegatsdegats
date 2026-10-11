@@ -1,6 +1,6 @@
 # Liaison Maya
 
-Registre des propositions de textes du serveur GTA RP Last Gate (État de San Andreas). Le site présente chaque proposition et recueille les décisions de la fondatrice : valider, refuser ou rediscuter en appel.
+Registre des propositions de textes du serveur GTA RP Last Gate (État de San Andreas). Le site présente chaque proposition et recueille les décisions de la fondatrice : valider, refuser ou rediscuter en appel. Une proposition validée peut ensuite être marquée « Traitée » une fois appliquée au texte du serveur.
 
 - `contenu/propositions.json` : toutes les propositions. C'est le seul fichier à modifier.
 - `netlify/functions/decisions.mjs` : enregistre les décisions dans Netlify Blobs, une clé par `id` de proposition.
@@ -67,7 +67,7 @@ Remplacer `contenu/propositions.json`, lancer `npm run verifier`, puis commit et
 
 ## Palettes
 
-Le bouton « Palette » de l'en-tête propose 8 palettes claires, 4 sombres et un mode automatique (Bleu nuit ou Nuit marine selon le réglage de l'appareil). Le choix est mémorisé dans le navigateur de chaque personne. Les couleurs sont définies en tête de `assets/style.css`, sous forme de variables CSS.
+Le bouton « Palette » de l'en-tête propose la famille Rose (Pétale, Poudré, Quartz, Velours, Minuit), 8 palettes claires, 4 sombres et un mode automatique (Bleu nuit ou Nuit marine selon le réglage de l'appareil). Une palette s'applique au clic sur sa carte ; le choix est mémorisé dans le navigateur de chaque personne. Les couleurs sont définies en tête de `assets/style.css`, sous forme de variables CSS.
 
 ## Accès
 

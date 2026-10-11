@@ -4,10 +4,11 @@ import { analyserRegistre, sansAccents } from './registre.js';
 const STATUTS = {
   attente: { libelle: 'En attente', compteur: 'En attente' },
   validee: { libelle: 'Validée', compteur: 'Validées' },
+  traitee: { libelle: 'Traitée', compteur: 'Traitées' },
   refusee: { libelle: 'Refusée', compteur: 'Refusées' },
   rediscuter: { libelle: 'À rediscuter', compteur: 'À rediscuter' },
 };
-const ORDRE_STATUTS = ['attente', 'validee', 'refusee', 'rediscuter'];
+const ORDRE_STATUTS = ['attente', 'validee', 'traitee', 'refusee', 'rediscuter'];
 const GROUPES = ['Code pénal', 'Code de procédure pénale', 'Code de police', 'Code de la route', 'Code du travail', 'Code civil', 'Code électoral', 'Constitution', 'Décrets', 'Autre'];
 
 const DECISIONS = {
@@ -26,9 +27,19 @@ const DECISIONS = {
     message: 'proposition renvoyée en appel',
     aide: 'La proposition est mise de côté pour le prochain appel, avec votre commentaire. Elle apparaît dans « À rediscuter ».',
   },
+  traitee: {
+    libelle: 'Marquer comme traitée',
+    message: 'proposition marquée comme traitée',
+    aide: 'Le texte a été appliqué et intégré au texte du serveur. Vous pourrez la remettre en validée.',
+  },
 };
 
 const PALETTES = [
+  { cle: 'petale', nom: 'Pétale', mode: 'clair', famille: 'rose' },
+  { cle: 'poudre', nom: 'Poudré', mode: 'clair', famille: 'rose' },
+  { cle: 'quartz', nom: 'Quartz', mode: 'clair', famille: 'rose' },
+  { cle: 'velours', nom: 'Velours', mode: 'sombre', famille: 'rose' },
+  { cle: 'minuit', nom: 'Minuit', mode: 'sombre', famille: 'rose' },
   { cle: 'bleu-nuit', nom: 'Bleu nuit', mode: 'clair' },
   { cle: 'bordeaux-ivoire', nom: 'Bordeaux & ivoire', mode: 'clair' },
   { cle: 'vert-sapin', nom: 'Vert sapin', mode: 'clair' },
@@ -66,6 +77,7 @@ const svg = (contenu) => `<svg class="icone" viewBox="0 0 16 16" fill="none" str
 const ICONES = {
   attente: svg('<circle cx="8" cy="8" r="5.75"/><path d="M8 5.2V8l1.9 1.3"/>'),
   validee: svg('<path d="M3.4 8.4l3.1 3 6.1-6.6"/>'),
+  traitee: svg('<path d="M1.6 8.6l2.8 2.8 5.6-6.1"/><path d="M7.6 10.8l.6.6 5.6-6.1"/>'),
   refusee: svg('<path d="M4.6 4.6l6.8 6.8M11.4 4.6l-6.8 6.8"/>'),
   rediscuter: svg('<path d="M6 3.8L3.4 6.4 6 9"/><path d="M3.6 6.4h6.1a2.9 2.9 0 0 1 0 5.8H7.2"/>'),
   recherche: svg('<circle cx="7" cy="7" r="4.5"/><path d="M10.4 10.4l3.1 3.1"/>'),
@@ -177,6 +189,14 @@ function aRediscuter() {
       const db = decisionDe(b.id);
       return horodatage(da.renvoyeLe ?? da.date) - horodatage(db.renvoyeLe ?? db.date) || a.numero - b.numero;
     });
+}
+
+function dateValidation(id) {
+  const decision = decisionDe(id);
+  if (!decision) return '';
+  if (decision.statut === 'validee') return decision.date;
+  const validations = (decision.historique ?? []).filter((entree) => entree.statut === 'validee');
+  return validations.length ? validations[validations.length - 1].date : decision.date;
 }
 
 function grouper(liste) {
@@ -398,7 +418,7 @@ function listeRecap() {
     }
     return vide(`Aucune proposition « ${STATUTS[etat.filtre].libelle} » pour l'instant.`);
   }
-  return grouper(visibles).map(([nom, items]) => `
+  const groupes = (liste) => grouper(liste).map(([nom, items]) => `
     <section class="groupe" aria-labelledby="groupe-${slug(nom)}">
       <div class="section-tete">
         <h2 id="groupe-${slug(nom)}">${esc(nom)}</h2>
@@ -406,6 +426,21 @@ function listeRecap() {
       </div>
       <ul class="liste">${items.map((p) => `<li>${ligne(p, false)}</li>`).join('')}</ul>
     </section>`).join('');
+
+  if (etat.filtre !== 'tous') return groupes(visibles);
+
+  // Sans filtre, les traitées sont repliées dans un groupe fermé en bas de la liste.
+  const actives = visibles.filter((p) => statutDe(p.id) !== 'traitee');
+  const traitees = visibles.filter((p) => statutDe(p.id) === 'traitee');
+  const repli = traitees.length ? `
+    <details class="repli groupe"${etat.recherche.trim() ? ' open' : ''}>
+      <summary class="section-tete repli-tete">
+        <h2>Traitées</h2>
+        <span class="compte">${traitees.length}</span>
+      </summary>
+      <ul class="liste">${traitees.map((p) => `<li>${ligne(p, true)}</li>`).join('')}</ul>
+    </details>` : '';
+  return groupes(actives) + repli;
 }
 
 function majListeRecap() {
@@ -421,7 +456,7 @@ function ligne(p, avecTexte) {
     .join('<span class="sep" aria-hidden="true">·</span>');
   const marques = `${estNouvelle(p.id) ? badgeNouveau() : ''}${p.urgent ? badgeUrgent() : ''}`;
   return `
-    <a class="ligne" href="${lienFiche(p.id)}">
+    <a class="ligne ligne--${statutDe(p.id)}" href="${lienFiche(p.id)}">
       <span class="ligne-corps">
         <span class="ligne-titre">${esc(p.titre)}</span>
         ${sous ? `<span class="ligne-sous">${sous}</span>` : ''}
@@ -440,9 +475,9 @@ function vueDetail(id) {
   }
   marquerVue(p.id);
   return `
-    <article class="fiche">
+    <article class="fiche fiche--${statutDe(p.id)}">
       ${lienRetour()}
-      <header>
+      <header class="fiche-tete">
         <div class="meta">
           ${metaTexte(p)}
           ${p.urgent ? badgeUrgent() : ''}
@@ -537,10 +572,18 @@ function blocDecision(p) {
       <p class="decision-etat">${situation}</p>
       ${commentaire}
       ${champCommentaire(p.id)}
-      <div class="boutons">
-        ${['validee', 'refusee', 'rediscuter'].map((s) => boutonDecision(p.id, s, statut === s)).join('')}
-      </div>
+      ${statut === 'traitee'
+        ? `<p class="decision-traitee">Appliquée et intégrée au texte du serveur. ${lienRemettre(p.id)}</p>`
+        : `<div class="boutons">
+            ${['validee', 'refusee', 'rediscuter'].map((s) => boutonDecision(p.id, s, statut === s)).join('')}
+            ${statut === 'validee' ? boutonDecision(p.id, 'traitee', false) : ''}
+          </div>`}
     </section>`;
+}
+
+function lienRemettre(id) {
+  const bloque = Boolean(etat.erreurDecisions || etat.enCours);
+  return `<button type="button" class="lien-action" data-action="decider" data-id="${esc(id)}" data-statut="validee"${bloque ? ' disabled' : ''}>Remettre en validée</button>`;
 }
 
 function champCommentaire(id) {
@@ -686,28 +729,41 @@ function cartePoint(p, index) {
 /* Textes validés */
 
 function vueValides() {
-  const valides = etat.propositions
-    .filter((p) => statutDe(p.id) === 'validee')
-    .sort((a, b) => horodatage(decisionDe(a.id).date) - horodatage(decisionDe(b.id).date) || a.numero - b.numero);
+  const parDate = (a, b) => horodatage(dateValidation(a.id)) - horodatage(dateValidation(b.id)) || a.numero - b.numero;
+  const aAppliquer = etat.propositions.filter((p) => statutDe(p.id) === 'validee').sort(parDate);
+  const traitees = etat.propositions.filter((p) => statutDe(p.id) === 'traitee').sort(parDate);
 
   const tete = `
     <header class="page-tete">
       <h1>Textes validés</h1>
-      <p class="chapo">Les propositions validées, classées par texte puis par date de validation, prêtes à coller sur Discord.</p>
+      <p class="chapo">D'abord les textes à appliquer sur le serveur, puis ceux déjà traités. Classés par texte puis par date de validation, prêts à coller sur Discord.</p>
     </header>`;
 
-  if (!valides.length) {
+  if (!aAppliquer.length && !traitees.length) {
     return tete + vide("Aucun texte validé pour l'instant.", 'Les propositions que vous validez apparaîtront ici.');
   }
 
-  return tete + grouper(valides).map(([nom, items]) => `
-    <section class="groupe" aria-labelledby="valides-${slug(nom)}">
-      <div class="section-tete">
-        <h2 id="valides-${slug(nom)}">${esc(nom)}</h2>
-        <span class="compte">${items.length}</span>
-      </div>
+  const groupes = (liste, prefixe) => grouper(liste).map(([nom, items]) => `
+    <section class="groupe sous-groupe" aria-labelledby="${prefixe}-${slug(nom)}">
+      <h3 class="sous-groupe-titre" id="${prefixe}-${slug(nom)}">${esc(nom)} <span class="compte">${items.length}</span></h3>
       ${items.map(carteValide).join('')}
     </section>`).join('');
+
+  return `${tete}
+    <section class="bloc-valides" aria-labelledby="titre-a-appliquer">
+      <div class="section-tete">
+        <h2 id="titre-a-appliquer">À appliquer</h2>
+        <span class="compte">${aAppliquer.length}</span>
+      </div>
+      ${aAppliquer.length ? groupes(aAppliquer, 'a-appliquer') : '<p class="priorite-vide">Aucun texte à appliquer pour l\'instant.</p>'}
+    </section>
+    <details class="repli bloc-valides">
+      <summary class="section-tete repli-tete">
+        <h2>Traitées</h2>
+        <span class="compte">${traitees.length}</span>
+      </summary>
+      ${traitees.length ? groupes(traitees, 'traitees') : '<p class="priorite-vide">Aucun texte traité pour l\'instant.</p>'}
+    </details>`;
 }
 
 function carteValide(p) {
@@ -721,17 +777,23 @@ function carteValide(p) {
     ? `<p class="alerte-discord">Ce texte fait ${longueur.toLocaleString('fr-FR')} caractères une fois mis en forme. Discord limite un message à 2 000 caractères (4 000 avec Nitro) : il faudra le publier en plusieurs messages.</p>`
     : '';
 
+  const traitee = decision.statut === 'traitee';
+  const actions = traitee
+    ? `<button type="button" class="btn" data-action="copier" data-id="${esc(p.id)}">Copier le texte</button>${lienRemettre(p.id)}`
+    : `<button type="button" class="btn" data-action="copier" data-id="${esc(p.id)}">Copier le texte</button>${boutonDecision(p.id, 'traitee', false)}`;
+
   return `
-    <article class="valide">
+    <article class="valide valide--${decision.statut}">
       <div class="valide-tete">
         <div>
           <div class="meta">
             ${metaTexte(p)}
-            <span>Validée le ${dateLongue(decision.date)}</span>
+            ${pastille(decision.statut)}
+            <span>${traitee ? `Traitée le ${dateLongue(decision.date)}` : `Validée le ${dateLongue(decision.date)}`}</span>
           </div>
-          <h3 class="valide-titre"><a href="${lienFiche(p.id)}" class="lien-discret">${esc(p.titre)}</a></h3>
+          <h4 class="valide-titre"><a href="${lienFiche(p.id)}" class="lien-discret">${esc(p.titre)}</a></h4>
         </div>
-        <button type="button" class="btn" data-action="copier" data-id="${esc(p.id)}">Copier le texte</button>
+        <div class="valide-actions">${actions}</div>
       </div>
       <div class="corps">${article}${texte}</div>
       ${alerte}
@@ -746,7 +808,7 @@ function texteDiscord(p) {
   lignes.push(p.apres
     ? formaterDiscord(p.apres)
     : (p.article ? "L'article est abrogé." : 'Le texte est abrogé.'));
-  if (decision?.date) lignes.push('', `-# Texte validé le ${dateLongue(decision.date)}`);
+  if (decision?.date) lignes.push('', `-# Texte validé le ${dateLongue(dateValidation(p.id))}`);
   return lignes.join('\n');
 }
 
@@ -823,12 +885,15 @@ async function decider(id, statut) {
   document.querySelectorAll('[data-action="decider"]').forEach((b) => { b.disabled = true; });
 
   try {
+    const avant = statutDe(id);
     const decision = await envoyer({ id, statut, commentaire });
     if (vue === 'rediscuter' && statut !== 'rediscuter') await faireSortir(id);
     etat.decisions[id] = decision;
     delete etat.brouillons[id];
-    afficherToast(`« ${tronquer(p.titre)} » : ${DECISIONS[statut].message}.`, {
+    const message = statut === 'validee' && avant === 'traitee' ? 'proposition remise en validée' : DECISIONS[statut].message;
+    afficherToast(`« ${tronquer(p.titre)} » : ${message}.`, {
       annuler: () => annulerDecision(id, decision.date, commentaire),
+      ton: statut,
     });
   } catch (err) {
     afficherToast(`La décision n'a pas été enregistrée : ${err.message}.`, { erreur: true });
@@ -881,13 +946,14 @@ function changerPoint(delta) {
 
 /* Message de confirmation */
 
-function afficherToast(message, { erreur = false, annuler = null } = {}) {
+function afficherToast(message, { erreur = false, annuler = null, ton = '' } = {}) {
   const element = document.getElementById('toast');
   element.querySelector('.toast-message').textContent = message;
   element.querySelector('.toast-annuler').hidden = !annuler;
   element.classList.remove('toast--visible', 'toast--annulable');
   void element.offsetWidth; // relance l'animation du délai
   element.classList.toggle('toast--erreur', erreur);
+  element.classList.toggle('toast--validee', ton === 'validee');
   element.classList.toggle('toast--annulable', Boolean(annuler));
   element.classList.add('toast--visible');
   toast.annuler = annuler;
@@ -945,29 +1011,10 @@ function initialiserPalettes() {
     }
   });
 
+  // Un thème ne s'applique qu'au clic sur sa carte (voir surClic) : pas de prévisualisation au survol.
   const panneau = document.getElementById('panneau-palettes');
-  panneau.addEventListener('close', () => poserPalette(etat.palette));
   panneau.addEventListener('click', (e) => {
     if (e.target === panneau) fermerPalettes();
-  });
-  // Survol : prévisualisation en direct ; sortie : retour à la palette appliquée.
-  panneau.addEventListener('pointerover', (e) => {
-    if (e.pointerType === 'touch') return;
-    const carte = e.target.closest('.carte-palette');
-    if (carte) poserPalette(carte.dataset.paletteChoix);
-  });
-  panneau.addEventListener('pointerout', (e) => {
-    if (e.pointerType === 'touch') return;
-    const carte = e.target.closest('.carte-palette');
-    if (carte && !carte.contains(e.relatedTarget)) poserPalette(etat.palette);
-  });
-  panneau.addEventListener('focusin', (e) => {
-    const carte = e.target.closest('.carte-palette');
-    if (carte) poserPalette(carte.dataset.paletteChoix);
-  });
-  panneau.addEventListener('focusout', (e) => {
-    const carte = e.target.closest('.carte-palette');
-    if (carte && !e.relatedTarget?.closest?.('.carte-palette')) poserPalette(etat.palette);
   });
 }
 
@@ -987,7 +1034,6 @@ function fermerPalettes() {
   const panneau = document.getElementById('panneau-palettes');
   if (typeof panneau.close === 'function' && panneau.open) panneau.close();
   else panneau.removeAttribute('open');
-  poserPalette(etat.palette);
 }
 
 function contenuPanneau() {
@@ -1012,22 +1058,26 @@ function contenuPanneau() {
     <div class="panneau-tete">
       <div>
         <h2 id="titre-palettes">Palette de couleurs</h2>
-        <p>Cliquez sur une palette pour l'appliquer ; sur ordinateur, le survol la prévisualise sur le site. Le choix est mémorisé sur cet appareil.</p>
+        <p>Cliquez sur une palette pour l'appliquer. Le choix est mémorisé sur cet appareil.</p>
       </div>
       <button type="button" class="bouton-fermer" data-action="fermer-palettes" aria-label="Fermer le panneau des palettes">${ICONES.fermer}</button>
     </div>
     <div class="panneau-corps">
+      <section class="panneau-groupe" aria-labelledby="groupe-rose">
+        <h3 id="groupe-rose">Rose</h3>
+        <div class="grille-palettes">${PALETTES.filter((p) => p.famille === 'rose').map(carte).join('')}</div>
+      </section>
       <section class="panneau-groupe" aria-labelledby="groupe-automatique">
         <h3 id="groupe-automatique">Automatique</h3>
         ${automatique}
       </section>
       <section class="panneau-groupe" aria-labelledby="groupe-clair">
         <h3 id="groupe-clair">Clair</h3>
-        <div class="grille-palettes">${PALETTES.filter((p) => p.mode === 'clair').map(carte).join('')}</div>
+        <div class="grille-palettes">${PALETTES.filter((p) => p.mode === 'clair' && !p.famille).map(carte).join('')}</div>
       </section>
       <section class="panneau-groupe" aria-labelledby="groupe-sombre">
         <h3 id="groupe-sombre">Sombre</h3>
-        <div class="grille-palettes">${PALETTES.filter((p) => p.mode === 'sombre').map(carte).join('')}</div>
+        <div class="grille-palettes">${PALETTES.filter((p) => p.mode === 'sombre' && !p.famille).map(carte).join('')}</div>
       </section>
     </div>
     <div class="panneau-pied">

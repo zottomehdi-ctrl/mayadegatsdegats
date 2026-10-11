@@ -56,6 +56,28 @@
   --bg: #151012; --surface: #1E171A; --text: #F0E8EA; --muted: #A8999D; --border: #33272B; --accent: #C98A96; --on-accent: #1E0F13;
 }
 
+/* Famille Rose, du plus clair au plus sombre */
+
+[data-palette="petale"] {
+  --bg: #FFF7FA; --surface: #FFFFFF; --text: #24141C; --muted: #7A5F6C; --border: #F6DCE7; --accent: #C23B78; --on-accent: #FFFFFF;
+}
+
+[data-palette="poudre"] {
+  --bg: #FAF0F3; --surface: #FFFAFC; --text: #22151B; --muted: #735A66; --border: #EDD5DF; --accent: #A8326A; --on-accent: #FFFFFF;
+}
+
+[data-palette="quartz"] {
+  --bg: #F1DDE5; --surface: #F8EAF0; --text: #2A1520; --muted: #6A4A59; --border: #E2C3D0; --accent: #8E2457; --on-accent: #FFFFFF;
+}
+
+[data-palette="velours"] {
+  --bg: #1F1219; --surface: #2A1822; --text: #F7E6EE; --muted: #C4A3B3; --border: #43293A; --accent: #F08DB8; --on-accent: #2A0F1C;
+}
+
+[data-palette="minuit"] {
+  --bg: #0E080B; --surface: #170E13; --text: #F5E4EC; --muted: #B391A1; --border: #2E1C25; --accent: #E77AAA; --on-accent: #22091A;
+}
+
 /* Statuts, mode clair (par défaut).
    Sur fond clair, le texte des pastilles mêle 70 % de la couleur de statut et 30 % du texte
    pour atteindre un contraste AA ; icônes, points et barres gardent la couleur pure. */
@@ -67,7 +89,10 @@
   --st-validee: #2F7D4F;
   --st-refusee: #B23A3A;
   --st-rediscuter: #B7791F;
+  --st-traitee: #FF6FAE;
+  --st-traitee-encre: #3A0E22;
   --mix-statut: 70%;
+  --mix-traitee: 50%;
   --ombre: 0 1px 2px color-mix(in srgb, var(--text) 6%, transparent);
   --ombre-haute: 0 10px 30px color-mix(in srgb, var(--text) 10%, transparent);
 }
@@ -75,15 +100,43 @@
 [data-palette="graphite"],
 [data-palette="nuit-marine"],
 [data-palette="anthracite-or"],
-[data-palette="bordeaux-nocturne"] {
+[data-palette="bordeaux-nocturne"],
+[data-palette="velours"],
+[data-palette="minuit"] {
   color-scheme: dark;
   --st-attente: #9AA1AC;
   --st-validee: #6FBF8E;
   --st-refusee: #E07A7A;
   --st-rediscuter: #E0B062;
+  --st-traitee: #FF7FB8;
+  --st-traitee-encre: #2A0A18;
   --mix-statut: 100%;
+  --mix-traitee: 100%;
   --ombre: none;
   --ombre-haute: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+/* Statuts propres aux thèmes roses : Validée passe au rose framboise, Refusée au rouge brique. */
+
+[data-palette="petale"],
+[data-palette="poudre"],
+[data-palette="quartz"] {
+  --st-attente: #6E6470;
+  --st-validee: #B8336A;
+  --st-refusee: #9C3D2E;
+  --st-rediscuter: #A86F12;
+  --on-validee: #FFFFFF;
+}
+
+[data-palette="quartz"] { --st-validee: #9A2A5E; }
+
+[data-palette="velours"],
+[data-palette="minuit"] {
+  --st-attente: #A99BA2;
+  --st-validee: #F08DB8;
+  --st-refusee: #E8876F;
+  --st-rediscuter: #E6B45E;
+  --on-validee: var(--on-accent);
 }
 
 /* Variables dérivées, recalculées pour chaque élément portant une palette
@@ -106,6 +159,10 @@
   --st-validee-texte: color-mix(in srgb, var(--st-validee) var(--mix-statut), var(--text));
   --st-refusee-texte: color-mix(in srgb, var(--st-refusee) var(--mix-statut), var(--text));
   --st-rediscuter-texte: color-mix(in srgb, var(--st-rediscuter) var(--mix-statut), var(--text));
+
+  /* Traitée : rose bonbon plein dans la pastille ; teinte légère et libellé lisible ailleurs. */
+  --st-traitee-teinte: color-mix(in srgb, var(--st-traitee) 14%, var(--surface));
+  --st-traitee-texte: color-mix(in srgb, var(--st-traitee) var(--mix-traitee), var(--text));
 
   --ajout-fond: color-mix(in srgb, var(--st-validee) 18%, var(--surface));
   --ajout-texte: var(--st-validee-texte);
@@ -368,6 +425,7 @@ main {
 .st-validee { --st: var(--st-validee); --st-fond: var(--st-validee-fond); --st-texte: var(--st-validee-texte); }
 .st-refusee { --st: var(--st-refusee); --st-fond: var(--st-refusee-fond); --st-texte: var(--st-refusee-texte); }
 .st-rediscuter { --st: var(--st-rediscuter); --st-fond: var(--st-rediscuter-fond); --st-texte: var(--st-rediscuter-texte); }
+.st-traitee { --st: var(--st-traitee); --st-fond: var(--st-traitee-teinte); --st-texte: var(--st-traitee-texte); }
 
 .pastille {
   display: inline-flex;
@@ -384,6 +442,12 @@ main {
 }
 
 .pastille .icone { width: 13px; height: 13px; }
+
+/* Traitée : la couleur remplit la pastille, dans toutes les palettes. */
+.pastille.st-traitee {
+  background: var(--st-traitee);
+  color: var(--st-traitee-encre);
+}
 
 .badge {
   display: inline-flex;
@@ -579,7 +643,7 @@ main {
 
 .compteurs {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 12px;
   margin-bottom: 28px;
 }
@@ -1573,23 +1637,23 @@ kbd {
 .toast-annuler {
   flex: none;
   padding: 5px 12px;
-  border: 1px solid color-mix(in srgb, var(--bg) 45%, transparent);
+  border: 1px solid color-mix(in srgb, currentColor 45%, transparent);
   border-radius: 4px;
   background: transparent;
-  color: var(--bg);
+  color: inherit;
   font-size: 13.5px;
   font-weight: 600;
   cursor: pointer;
 }
 
-.toast-annuler:hover { background: color-mix(in srgb, var(--bg) 14%, transparent); }
-.toast-annuler:focus-visible { outline-color: var(--bg); }
+.toast-annuler:hover { background: color-mix(in srgb, currentColor 14%, transparent); }
+.toast-annuler:focus-visible { outline-color: currentColor; }
 
 .toast-delai {
   position: absolute;
   inset: auto 0 0;
   height: 3px;
-  background: color-mix(in srgb, var(--bg) 55%, transparent);
+  background: color-mix(in srgb, currentColor 55%, transparent);
   transform: scaleX(0);
   transform-origin: left center;
 }
@@ -1605,6 +1669,114 @@ kbd {
   border-color: var(--st-refusee);
   background: var(--surface);
   color: var(--st-refusee-texte);
+}
+
+/* Statut Traitée : fine bordure gauche rose bonbon */
+
+.ligne--traitee { box-shadow: inset 3px 0 0 var(--st-traitee); }
+.valide--traitee { border-left: 3px solid var(--st-traitee); }
+
+.fiche--traitee .fiche-tete,
+.fiche--validee .fiche-tete { padding-left: 16px; }
+
+.fiche--traitee .fiche-tete { border-left: 3px solid var(--st-traitee); }
+.fiche--validee .fiche-tete { border-left: 3px solid transparent; }
+
+.decision-traitee {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 14px;
+  margin-top: 16px;
+  color: var(--muted);
+  font-size: 14.5px;
+}
+
+.lien-action {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 14px;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.lien-action:hover:not(:disabled) { color: var(--text); }
+.lien-action:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* Groupes repliables (traitées) */
+
+.repli > summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.repli > summary::-webkit-details-marker { display: none; }
+
+.repli-tete::before {
+  content: "";
+  flex: none;
+  width: 8px;
+  height: 8px;
+  margin-right: 2px;
+  border-right: 1.6px solid var(--muted);
+  border-bottom: 1.6px solid var(--muted);
+  transform: rotate(-45deg);
+  transition: transform 0.15s var(--ease);
+}
+
+.repli[open] > .repli-tete::before { transform: rotate(45deg); }
+.repli:not([open]) > .repli-tete { margin-bottom: 0; }
+
+.repli > summary:focus-visible { outline-offset: 4px; }
+
+/* Textes validés : « À appliquer », puis « Traitées » */
+
+.bloc-valides + .bloc-valides { margin-top: 48px; }
+.sous-groupe + .sous-groupe { margin-top: 28px; }
+
+.sous-groupe-titre {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 12px;
+  color: var(--muted);
+  font-size: 14.5px;
+  font-weight: 600;
+}
+
+.valide-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+}
+
+/* Détails roses : propositions validées, notification « Validée », filet sous l'en-tête */
+
+:is([data-palette="petale"], [data-palette="poudre"], [data-palette="quartz"], [data-palette="velours"], [data-palette="minuit"]) .entete { border-bottom-color: color-mix(in srgb, var(--accent) 55%, var(--border)); }
+
+:is([data-palette="petale"], [data-palette="poudre"], [data-palette="quartz"], [data-palette="velours"], [data-palette="minuit"]) .ligne--validee {
+  background: color-mix(in srgb, var(--st-validee) 6%, var(--surface));
+  box-shadow: inset 3px 0 0 var(--st-validee);
+}
+
+:is([data-palette="petale"], [data-palette="poudre"], [data-palette="quartz"], [data-palette="velours"], [data-palette="minuit"]) .ligne--validee:hover { background: color-mix(in srgb, var(--st-validee) 10%, var(--surface)); }
+
+:is([data-palette="petale"], [data-palette="poudre"], [data-palette="quartz"], [data-palette="velours"], [data-palette="minuit"]) .valide--validee {
+  border-left: 3px solid var(--st-validee);
+  background: color-mix(in srgb, var(--st-validee) 6%, var(--surface));
+}
+
+:is([data-palette="petale"], [data-palette="poudre"], [data-palette="quartz"], [data-palette="velours"], [data-palette="minuit"]) .fiche--validee .fiche-tete { border-left-color: var(--st-validee); }
+
+:is([data-palette="petale"], [data-palette="poudre"], [data-palette="quartz"], [data-palette="velours"], [data-palette="minuit"]) .toast--validee {
+  border-color: var(--st-validee);
+  background: var(--st-validee);
+  color: var(--on-validee);
 }
 
 /* Panneau des palettes */
@@ -1711,10 +1883,7 @@ kbd {
   transition: border-color 0.15s var(--ease), box-shadow 0.15s var(--ease), transform 0.15s var(--ease);
 }
 
-.carte-palette:hover {
-  border-color: var(--border-strong);
-  transform: translateY(-1px);
-}
+.carte-palette:hover { border-color: color-mix(in srgb, var(--text) 35%, var(--border)); }
 
 .carte-palette[aria-pressed="true"] {
   border-color: var(--accent);
@@ -1854,6 +2023,10 @@ kbd {
 }
 
 /* Tablette et mobile */
+
+@media (max-width: 1000px) {
+  .compteurs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
 
 @media (max-width: 860px) {
   .comparaison { grid-template-columns: minmax(0, 1fr); }

@@ -4,12 +4,13 @@ import { getStore } from "@netlify/blobs";
 // une clé par id de proposition (slug interne, jamais affiché). Le contenu des propositions n'est jamais touché.
 //
 //   GET  /api/decisions  ->  { "<id>": { statut, commentaire, date, renvoyeLe, historique, precedent }, ... }
-//   POST /api/decisions  <-  { id, statut: "validee" | "refusee" | "rediscuter", commentaire }
+//   POST /api/decisions  <-  { id, statut: "validee" | "traitee" | "refusee" | "rediscuter", commentaire }
+//                            (« traitee » : seulement pour une proposition validée, ou déjà traitée)
 //                        ->  la décision enregistrée
 //   POST /api/decisions  <-  { id, annuler: "<date de la décision à annuler>" }
 //                        ->  { decision }  (la décision rétablie, ou null si la proposition repasse en attente)
 
-const STATUTS = ["validee", "refusee", "rediscuter"];
+const STATUTS = ["validee", "traitee", "refusee", "rediscuter"];
 const ID_VALIDE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const ID_LONGUEUR_MAX = 100;
 const COMMENTAIRE_MAX = 2000;
@@ -98,6 +99,9 @@ export default async (req) => {
     const statut = corps.statut;
     const commentaire = typeof corps.commentaire === "string" ? corps.commentaire.trim() : "";
     if (!STATUTS.includes(statut)) return reponse({ erreur: "statut invalide" }, 400);
+    if (statut === "traitee" && !["validee", "traitee"].includes(actuelle?.statut)) {
+      return reponse({ erreur: "seule une proposition validée peut être marquée comme traitée" }, 409);
+    }
     if (commentaire.length > COMMENTAIRE_MAX) {
       return reponse({ erreur: `commentaire trop long (${COMMENTAIRE_MAX} caractères maximum)` }, 400);
     }
