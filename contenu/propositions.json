@@ -392,5 +392,197 @@
     "pourquoi": "Le Code civil fixe la majorité à 21 ans (Article 1-103) mais définit le mineur comme la personne de moins de 18 ans (Article 1-141.1). Entre 18 et 20 ans, un personnage n'est ni mineur ni majeur.\nOr plusieurs règles dépendent de la majorité : l'avocat obligatoire en cas d'arrestation (Article 1-142), le mariage (Article 1-107.1), la capacité de signer un contrat (Article 3-104). Pour ces personnages, on ne sait pas lesquelles s'appliquent, alors que le Code du travail les autorise à travailler dès 18 ans.\nLa correction fixe la majorité à 18 ans, comme le reste du corpus, et garde 21 ans là où un âge plus élevé a un sens : l'achat d'alcool et de tabac, et le recensement obligatoire.",
     "avant": "Tout citoyen de l’Etat de San Andreas est considéré comme majeur civilement à partir de 21 ans.",
     "apres": "Tout citoyen de l’Etat de San Andreas est considéré comme majeur civilement à partir de 18 ans. L'âge de 21 ans reste requis pour l'achat d'alcool et de cigarettes (article 4-101) et pour le recensement obligatoire (article 1-302.3)."
+  },
+  {
+    "id": "np-paiement-amendes",
+    "titre": "Délai de paiement des amendes",
+    "salve": 3,
+    "texte": "Code pénal",
+    "article": "Article Notes Pénales, Amendes :",
+    "resume": "L'amende se paie dans un délai d'une semaine, puis elle est majorée ou convertie en TIG.",
+    "changements": [
+      "Délai de paiement d'une semaine.",
+      "Passé ce délai : majoration de 10 % ou conversion en TIG, au choix du parquet.",
+      "Le taux de conversion (1 TIG pour [X] $) est à fixer."
+    ],
+    "pourquoi": "Les Notes Pénales disent seulement qu'une amende impayée « peut être remplacée ou complétée par une autre sanction », sans délai ni barème.\nUne amende peut donc rester impayée indéfiniment, et chaque agent invente sa propre sanction de remplacement : le même retard de paiement est puni différemment d'un joueur à l'autre.\nUn délai d'une semaine laisse le temps de réunir la somme en jeu, y compris pour les joueurs qui ne se connectent pas tous les jours. Passé ce délai, la suite est écrite et identique pour tous.",
+    "effets": {
+      "doj": "Le parquet choisit entre majoration et TIG pour les amendes impayées.",
+      "lspd": "Les agents savent quand une amende devient impayée."
+    },
+    "avant": "En cas d'impossibilité de paiement, l'amende peut être remplacée ou complétée par une autre sanction",
+    "apres": "L'amende est réglée dans un délai d'une semaine. Passé ce délai, elle est majorée de 10 % ou convertie en TIG (1 TIG pour [X] $), au choix du parquet."
+  },
+  {
+    "id": "travail-non-declare",
+    "titre": "Une seule sanction pour le travail non déclaré",
+    "salve": 3,
+    "texte": "Code pénal",
+    "article": "Article Employé non contractualisé :",
+    "resume": "La ligne du Livret renvoie à la sanction du Code du travail et couvre aussi le travail dissimulé.",
+    "changements": [
+      "Livret : la ligne devient « Employé non contractualisé ou travail dissimulé ».",
+      "La sanction est celle de l'Article 313.4 du Code du travail : avertissement et 35 000 $ d'amende pour l'employeur.",
+      "Le Code du travail n'est pas modifié.",
+      "Option inverse possible : garder le montant du Livret et abaisser l'Article 313.4."
+    ],
+    "pourquoi": "Le même fait est puni de deux façons sans rapport : de 625 à 2 500 $ au Livret des Peines, et d'un avertissement avec 35 000 $ d'amende au Code du travail (Article 313.4). Le « travail dissimulé » de l'Article 313.2 (c) renvoie, lui, à des « sanctions prévues par la loi » qui n'existent nulle part.\nSelon l'agent ou le texte cité, un patron risque donc 625 $ ou 35 000 $ pour la même faute, et tout montant appliqué peut être contesté au nom de l'autre texte.\nLa correction aligne le Livret sur le Code du travail, qui est le texte spécialisé, et donne enfin une sanction au travail dissimulé. À noter : cette proposition renforce l'obligation de faire des contrats, ce qui profite aux cabinets d'avocats, dont celui de Javier.",
+    "effets": {
+      "entreprises": "Un employé sans contrat expose l'employeur à un avertissement et 35 000 $ d'amende.",
+      "lspd": "Une seule sanction à appliquer lors des contrôles d'entreprise."
+    },
+    "avant": "Employé non contractualisé : Mineure, de 625 $ à 2 500 $, excuses sur réseaux sociaux",
+    "apres": "Employé non contractualisé ou travail dissimulé : sanction prévue à l'article 313.4 du Code du Travail et des Entreprises (avertissement et 35 000 $ d'amende pour l'employeur)"
+  },
+  {
+    "id": "lp-extorsion",
+    "titre": "Nouvelle infraction : extorsion / racket",
+    "salve": 3,
+    "texte": "Code pénal",
+    "article": "Article Fraude, escroquerie et criminalité financière :",
+    "resume": "Le racket, annoncé dans le titre de la section du Livret, reçoit enfin sa ligne.",
+    "changements": [
+      "Nouvelle ligne : Crime, de 1 250 $ à 5 000 $.",
+      "Nouvelle définition au Lexique."
+    ],
+    "pourquoi": "Le titre de la section « Fraude, escroquerie et criminalité financière (Arnaques, racket, blanchiment) » annonce le racket, mais aucune ligne du Livret ne le punit.\nC'est pourtant une activité courante de l'illégal en RP (protection imposée aux commerces, rançons). Faute de ligne, elle n'est punissable par rien : les menaces ne sont punies que envers un représentant de l'État, et la définition de l'arnaque est celle de l'usurpation d'identité.\nLa ligne proposée se place au niveau Crime, comme la corruption et la tentative de corruption, qui reposent elles aussi sur une pression exercée pour obtenir un avantage.",
+    "effets": {
+      "lspd": "Les agents peuvent interpeller pour racket sur une base écrite.",
+      "entreprises": "Les commerces rackettés ont un recours légal."
+    },
+    "apres": "Extorsion / racket : Crime, de 1 250 $ à 5 000 $\nLexique : Obtenir de l'argent, un bien ou un service par la menace ou la contrainte."
+  },
+  {
+    "id": "retrait-violences-sexuelles-livret",
+    "titre": "Retrait des violences sexuelles du Livret des Peines",
+    "salve": 3,
+    "texte": "Code pénal",
+    "article": "Article Attouchement sexuel non consenti :",
+    "urgent": true,
+    "resume": "La ligne « Attouchement sexuel non consenti » et sa définition sont retirées : les violences sexuelles sont interdites par le règlement du serveur.",
+    "changements": [
+      "Ligne « Attouchement sexuel non consenti » supprimée du Livret.",
+      "Définition supprimée du Lexique.",
+      "Note ajoutée en tête du Livret : « Les violences sexuelles sont interdites par le règlement du serveur. »"
+    ],
+    "pourquoi": "En prévoyant une sanction pénale pour l'attouchement sexuel, le Livret laisse entendre que ces scènes peuvent être jouées en RP, puis réglées en jeu par une amende. La sanction actuelle, une « danse à l'unicorn », banalise en plus le sujet.\nCe type de contenu n'a pas sa place sur le serveur : il met mal à l'aise les joueurs, quel que soit leur personnage, et ne doit pas être traité comme une infraction parmi d'autres.\nLe retirer du corpus et le renvoyer au règlement du serveur rend la règle claire : ce n'est pas une scène à jouer, c'est un comportement sanctionné par le staff, hors jeu.",
+    "effets": {
+      "lspd": "Aucune procédure RP : tout signalement est transmis au staff.",
+      "doj": "Plus aucune affaire de ce type n'est jugée en RP."
+    },
+    "avant": "Attouchement sexuel non consenti : Crime majeur, de 1 500 $ à 6 000 $, 60 minutes de tenue de la honte, humiliation publique « Danse à l'unicorn 10 min », 50 % de l'amende donnée à la victime si présente\n\nLexique : Contact physique à caractère sexuel effectué sans consentement de la personne.",
+    "apres": "Ligne et définition supprimées.\n\nNote en tête du Livret des Peines :\nLes violences sexuelles sont interdites par le règlement du serveur."
+  },
+  {
+    "id": "retrait-viol-conjugal-code-civil",
+    "titre": "Retrait des violences sexuelles du Code civil",
+    "salve": 3,
+    "texte": "Code civil",
+    "article": "Article 1-107.11 :",
+    "resume": "Les violences sexuelles sont retirées de l'article sur la violence conjugale : elles sont interdites par le règlement du serveur.",
+    "changements": [
+      "« sexuellement » est retiré de la liste des atteintes.",
+      "La phrase sur le viol conjugal est remplacée par : « Les violences sexuelles sont interdites par le règlement du serveur. »",
+      "Le reste de l'article est inchangé."
+    ],
+    "pourquoi": "Les violences sexuelles sont interdites sur le serveur : ce n'est pas une infraction à jouer, c'est une interdiction du règlement. Les mentionner dans le Code civil comme une infraction laisse entendre qu'elles peuvent faire partie d'une scène.\nLa violence conjugale physique, psychologique et financière reste une infraction.",
+    "avant": "La violence conjugale est une infraction. Vous ne pouvez pas nuire physiquement, émotionnellement, sexuellement et financièrement à votre partenaire. Le viol conjugal, ou le fait de contraindre son conjoint à avoir des relations sexuelles sans son consentement, est illégal.",
+    "apres": "La violence conjugale est une infraction. Vous ne pouvez pas nuire physiquement, émotionnellement ou financièrement à votre partenaire. Les violences sexuelles sont interdites par le règlement du serveur."
+  },
+  {
+    "id": "lp-faux-temoignage",
+    "titre": "Nouvelle infraction : faux témoignage",
+    "salve": 3,
+    "texte": "Code pénal",
+    "article": "Article Autorité, justice et services publics :",
+    "resume": "Mentir sous serment devant la justice devient punissable.",
+    "changements": [
+      "Nouvelle ligne : Crime, de 1 000 $ à 4 000 $.",
+      "Nouvelle définition au Lexique."
+    ],
+    "pourquoi": "Aucune ligne ne punit le fait de mentir devant le juge. Le serment des témoins, prévu par l'Article 302 du Code de Procédure Pénale (salve 1), n'a donc aucune conséquence s'il est violé.\nEn audience, un témoin peut affirmer n'importe quoi sans risque, et un procès peut se gagner sur un mensonge assumé. C'est vrai pour l'accusation comme pour la défense.\nLa ligne proposée se place au niveau Crime, comme l'entrave à la justice et la destruction de preuve, qui portent atteinte à l'enquête de la même façon.",
+    "effets": {
+      "doj": "Le juge peut poursuivre un témoin qui ment sous serment."
+    },
+    "apres": "Faux témoignage : Crime, de 1 000 $ à 4 000 $\nLexique : Déclarer sous serment, devant la justice, un fait que l'on sait faux."
+  },
+  {
+    "id": "reglementation-armes",
+    "titre": "Réglementation des Armes remise en cohérence",
+    "salve": 3,
+    "texte": "Autre",
+    "article": "Article Réglementation des Armes :",
+    "resume": "Les objets du quotidien ne sont plus interdits en soi, et chaque arme est rangée dans la catégorie qui correspond à son nom.",
+    "changements": [
+      "Marteau, batte, club de golf, pied de biche : interdits seulement s'ils sont portés ou utilisés comme arme.",
+      "Le pistolet mitrailleur passe en catégorie 2, renommée « Armes semi-lourdes ».",
+      "Le tazer et le beanbag deviennent des armes non létales réservées aux forces de l'ordre.",
+      "La liste des armes autorisées pour le LSPD est inchangée."
+    ],
+    "pourquoi": "La Réglementation des Armes interdit aux civils tous les objets de la liste, y compris le marteau, la batte de baseball, le club de golf et le pied de biche. Posséder un club de golf ou un marteau dans son coffre est donc aujourd'hui un délit (« Possession d'arme blanche »).\nLes catégories ne correspondent pas non plus à leur nom : la catégorie 1, « Armes de poing », contient le pistolet mitrailleur, le tazer et le beanbag ; la catégorie 2, « Mitraillette & Mitrailleuse », contient un fusil à canon scié et une carabine. Comme les peines du Livret dépendent de la catégorie, une erreur de classement fausse directement la sanction.\nLa correction interdit les objets du quotidien seulement quand ils servent d'arme, et range chaque arme dans la bonne catégorie. À noter : le pistolet mitrailleur passant en catégorie 2, sa possession sera punie plus lourdement.",
+    "effets": {
+      "lspd": "Plus de verbalisation pour un simple outil dans un coffre, et un classement clair pour chaque arme."
+    },
+    "avant": "Armes blanches (toutes interdites) : couteau, dague antique, machette, hachette, batte de baseball, club de golf, poing américain, marteau, matraque, pied de biche.\nCat. 1 – Armes de poing (interdites) : tazer, beanbag, pistolet, pistolet mitrailleur.\nCat. 2 – Mitraillette & Mitrailleuse (interdites) : fusil à canon scié, fusil carabine.\nCat. 3 – Armes lourdes (interdites) : fusil d'assaut.\nAutorisées pour le LSPD : matraque, tazer, beanbag, pistolet, fusil carabine, fusil d'assaut.",
+    "apres": "Armes blanches (interdites) : couteau, dague antique, machette, hachette, poing américain.\nObjets d'usage courant (batte de baseball, club de golf, marteau, pied de biche) : interdits uniquement lorsqu'ils sont portés ou utilisés comme arme.\nArmes non létales (réservées aux forces de l'ordre) : matraque, tazer, beanbag.\nCat. 1 – Armes de poing (interdites) : pistolet.\nCat. 2 – Armes semi-lourdes (interdites) : pistolet mitrailleur, fusil à canon scié, fusil carabine.\nCat. 3 – Armes lourdes (interdites) : fusil d'assaut.\nAutorisées pour le LSPD : matraque, tazer, beanbag, pistolet, fusil carabine, fusil d'assaut."
+  },
+  {
+    "id": "iie-amendement-armes",
+    "titre": "Le IIe amendement encadré par la Réglementation des Armes",
+    "salve": 3,
+    "texte": "Constitution",
+    "article": "Article IIe amendement :",
+    "resume": "Le droit de porter des armes s'exerce dans les limites de la Réglementation des Armes.",
+    "changements": [
+      "Une phrase est ajoutée à la fin du IIe amendement.",
+      "Le reste de l'amendement est inchangé."
+    ],
+    "pourquoi": "Le IIe amendement garantit, sans aucune réserve, le droit de détenir et de porter des armes, alors que la Réglementation des Armes interdit toutes les armes aux civils.\nToute poursuite pour possession d'arme peut donc être attaquée comme inconstitutionnelle, la Constitution primant sur les autres textes.\nLa phrase ajoutée garde l'amendement, qui fait partie de l'univers américain du serveur, tout en confirmant que c'est la Réglementation des Armes qui fixe ce qui est permis. Elle va avec la proposition sur la Réglementation des Armes.",
+    "effets": {
+      "lspd": "Les poursuites pour possession d'arme ne peuvent plus être contestées sur la base du IIe amendement."
+    },
+    "avant": "Une milice bien organisée étant nécessaire à la sécurité d’un État libre, il ne sera pas porté atteinte au droit du peuple de détenir et de porter des armes.",
+    "apres": "Une milice bien organisée étant nécessaire à la sécurité d’un État libre, il ne sera pas porté atteinte au droit du peuple de détenir et de porter des armes. Ce droit s'exerce dans les limites de la Réglementation des Armes de l'État de San Andreas."
+  },
+  {
+    "id": "fait-unique",
+    "titre": "Une seule amende pour une même action, avec des limites",
+    "salve": 3,
+    "texte": "Code de police",
+    "article": "Article Préambule :",
+    "urgent": true,
+    "resume": "Pour une action continue, seule l'amende la plus lourde est retenue, majorée selon le nombre de lignes ; les atteintes aux personnes et l'usage d'une arme restent toujours cumulables.",
+    "changements": [
+      "Une action continue, sans interruption jusqu'à l'interpellation, constitue un fait unique.",
+      "Pour un fait unique, seule l'amende la plus lourde est retenue, majorée de 10 % par ligne absorbée, dans la limite de 50 %.",
+      "Les autres sanctions de chaque ligne (fourrière, TIG, tenue de la honte, déclassement…) restent applicables.",
+      "Restent toujours des faits distincts : les atteintes aux personnes, l'usage d'une arme et chaque victime différente."
+    ],
+    "pourquoi": "Le préambule du Code de police dit seulement que « les peines sont cumulables ». Une seule course-poursuite peut ainsi empiler six lignes du Livret (conduite dangereuse, conduite imprudente, excès de vitesse, refus d'obtempérer, mise en danger, délit de fuite), soit environ 12 000 $ pour une seule action, alors que la Constitution interdit les amendes excessives (Article 1, Section 13).\nLa règle proposée est équilibrée pour ne favoriser aucun camp :\n- côté défense, une même action n'est plus facturée six fois ;\n- côté accusation, l'amende reste majorée selon le nombre de lignes (jusqu'à 50 %), toutes les autres sanctions restent dues, et les faits graves ne sont jamais absorbés : frapper quelqu'un, prendre un otage ou sortir une arme pendant la fuite reste puni à part.\nExemple : la course-poursuite à six lignes donne 3 000 $ (délit de fuite) majorés de 50 %, soit 4 500 $, plus toutes les mises en fourrière et tenues de la honte prévues. Si le conducteur tire sur un agent, ce tir est puni en plus.",
+    "effets": {
+      "lspd": "Les agents retiennent toutes les lignes ; le calcul de l'amende suit une règle unique.",
+      "doj": "Les amendes sont proportionnées et ne peuvent plus être contestées comme excessives."
+    },
+    "avant": "Les peines sont cumulables. Le montant maximum des amendes ne peut excéder 50 000$.",
+    "apres": "Les peines prononcées pour des faits distincts sont cumulables. Le montant total des amendes ne peut excéder 50 000 $.\nConstitue un fait unique une action continue, commise sans interruption depuis le début des faits jusqu'à l'interpellation. Lorsqu'un fait unique relève de plusieurs lignes du Livret des Peines, seule l'amende la plus lourde est retenue, majorée de 10 % par ligne absorbée, dans la limite de 50 %. Les sanctions autres que l'amende prévues par chaque ligne restent applicables.\nRestent toujours des faits distincts, même au cours d'une même action : toute atteinte à une personne (violences, prise d'otage, homicide et leurs tentatives), tout usage d'une arme, et chaque victime différente."
+  },
+  {
+    "id": "egalite-classes-immunites",
+    "titre": "Les classes sociales inscrites dans la règle d'égalité",
+    "salve": 3,
+    "texte": "Constitution",
+    "article": "Article 1 :",
+    "resume": "La Constitution reconnaît que les droits varient selon la classe sociale, comme le veut l'univers Neuralis ; l'égalité ne s'applique qu'entre citoyens d'une même classe.",
+    "changements": [
+      "Les droits et privilèges varient selon la classe sociale (A, B ou C), conformément à la loi.",
+      "L'égalité de traitement s'applique entre citoyens d'une même classe.",
+      "Les immunités prévues par la Constitution (Neuralis, Gouverneur) sont réservées."
+    ],
+    "pourquoi": "Tout l'univers du serveur repose sur l'inégalité entre les classes : Eden réservé à une élite, la Sélection, les catégories A, B et C, la carte rouge, le vote réservé aux catégories A et B (Code électoral, Article 2), les exemptions de circulation des citoyens de catégorie A (Article L.210.1). La Section 1 de la Constitution le dit d'ailleurs : « ces droits sont régis par la classe sociale de l'individu ».\nOr la Section 6 (b) affirme l'inverse : aucune catégorie de citoyens ne peut recevoir de privilèges que les autres n'ont pas. Prise à la lettre, elle rend attaquables le déclassement, la carte rouge, le vote réservé, les zones d'habitation par catégorie et les immunités de Neuralis et du Gouverneur, c'est-à-dire tout ce qui fait le lore Neuralis.\nLa correction rend la Constitution cohérente avec le RP : les inégalités entre classes sont assumées et encadrées par la loi, et l'égalité joue entre citoyens d'une même classe, ce qui protège toujours contre l'arbitraire.",
+    "effets": {
+      "doj": "Le déclassement, la carte rouge et les droits par catégorie ne peuvent plus être contestés comme inconstitutionnels."
+    },
+    "avant": "Section 6. (b) Un citoyen ou une catégorie de citoyens ne peut se voir accorder des privilèges ou des immunités qui ne sont pas accordés dans les mêmes conditions à tous les citoyens ou catégories de citoyens. Les privilèges ou immunités accordés par la législature peuvent être modifiés ou révoqués.",
+    "apres": "Section 6. (b) Les droits et privilèges des citoyens varient selon leur classe sociale (A, B ou C), dans les conditions fixées par la loi. Entre citoyens d'une même classe, nul ne peut se voir accorder des privilèges ou des immunités qui ne sont pas accordés dans les mêmes conditions aux autres, sous réserve des immunités prévues par la présente Constitution. Les privilèges ou immunités accordés par la législature peuvent être modifiés ou révoqués."
   }
 ]
