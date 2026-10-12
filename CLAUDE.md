@@ -9,7 +9,7 @@ Liaison Maya : registre des propositions de textes du serveur GTA RP Last Gate. 
 - `id` : slug en minuscules, chiffres et tirets, unique. Ne jamais modifier l'`id` d'une proposition existante ni réutiliser celui d'une proposition retirée : les décisions stockées dans Netlify Blobs y sont rattachées.
 - `salve` : entier ≥ 1, facultatif (1 par défaut). La salve en cours est le plus grand numéro du fichier ; une nouvelle salve prend le numéro suivant. Ne jamais changer la salve d'une proposition existante.
 - Reprendre le texte fourni à l'identique : retours à la ligne en `\n`, espaces, alinéas.
-- Format des articles partout : « Article 12 : » (numéro, espace, deux points, sans tiret). Signaler toute autre forme (« Article 12 - », « Art. 12 ») à l'utilisateur au lieu de la corriger en silence.
+- Format des articles partout : « Article 12 : » (numéro, espace, deux points, sans tiret), ou « Article <nom de section> : » pour une partie non numérotée. Signaler toute autre forme (« Article 12 - », « Art. 12 ») à l'utilisateur au lieu de la corriger en silence.
 - Omettre les champs vides plutôt que les laisser à `""`.
 - Lancer `npm run verifier` avant de committer, et corriger ou signaler chaque erreur et chaque remarque.
 

@@ -922,7 +922,6 @@ a.compteur {
 .article {
   color: var(--text);
   font: 500 14.5px var(--mono);
-  white-space: nowrap;
 }
 
 .legende {

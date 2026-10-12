@@ -54,7 +54,7 @@ Remplacer `contenu/propositions.json`, lancer `npm run verifier`, puis commit et
 | `id` | oui | Clé interne en slug (minuscules, chiffres, tirets), unique, jamais affichée. Ne jamais la modifier ni la réutiliser : les décisions y sont rattachées. |
 | `titre` | oui | Titre court. |
 | `texte` | oui | `Code pénal`, `Code de procédure pénale`, `Code de police`, `Code de la route`, `Code du travail`, `Code civil`, `Code électoral`, `Constitution`, `Décret` ou `Autre`. |
-| `article` | oui, sauf pour un décret | Sous la forme « Article 12 : ». |
+| `article` | oui, sauf pour un décret | Sous la forme « Article 12 : », ou « Article Préambule : » pour une partie non numérotée. |
 | `urgent` | non | `true` ou `false` (faux par défaut). |
 | `salve` | non | Numéro de la salve : nombre entier supérieur ou égal à 1, sans guillemets (1 par défaut). Sert seulement à grouper les Archives et à afficher la salve en cours. |
 | `resume` | oui | En une phrase. |

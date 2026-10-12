@@ -26,7 +26,8 @@ export const CHANGEMENTS_MAX = 4;
 const CHAMPS = ['id', 'titre', 'texte', 'article', 'urgent', 'salve', 'resume', 'changements', 'pourquoi', 'effets', 'avant', 'apres'];
 const RE_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const SUFFIXES = '(?: (?:bis|ter|quater|quinquies|sexies))?';
-const RE_ARTICLE_CONFORME = new RegExp(`^Article [^\\s:]+${SUFFIXES} :$`);
+// « Article 12 : », « Article 12 bis : » ou, pour un texte non numéroté, « Article Préambule : ».
+const RE_ARTICLE_CONFORME = /^Article [^\s:](?:[^:]*[^\s:])? :$/;
 const RE_LIGNE_ARTICLE = /^\s*Art(?:icle|\.)?\s*\d/i;
 const RE_LIGNE_CONFORME = new RegExp(`^\\s*Article [^\\s:]+${SUFFIXES} :(?: |$)`);
 
@@ -40,7 +41,7 @@ export function normaliserArticle(valeur) {
   const numero = String(valeur)
     .trim()
     .replace(/^art(?:icle|\.)?\s*/i, '')
-    .replace(/\s*[:.\-–—]+\s*$/, '')
+    .replace(/[\s:.\-–—]+$/, '')
     .trim();
   return numero ? `Article ${numero} :` : '';
 }
@@ -189,7 +190,7 @@ function validerProposition(brut, numero) {
     article = normaliserArticle(brut.article);
     if (!article) {
       erreur('le champ « article » est vide.');
-    } else if (!RE_ARTICLE_CONFORME.test(String(brut.article).trim())) {
+    } else if (String(brut.article).trim() !== article || !RE_ARTICLE_CONFORME.test(article)) {
       remarque(`l'article « ${brut.article} » est affiché « ${article} » : écrivez-le directement sous cette forme.`);
     }
   }
