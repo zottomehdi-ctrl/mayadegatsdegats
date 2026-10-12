@@ -399,19 +399,18 @@
     "salve": 3,
     "texte": "Code pénal",
     "article": "Article Notes Pénales, Amendes :",
-    "resume": "L'amende se paie dans un délai d'une semaine, puis elle est majorée ou convertie en TIG.",
+    "resume": "L'amende se paie dans un délai d'une semaine ; passé ce délai, elle est majorée de 10 %.",
     "changements": [
       "Délai de paiement d'une semaine.",
-      "Passé ce délai : majoration de 10 % ou conversion en TIG, au choix du parquet.",
-      "Le taux de conversion (1 TIG pour [X] $) est à fixer."
+      "Passé ce délai, l'amende est majorée de 10 %.",
+      "La possibilité de remplacer l'amende par une autre sanction est retirée."
     ],
-    "pourquoi": "Les Notes Pénales disent seulement qu'une amende impayée « peut être remplacée ou complétée par une autre sanction », sans délai ni barème.\nUne amende peut donc rester impayée indéfiniment, et chaque agent invente sa propre sanction de remplacement : le même retard de paiement est puni différemment d'un joueur à l'autre.\nUn délai d'une semaine laisse le temps de réunir la somme en jeu, y compris pour les joueurs qui ne se connectent pas tous les jours. Passé ce délai, la suite est écrite et identique pour tous.",
+    "pourquoi": "Les Notes Pénales disent seulement qu'une amende impayée « peut être remplacée ou complétée par une autre sanction », sans délai ni barème.\nUne amende peut donc rester impayée indéfiniment, et chaque agent invente sa propre sanction de remplacement : le même retard de paiement est puni différemment d'un joueur à l'autre.\nUn délai d'une semaine laisse le temps de réunir la somme en jeu, y compris pour les joueurs qui ne se connectent pas tous les jours. Passé ce délai, la majoration est la même pour tous.",
     "effets": {
-      "doj": "Le parquet choisit entre majoration et TIG pour les amendes impayées.",
-      "lspd": "Les agents savent quand une amende devient impayée."
+      "lspd": "Les agents savent quand une amende devient impayée et quel montant réclamer."
     },
     "avant": "En cas d'impossibilité de paiement, l'amende peut être remplacée ou complétée par une autre sanction",
-    "apres": "L'amende est réglée dans un délai d'une semaine. Passé ce délai, elle est majorée de 10 % ou convertie en TIG (1 TIG pour [X] $), au choix du parquet."
+    "apres": "L'amende est réglée dans un délai d'une semaine. Passé ce délai, elle est majorée de 10 %."
   },
   {
     "id": "travail-non-declare",
@@ -445,7 +444,7 @@
       "Nouvelle ligne : Crime, de 1 250 $ à 5 000 $.",
       "Nouvelle définition au Lexique."
     ],
-    "pourquoi": "Le titre de la section « Fraude, escroquerie et criminalité financière (Arnaques, racket, blanchiment) » annonce le racket, mais aucune ligne du Livret ne le punit.\nC'est pourtant une activité courante de l'illégal en RP (protection imposée aux commerces, rançons). Faute de ligne, elle n'est punissable par rien : les menaces ne sont punies que envers un représentant de l'État, et la définition de l'arnaque est celle de l'usurpation d'identité.\nLa ligne proposée se place au niveau Crime, comme la corruption et la tentative de corruption, qui reposent elles aussi sur une pression exercée pour obtenir un avantage.",
+    "pourquoi": "Le titre de la section « Fraude, escroquerie et criminalité financière (Arnaques, racket, blanchiment) » annonce le racket, mais aucune ligne du Livret ne le punit.\nC'est pourtant une activité courante de l'illégal en RP (protection imposée aux commerces, rançons). Faute de ligne, elle n'est punissable par rien : les menaces ne sont punies qu'envers un représentant de l'État, et la définition de l'arnaque est celle de l'usurpation d'identité.\nLa ligne proposée se place au niveau Crime, comme la corruption et la tentative de corruption, qui reposent elles aussi sur une pression exercée pour obtenir un avantage.",
     "effets": {
       "lspd": "Les agents peuvent interpeller pour racket sur une base écrite.",
       "entreprises": "Les commerces rackettés ont un recours légal."
@@ -463,7 +462,7 @@
     "changements": [
       "Ligne « Attouchement sexuel non consenti » supprimée du Livret.",
       "Définition supprimée du Lexique.",
-      "Note ajoutée en tête du Livret : « Les violences sexuelles sont interdites par le règlement du serveur. »"
+      "À la place, une note est ajoutée en tête du Livret : « Les violences sexuelles sont interdites par le règlement du serveur. »"
     ],
     "pourquoi": "En prévoyant une sanction pénale pour l'attouchement sexuel, le Livret laisse entendre que ces scènes peuvent être jouées en RP, puis réglées en jeu par une amende. La sanction actuelle, une « danse à l'unicorn », banalise en plus le sujet.\nCe type de contenu n'a pas sa place sur le serveur : il met mal à l'aise les joueurs, quel que soit leur personnage, et ne doit pas être traité comme une infraction parmi d'autres.\nLe retirer du corpus et le renvoyer au règlement du serveur rend la règle claire : ce n'est pas une scène à jouer, c'est un comportement sanctionné par le staff, hors jeu.",
     "effets": {
@@ -471,7 +470,7 @@
       "doj": "Plus aucune affaire de ce type n'est jugée en RP."
     },
     "avant": "Attouchement sexuel non consenti : Crime majeur, de 1 500 $ à 6 000 $, 60 minutes de tenue de la honte, humiliation publique « Danse à l'unicorn 10 min », 50 % de l'amende donnée à la victime si présente\n\nLexique : Contact physique à caractère sexuel effectué sans consentement de la personne.",
-    "apres": "Ligne et définition supprimées.\n\nNote en tête du Livret des Peines :\nLes violences sexuelles sont interdites par le règlement du serveur."
+    "apres": "Les violences sexuelles sont interdites par le règlement du serveur."
   },
   {
     "id": "retrait-viol-conjugal-code-civil",
@@ -487,7 +486,7 @@
     ],
     "pourquoi": "Les violences sexuelles sont interdites sur le serveur : ce n'est pas une infraction à jouer, c'est une interdiction du règlement. Les mentionner dans le Code civil comme une infraction laisse entendre qu'elles peuvent faire partie d'une scène.\nLa violence conjugale physique, psychologique et financière reste une infraction.",
     "avant": "La violence conjugale est une infraction. Vous ne pouvez pas nuire physiquement, émotionnellement, sexuellement et financièrement à votre partenaire. Le viol conjugal, ou le fait de contraindre son conjoint à avoir des relations sexuelles sans son consentement, est illégal.",
-    "apres": "La violence conjugale est une infraction. Vous ne pouvez pas nuire physiquement, émotionnellement ou financièrement à votre partenaire. Les violences sexuelles sont interdites par le règlement du serveur."
+    "apres": "La violence conjugale est une infraction. Vous ne pouvez pas nuire physiquement, émotionnellement et financièrement à votre partenaire. Les violences sexuelles sont interdites par le règlement du serveur."
   },
   {
     "id": "lp-faux-temoignage",
@@ -516,7 +515,7 @@
     "changements": [
       "Marteau, batte, club de golf, pied de biche : interdits seulement s'ils sont portés ou utilisés comme arme.",
       "Le pistolet mitrailleur passe en catégorie 2, renommée « Armes semi-lourdes ».",
-      "Le tazer et le beanbag deviennent des armes non létales réservées aux forces de l'ordre.",
+      "La matraque, le tazer et le beanbag deviennent des armes non létales réservées aux forces de l'ordre (la matraque était rangée parmi les armes blanches).",
       "La liste des armes autorisées pour le LSPD est inchangée."
     ],
     "pourquoi": "La Réglementation des Armes interdit aux civils tous les objets de la liste, y compris le marteau, la batte de baseball, le club de golf et le pied de biche. Posséder un club de golf ou un marteau dans son coffre est donc aujourd'hui un délit (« Possession d'arme blanche »).\nLes catégories ne correspondent pas non plus à leur nom : la catégorie 1, « Armes de poing », contient le pistolet mitrailleur, le tazer et le beanbag ; la catégorie 2, « Mitraillette & Mitrailleuse », contient un fusil à canon scié et une carabine. Comme les peines du Livret dépendent de la catégorie, une erreur de classement fausse directement la sanction.\nLa correction interdit les objets du quotidien seulement quand ils servent d'arme, et range chaque arme dans la bonne catégorie. À noter : le pistolet mitrailleur passant en catégorie 2, sa possession sera punie plus lourdement.",
@@ -556,7 +555,7 @@
       "Une action continue, sans interruption jusqu'à l'interpellation, constitue un fait unique.",
       "Pour un fait unique, seule l'amende la plus lourde est retenue, majorée de 10 % par ligne absorbée, dans la limite de 50 %.",
       "Les autres sanctions de chaque ligne (fourrière, TIG, tenue de la honte, déclassement…) restent applicables.",
-      "Restent toujours des faits distincts : les atteintes aux personnes, l'usage d'une arme et chaque victime différente."
+      "Restent toujours des faits distincts : les atteintes aux personnes, l'usage d'une arme et chaque victime différente. Le plafond de 50 000 $ est inchangé."
     ],
     "pourquoi": "Le préambule du Code de police dit seulement que « les peines sont cumulables ». Une seule course-poursuite peut ainsi empiler six lignes du Livret (conduite dangereuse, conduite imprudente, excès de vitesse, refus d'obtempérer, mise en danger, délit de fuite), soit environ 12 000 $ pour une seule action, alors que la Constitution interdit les amendes excessives (Article 1, Section 13).\nLa règle proposée est équilibrée pour ne favoriser aucun camp :\n- côté défense, une même action n'est plus facturée six fois ;\n- côté accusation, l'amende reste majorée selon le nombre de lignes (jusqu'à 50 %), toutes les autres sanctions restent dues, et les faits graves ne sont jamais absorbés : frapper quelqu'un, prendre un otage ou sortir une arme pendant la fuite reste puni à part.\nExemple : la course-poursuite à six lignes donne 3 000 $ (délit de fuite) majorés de 50 %, soit 4 500 $, plus toutes les mises en fourrière et tenues de la honte prévues. Si le conducteur tire sur un agent, ce tir est puni en plus.",
     "effets": {
@@ -564,7 +563,7 @@
       "doj": "Les amendes sont proportionnées et ne peuvent plus être contestées comme excessives."
     },
     "avant": "Les peines sont cumulables. Le montant maximum des amendes ne peut excéder 50 000$.",
-    "apres": "Les peines prononcées pour des faits distincts sont cumulables. Le montant total des amendes ne peut excéder 50 000 $.\nConstitue un fait unique une action continue, commise sans interruption depuis le début des faits jusqu'à l'interpellation. Lorsqu'un fait unique relève de plusieurs lignes du Livret des Peines, seule l'amende la plus lourde est retenue, majorée de 10 % par ligne absorbée, dans la limite de 50 %. Les sanctions autres que l'amende prévues par chaque ligne restent applicables.\nRestent toujours des faits distincts, même au cours d'une même action : toute atteinte à une personne (violences, prise d'otage, homicide et leurs tentatives), tout usage d'une arme, et chaque victime différente."
+    "apres": "Les peines prononcées pour des faits distincts sont cumulables. Le montant maximum des amendes ne peut excéder 50 000$.\nConstitue un fait unique une action continue, commise sans interruption depuis le début des faits jusqu'à l'interpellation. Lorsqu'un fait unique relève de plusieurs lignes du Livret des Peines, seule l'amende la plus lourde est retenue, majorée de 10 % par ligne absorbée, dans la limite de 50 %. Les sanctions autres que l'amende prévues par chaque ligne restent applicables.\nRestent toujours des faits distincts, même au cours d'une même action : toute atteinte à une personne (violences, prise d'otage, homicide et leurs tentatives), tout usage d'une arme, et chaque victime différente."
   },
   {
     "id": "egalite-classes-immunites",
