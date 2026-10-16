@@ -1,4 +1,5 @@
 import { getStore } from "@netlify/blobs";
+import DECISIONS_INITIALES from "../decisions-initiales.mjs";
 
 // Décisions de la fondatrice, stockées dans Netlify Blobs (magasin « decisions »),
 // une clé par id de proposition (slug interne, jamais affiché). Le contenu des propositions n'est jamais touché.
@@ -16,21 +17,9 @@ const ID_LONGUEUR_MAX = 100;
 const COMMENTAIRE_MAX = 2000;
 const HISTORIQUE_MAX = 200;
 
-// Décision de démonstration pour la proposition d'exemple « exemple-controles-identite ».
-// Elle ne sert que tant qu'aucune décision réelle n'existe pour cet id,
-// et devient sans effet une fois les exemples retirés de contenu/propositions.json.
-const COMMENTAIRE_EXEMPLE =
-  "D'accord sur le principe, mais « raison plausible » me paraît trop vague pour les nouveaux agents. On en parle à l'appel : il faudrait peut-être une liste d'exemples, ou une formation avant l'entrée en vigueur.";
-const DECISIONS_EXEMPLE = {
-  "exemple-controles-identite": {
-    statut: "rediscuter",
-    commentaire: COMMENTAIRE_EXEMPLE,
-    date: "2026-10-08T19:40:00.000Z",
-    renvoyeLe: "2026-10-08T19:40:00.000Z",
-    historique: [{ statut: "rediscuter", commentaire: COMMENTAIRE_EXEMPLE, date: "2026-10-08T19:40:00.000Z" }],
-    precedent: null,
-  },
-};
+// Les décisions de départ (netlify/decisions-initiales.mjs) sont servies tant qu'aucune décision
+// n'est enregistrée dans Netlify Blobs pour l'id. Une décision prise sur le site passe devant,
+// et son annulation ramène à la décision de départ.
 
 const reponse = (donnees, status = 200) =>
   new Response(JSON.stringify(donnees), {
@@ -58,7 +47,7 @@ export default async (req) => {
       const entrees = await Promise.all(
         blobs.map(async ({ key }) => [key, await store.get(key, { type: "json" })]),
       );
-      const decisions = { ...DECISIONS_EXEMPLE };
+      const decisions = { ...DECISIONS_INITIALES };
       for (const [cle, valeur] of entrees) {
         if (valeur) decisions[cle] = valeur;
       }
@@ -79,19 +68,23 @@ export default async (req) => {
       return reponse({ erreur: "id de proposition invalide" }, 400);
     }
 
-    const actuelle = (await store.get(id, { type: "json" })) ?? DECISIONS_EXEMPLE[id] ?? null;
+    const enregistree = await store.get(id, { type: "json" });
+    const depart = DECISIONS_INITIALES[id] ?? null;
+    const actuelle = enregistree ?? depart;
 
-    // Annulation de la dernière décision (bouton « Annuler » du message de confirmation)
+    // Annulation de la dernière décision (bouton « Annuler » du message de confirmation).
+    // Seule une décision enregistrée s'annule ; une décision de départ ne s'annule pas.
     if (corps.annuler !== undefined) {
-      if (!actuelle || actuelle.date !== corps.annuler) {
+      if (!enregistree || enregistree.date !== corps.annuler) {
         return reponse({ erreur: "la décision a changé entre-temps et ne peut plus être annulée" }, 409);
       }
-      const historique = (actuelle.historique ?? []).slice(0, -1);
-      if (!actuelle.precedent) {
+      const historique = (enregistree.historique ?? []).slice(0, -1);
+      // Retour à la situation de départ : la clé est effacée, la décision de départ revient telle quelle.
+      if (!enregistree.precedent || enregistree.precedent.date === depart?.date) {
         await store.delete(id);
-        return reponse({ decision: DECISIONS_EXEMPLE[id] ?? null });
+        return reponse({ decision: depart });
       }
-      const retablie = { ...actuelle.precedent, historique, precedent: null };
+      const retablie = { ...enregistree.precedent, historique, precedent: null };
       await store.setJSON(id, retablie);
       return reponse({ decision: retablie });
     }

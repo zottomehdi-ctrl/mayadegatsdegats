@@ -6,6 +6,7 @@ Les propositions arrivent par salves. Les propositions traitées et refusées so
 
 - `contenu/propositions.json` : toutes les propositions. C'est le seul fichier à modifier.
 - `netlify/functions/decisions.mjs` : enregistre les décisions dans Netlify Blobs, une clé par `id` de proposition.
+- `netlify/decisions-initiales.mjs` : décisions de départ, reprises du site en ligne au 12 octobre 2026. Elles s'affichent tant qu'aucune décision n'a été prise sur le site pour la proposition ; une décision prise ensuite passe devant.
 - `assets/registre.js` : lecture et vérification du fichier, partagées par le site et par `npm run verifier`.
 - `index.html`, `assets/` : le site.
 
