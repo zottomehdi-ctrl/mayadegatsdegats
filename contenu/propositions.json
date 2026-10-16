@@ -79,25 +79,6 @@
     "apres": "Récidive\nEst en récidive la personne condamnée à nouveau pour la même infraction, ou pour une infraction de la même section du Livret des Peines, dans les 14 jours suivant une condamnation définitive. L'amende est alors fixée au montant maximal et les sanctions prévues « si récidive » s'appliquent. À la deuxième récidive dans ce délai, l'infraction est jugée dans la catégorie supérieure et le Juge peut prononcer un déclassement."
   },
   {
-    "id": "cpp-108-casier-judiciaire",
-    "titre": "C.P.P. : casier judiciaire",
-    "salve": 1,
-    "texte": "Code de procédure pénale",
-    "article": "Article 108 :",
-    "resume": "Le DOJ tient un casier pour chaque citoyen, effacé après 30 jours pour les infractions légères.",
-    "changements": [
-      "Contenu : date, ligne du Livret, sanction.",
-      "Consultable par le LSPD, le parquet, le Juge et l'avocat de l'intéressé.",
-      "Mineure, Infraction et Délit effacés après 30 jours sans nouvelle condamnation."
-    ],
-    "pourquoi": "Aucun registre des condamnations n'existe. Sans lui, impossible de prouver une récidive, ni, à l'inverse, de montrer qu'un accusé a un casier vierge.\nChaque agent et chaque juge se fie à sa mémoire : le même personnage est traité en récidiviste par l'un et en primo-délinquant par l'autre.\nLe casier tenu par le DOJ rend la récidive et les circonstances atténuantes vérifiables. L'effacement après 30 jours pour les infractions légères évite qu'une vieille contravention pèse indéfiniment sur un personnage ; les infractions graves restent inscrites.",
-    "effets": {
-      "lspd": "Consultation du casier lors des interpellations.",
-      "doj": "Le DOJ tient et met à jour le casier."
-    },
-    "apres": "Casier judiciaire\nLe DOJ tient un casier pour chaque citoyen, mentionnant la date, la ligne du Livret des Peines et la sanction prononcée. Il est consultable par le LSPD, le parquet, le Juge et l'avocat de l'intéressé. Les condamnations de catégorie Mineure, Infraction et Délit sont effacées après 30 jours sans nouvelle condamnation ; les autres ne s'effacent pas."
-  },
-  {
     "id": "cpp-106-circonstances-aggravantes",
     "titre": "C.P.P. : circonstances aggravantes",
     "salve": 1,
@@ -583,5 +564,272 @@
     },
     "avant": "Section 6. (b) Un citoyen ou une catégorie de citoyens ne peut se voir accorder des privilèges ou des immunités qui ne sont pas accordés dans les mêmes conditions à tous les citoyens ou catégories de citoyens. Les privilèges ou immunités accordés par la législature peuvent être modifiés ou révoqués.",
     "apres": "Section 6. (b) Les droits et privilèges des citoyens varient selon leur classe sociale (A, B ou C), dans les conditions fixées par la loi. Entre citoyens d'une même classe, nul ne peut se voir accorder des privilèges ou des immunités qui ne sont pas accordés dans les mêmes conditions aux autres, sous réserve des immunités prévues par la présente Constitution. Les privilèges ou immunités accordés par la législature peuvent être modifiés ou révoqués."
+  },
+  {
+    "id": "categories-cinq",
+    "titre": "Cinq catégories d'infractions au lieu de sept",
+    "salve": 4,
+    "texte": "Code pénal",
+    "article": "Article Catégories du Livret :",
+    "urgent": true,
+    "resume": "Le Livret passe de sept à cinq catégories : Infraction, Délit mineur, Délit majeur, Crime et Crime État.",
+    "changements": [
+      "« Mineure » est fusionnée dans « Infraction » : toutes les lignes Mineure deviennent Infraction.",
+      "« Délit » devient « Délit mineur ».",
+      "« Crime majeur » est fusionné dans « Crime » : toutes les lignes Crime majeur deviennent Crime.",
+      "Le Lexique et tous les textes qui citent une catégorie supprimée utilisent les nouveaux noms, y compris les propositions déjà validées."
+    ],
+    "pourquoi": "Le Livret compte sept catégories, le Code civil n'en connaît que trois (contravention, délit, crime), et l'Article L.403.3 du Code de police parle de « délits mineurs », une catégorie qui n'existe nulle part. Chaque règle qui dépend de la catégorie (prescription, droits Miranda, récidive, réduction d'amende) est donc contestable.\nDeux paires de catégories sont en plus impossibles à distinguer en pratique : « Mineure » et « Infraction », et « Crime » et « Crime majeur » (un Crime peut d'ailleurs coûter jusqu'à 20 000 $, plus qu'un Crime majeur, plafonné à 15 000 $).\nCinq catégories, dont le « Délit mineur » que le Code de police cite déjà, donnent une échelle simple que tous les textes peuvent reprendre à l'identique.",
+    "effets": {
+      "lspd": "Cinq catégories à connaître au lieu de sept.",
+      "doj": "La prescription, la récidive et les droits Miranda s'appuient sur les mêmes catégories."
+    },
+    "avant": "Infraction mineure (mineure) : Manquement de faible gravité, généralement sanctionné par une amende et exceptionnellement par une courte peine.\nInfraction : Violation des règles entraînant une sanction, mais dont la gravité reste limitée.\nDélit : Infraction présentant une atteinte plus importante à une personne, un bien, l'ordre public ou la loi.\nDélit majeur : Délit présentant une dangerosité ou une atteinte importante, pouvant justifier une sanction significative.\nCrime : Infraction grave portant notamment atteinte aux personnes, aux biens ou aux institutions.\nCrime majeur : Infraction d'une gravité exceptionnelle, notamment lorsqu'elle implique violence, armes, prise d'otage, criminalité organisée ou atteinte grave à la vie humaine.\nCrime contre l'État (Crime État) : Infraction portant directement atteinte aux institutions, à la sécurité ou à la stabilité de l'État.",
+    "apres": "Infraction : Manquement de faible gravité, sanctionné principalement par une amende.\nDélit mineur : Infraction présentant une atteinte plus importante à une personne, un bien, l'ordre public ou la loi.\nDélit majeur : Délit présentant une dangerosité ou une atteinte importante, pouvant justifier une sanction significative.\nCrime : Infraction grave portant atteinte aux personnes, aux biens ou aux institutions, notamment lorsqu'elle implique violence, armes, prise d'otage, criminalité organisée ou atteinte à la vie humaine.\nCrime contre l'État (Crime État) : Infraction portant directement atteinte aux institutions, à la sécurité ou à la stabilité de l'État."
+  },
+  {
+    "id": "prescription-par-categorie",
+    "titre": "Prescription fixée pour chaque catégorie",
+    "salve": 4,
+    "texte": "Code civil",
+    "article": "Article 6-1 :",
+    "urgent": true,
+    "resume": "Chaque catégorie reçoit un délai de prescription, et une plainte ou une enquête suspend le délai pour qu'une affaire ne se prescrive plus pendant l'enquête.",
+    "changements": [
+      "Infraction et Délit mineur : 14 jours.",
+      "Délit majeur : 21 jours.",
+      "Crime et Crime État : 60 jours.",
+      "Nouvel Article 6-4 : la plainte ou l'enquête suspend le délai, pour une durée au plus égale au délai lui-même."
+    ],
+    "pourquoi": "Les Articles 6-1 à 6-3 fixent la prescription pour les « contraventions », « délits » et « crimes », trois catégories qui n'existent pas dans le Livret, et sans table de correspondance. On ne sait donc pas quel délai s'applique à la plupart des infractions.\nRien n'arrête en plus le délai : une plainte peut être déposée le premier jour et l'affaire se prescrire pendant que l'enquête suit son cours.\nLa correction aligne les délais sur les catégories du Livret, et suspend le délai dès qu'une plainte ou une enquête existe. Pour ne pas laisser une affaire ouverte indéfiniment, la suspension ne peut pas dépasser la durée du délai initial.",
+    "effets": {
+      "doj": "Une date limite claire pour chaque dossier, et pas de prescription pendant l'enquête.",
+      "lspd": "Une enquête ouverte protège le dossier."
+    },
+    "avant": "Le délai de prescription pour les infractions condamnées par une contravention est fixé à 14 jours à partir du jour de l'infraction. Passé cette période, il ne sera plus possible de poursuivre juridiquement l'auteur de l'infraction.\n\nArticle 6-2 :\nLe délai de prescription pour les infractions considérées comme un délit ou condamné par des peines fiscales est fixé à 21 jours à partir du jour de l'infraction. Passé cette période, il ne sera plus possible de poursuivre juridiquement l'auteur de l'infraction.\n\nArticle 6-3 :\nLe délai de prescription pour les infractions considérées comme un crime est fixé à 60 jours à partir du jour de l'infraction. Passé cette période, il ne sera plus possible de poursuivre juridiquement l'auteur de l'infraction.",
+    "apres": "Le délai de prescription des infractions de catégorie Infraction et Délit mineur est fixé à 14 jours à partir du jour de l'infraction. Passé cette période, il ne sera plus possible de poursuivre juridiquement l'auteur de l'infraction.\n\nArticle 6-2 :\nLe délai de prescription des infractions de catégorie Délit majeur, ainsi que des peines fiscales, est fixé à 21 jours à partir du jour de l'infraction. Passé cette période, il ne sera plus possible de poursuivre juridiquement l'auteur de l'infraction.\n\nArticle 6-3 :\nLe délai de prescription des infractions de catégorie Crime et Crime État est fixé à 60 jours à partir du jour de l'infraction. Passé cette période, il ne sera plus possible de poursuivre juridiquement l'auteur de l'infraction.\n\nArticle 6-4 :\nLe dépôt d'une plainte ou l'ouverture d'une enquête par le parquet suspend le délai de prescription jusqu'au classement ou au jugement. La suspension ne peut excéder la durée du délai initial."
+  },
+  {
+    "id": "recidive-par-categorie",
+    "titre": "Délai de récidive selon la catégorie",
+    "salve": 4,
+    "texte": "Code de procédure pénale",
+    "article": "Article 105 :",
+    "resume": "Le délai de récidive dépend de la catégorie : aucun pour l'Infraction, 7 jours pour le Délit mineur, 14 pour le Délit majeur, 30 pour le Crime.",
+    "changements": [
+      "Infraction : pas de récidive.",
+      "Délit mineur : 7 jours ; Délit majeur : 14 jours ; Crime et Crime État : 30 jours.",
+      "Les mentions « si récidive » des lignes de catégorie Infraction sont supprimées du Livret.",
+      "La catégorie supérieure, à la deuxième récidive, ne peut dépasser Crime."
+    ],
+    "pourquoi": "La proposition de la salve 1 fixait un délai unique de 14 jours, quelle que soit la gravité. Elle remplace cette proposition si celle-ci a déjà été validée.\nUn délai unique traite de la même façon un excès de vitesse et un braquage. Plus l'infraction est grave, plus il est logique qu'elle pèse longtemps dans l'historique d'un personnage. À l'inverse, les petites infractions du quotidien (vitesse, stationnement) ne doivent pas entraîner d'escalade : elles n'ont donc pas de récidive.\nConséquence à connaître : plusieurs lignes de catégorie Infraction prévoient aujourd'hui une sanction « si récidive » (tenue de la honte, TIG). Ces mentions deviennent sans objet et sont supprimées, pour que le Livret ne contredise pas la règle.",
+    "effets": {
+      "lspd": "Le casier indique si une condamnation est encore dans le délai de récidive.",
+      "doj": "L'aggravation pour récidive dépend de la gravité de l'infraction."
+    },
+    "avant": "Récidive\nEst en récidive la personne condamnée à nouveau pour la même infraction, ou pour une infraction de la même section du Livret des Peines, dans les 14 jours suivant une condamnation définitive. L'amende est alors fixée au montant maximal et les sanctions prévues « si récidive » s'appliquent. À la deuxième récidive dans ce délai, l'infraction est jugée dans la catégorie supérieure et le Juge peut prononcer un déclassement.",
+    "apres": "Récidive\nEst en récidive la personne condamnée à nouveau pour la même infraction, ou pour une infraction de la même section du Livret des Peines, dans le délai suivant une condamnation définitive :\n- Infraction : pas de récidive ;\n- Délit mineur : 7 jours ;\n- Délit majeur : 14 jours ;\n- Crime et Crime État : 30 jours.\nL'amende est alors fixée au montant maximal et les sanctions prévues « si récidive » s'appliquent. À la deuxième récidive dans ce délai, l'infraction est jugée dans la catégorie supérieure, sans pouvoir dépasser la catégorie Crime, et le Juge peut prononcer un déclassement."
+  },
+  {
+    "id": "vices-procedure-articulation",
+    "titre": "Nullité, irrecevabilité et négociation : qui s'applique quand",
+    "salve": 4,
+    "texte": "Code de police",
+    "article": "Article L.403.3 :",
+    "urgent": true,
+    "resume": "La nullité vise l'absence totale de droits pour une Infraction ou un Délit mineur, l'irrecevabilité ne vise que la preuve concernée, et tout le reste passe par la négociation.",
+    "changements": [
+      "Point I : nullité pour absence totale de lecture des droits, pour les catégories Infraction et Délit mineur (les exemples sont retirés).",
+      "Point II : pour le Délit majeur et au-delà, ce qui est recueilli avant la notification tardive des droits est irrecevable, au lieu de « peut affecter ».",
+      "Nouveau point III : ces deux cas et l'Article L.403.6 sont les seules exceptions à la négociation de l'Article L.403.1.",
+      "Article L.403.6 : seule la preuve concernée est écartée, la procédure continue ; « code pénal » devient « Livret des Peines ou présent code »."
+    ],
+    "pourquoi": "Trois règles coexistent sans qu'on sache laquelle prime : la négociation de toute irrégularité (Article L.403.1), la nullité automatique (L.403.3, point I) et l'irrecevabilité des preuves (L.403.6). Le point I vise en plus des « délits mineurs » qui n'existaient pas au Livret, avec des exemples classés autrement.\nÀ chaque vice de procédure, chaque camp invoque l'article qui l'arrange, et la discussion porte sur le texte au lieu des faits.\nLa correction pose une hiérarchie simple : deux cas précis entraînent la nullité ou l'irrecevabilité, tout le reste se négocie. Avec la nouvelle catégorie « Délit mineur », le point I devient enfin applicable. L'Article L.403.1 n'est pas modifié ici.",
+    "effets": {
+      "lspd": "Les agents savent exactement quelle erreur annule la procédure et laquelle se négocie.",
+      "doj": "Plus de débat sur l'article applicable à un vice de procédure."
+    },
+    "avant": "Droits Miranda \nI. Délits mineurs\nEn matière de délits mineurs (notamment conduite dangereuse, refus d’obtempérer), l’absence totale de lecture des droits constitue un vice de procédure substantiel, entraînant la nullité de la procédure et la remise en liberté du suspect.\nII. Délits majeurs et crimes\nPour les délits majeurs et les crimes, lorsque le délai entre l’arrestation et la lecture des droits excède 15 minutes, cela constitue une irrégularité procédurale.\nCette irrégularité n’entraîne pas automatiquement la libération du suspect, mais peut affecter la recevabilité des éléments recueillis avant la notification des droits.\n\nArticle L.403.6 :\nRecevabilité des preuves \nToute preuve obtenue sans respect des motifs d’arrestation, ou en violation du code pénal sera considérée comme non conforme et irrecevable devant une cour de justice.",
+    "apres": "Droits Miranda\nI. Infractions et délits mineurs\nPour les infractions de catégorie Infraction et Délit mineur, l’absence totale de lecture des droits constitue un vice de procédure substantiel, entraînant la nullité de la procédure et la remise en liberté du suspect.\nII. Délits majeurs et crimes\nPour les infractions de catégorie Délit majeur, Crime et Crime État, lorsque le délai entre l’arrestation et la lecture des droits excède 15 minutes, cela constitue une irrégularité procédurale. Elle n’entraîne pas la libération du suspect, mais les éléments recueillis avant la notification des droits sont irrecevables.\nIII. Articulation avec l'article L.403.1\nLes points I et II du présent article et l'article L.403.6 sont les seules exceptions à la règle de négociation de l'article L.403.1. Toute autre irrégularité se règle par la négociation entre le Bureau du Procureur et l'avocat de la défense.\n\nArticle L.403.6 :\nRecevabilité des preuves\nToute preuve obtenue sans respect des motifs d’arrestation, ou en violation du Livret des Peines ou du présent code, est irrecevable. Seule la preuve concernée est écartée : la procédure se poursuit sur les autres éléments."
+  },
+  {
+    "id": "reduction-amende-categories",
+    "titre": "Réduction d'amende : catégories exclues mises à jour",
+    "salve": 4,
+    "texte": "Code de police",
+    "article": "Article Préambule :",
+    "resume": "L'exclusion de la réduction d'amende vise désormais les catégories Crime et Crime État.",
+    "changements": [
+      "« crimes et crimes majeurs » devient « catégories Crime et Crime État ».",
+      "Le Crime État, oublié jusqu'ici, est exclu de la réduction."
+    ],
+    "pourquoi": "Le préambule du Code de police exclut de la réduction de 75 % les « crimes et crimes majeurs ». La catégorie Crime majeur disparaît (proposition sur les cinq catégories), et le Crime État n'était pas cité : un crime contre l'État pouvait donc, en théorie, bénéficier de la réduction alors qu'un crime ordinaire ne le pouvait pas.",
+    "effets": {
+      "lspd": "La réduction ne s'applique jamais aux deux catégories les plus graves.",
+      "doj": "Plus d'argument pour réduire l'amende d'un Crime État."
+    },
+    "avant": "Le montant des amendes affiché est le montant maximum. Le montant effectif facturé au citoyen peut être réduit jusqu'à 75%, ce qui fait un minimum d'amendes à 25% (non applicable aux crimes et aux crimes majeurs)",
+    "apres": "Le montant des amendes affiché est le montant maximum. Le montant effectif facturé au citoyen peut être réduit jusqu'à 75%, ce qui fait un minimum d'amendes à 25% (non applicable aux catégories Crime et Crime État)."
+  },
+  {
+    "id": "perquisition-standard-unique",
+    "titre": "Perquisition : un seul standard et un mandat écrit",
+    "salve": 4,
+    "texte": "Code de police",
+    "article": "Article L.405.1 :",
+    "resume": "La perquisition repose sur la cause probable exigée par la Constitution, avec un mandat écrit valable 48 heures ; l'entrée sans s'annoncer n'est possible qu'avec ce mandat.",
+    "changements": [
+      "Article L.405.1 : la « Cour suprême » et le « soupçon raisonnable » sont supprimés ; l'entrée sans s'annoncer exige un mandat.",
+      "Nouvel Article L.405.2 : le mandat est délivré sur cause probable, comme l'exige la Constitution.",
+      "Le mandat est écrit, signé, précise son objet et vaut 48 heures au maximum.",
+      "L'autorité qui signe reste celle de l'Article L.405 (proposition de la salve 2)."
+    ],
+    "pourquoi": "Trois standards différents coexistent : la « cause probable » de la Constitution (Article 1, Section 11), le mandat du juge et du procureur (Article L.405) et le « soupçon raisonnable » d'une « Cour suprême » qui n'existe pas (Article L.405.1). Aucun texte ne fixe non plus la forme ni la durée d'un mandat.\nChaque perquisition est donc contestable, et avec elle tout ce qu'elle a permis de saisir. Un mandat oral ou vieux de plusieurs jours peut être invoqué comme contesté.\nLa correction garde un seul standard, celui de la Constitution, et donne au mandat une forme et une durée vérifiables.",
+    "effets": {
+      "lspd": "Un mandat écrit de 48 heures, et une règle claire pour entrer sans s'annoncer.",
+      "doj": "Le parquet délivre les mandats sur des éléments précis."
+    },
+    "avant": "La Cour suprême autorise un agent des forces de l’ordre à pénétrer dans une maison sans frapper uniquement en cas de « soupçon raisonnable ». Cela signifie qu’il pense que quelque chose d’illégal est peut-être en train de se produire. Il pense également qu’indiquer sa présence peut s’avérer dangereux ou permettre au suspect de détruire tous les éléments de preuve.  .",
+    "apres": "Muni d'un mandat, un agent des forces de l'ordre peut pénétrer dans une habitation sans s'annoncer lorsque l'annonce de sa présence mettrait des vies en danger ou permettrait la destruction d'éléments de preuve.\n\nArticle L.405.2 :\nUn mandat de perquisition n'est délivré que sur des éléments précis rendant probable la présence de preuves ou de la personne recherchée. Il est écrit et signé par l'autorité prévue à l'article L.405. Il précise son objet, le lieu ou la personne visée, et sa durée de validité, qui ne peut excéder 48 heures."
+  },
+  {
+    "id": "publication-des-regles",
+    "titre": "Seuls les textes inscrits au corpus ont force de loi",
+    "salve": 4,
+    "texte": "Code civil",
+    "article": "Article 4-2 :",
+    "urgent": true,
+    "resume": "Une règle annoncée ailleurs, notamment sur Discord, ne s'applique qu'une fois inscrite au corpus juridique.",
+    "changements": [
+      "Nouvel article après l'Article 4-1.",
+      "Une annonce faite sur Discord ou ailleurs n'est opposable qu'après son inscription au corpus.",
+      "La date d'entrée en vigueur est indiquée lors de l'inscription."
+    ],
+    "pourquoi": "Des règles appliquées aux joueurs n'existent que dans des messages Discord : les plafonds salariaux, par exemple, n'apparaissent dans aucun texte, sans montant écrit, sans sanction et sans définition de qui est concerné. Le « décret sur le suivi comptable » auquel se réfèrent les entreprises n'est pas non plus dans le corpus.\nPersonne ne peut alors vérifier la règle exacte, ni savoir depuis quand elle s'applique : deux agents ou deux juges peuvent appliquer deux versions différentes, et un avocat peut contester toute sanction fondée sur un message.\nL'Article 4 du Code civil lie déjà l'entrée en vigueur d'un texte à sa publication. Cette proposition précise simplement que la publication, c'est l'inscription au corpus. Conséquence directe : les plafonds salariaux et toute autre règle annoncée sur Discord devront y être inscrits, avec leurs montants, pour s'appliquer.",
+    "effets": {
+      "entreprises": "Les règles qui s'imposent aux entreprises (plafonds, taxes) sont toutes consultables au même endroit.",
+      "doj": "Une sanction ne peut se fonder que sur un texte du corpus."
+    },
+    "apres": "Seuls les textes inscrits au corpus juridique officiel de l'État de San Andreas ont force de loi. Une règle annoncée sur un autre support, notamment Discord, n'est opposable qu'après son inscription au corpus, qui mentionne la date de son entrée en vigueur."
+  },
+  {
+    "id": "decret-impot-entreprises",
+    "titre": "Décret relatif à l'impôt sur les entreprises",
+    "salve": 4,
+    "texte": "Décret",
+    "urgent": true,
+    "resume": "L'impôt que les entreprises déclarent chaque semaine reçoit enfin une base légale : un pourcentage du chiffre d'affaires hebdomadaire, au taux fixé par arrêté.",
+    "changements": [
+      "Déclaration hebdomadaire du chiffre d'affaires, du lundi au dimanche.",
+      "Impôt égal à un pourcentage de ce chiffre d'affaires, au taux fixé par arrêté du Gouverneur inscrit au corpus.",
+      "Paiement sous 72 heures, conservation des comptes des quatre dernières semaines.",
+      "Majoration de 10 % en cas de retard et de 50 % en cas de déclaration minorée ; associations exonérées."
+    ],
+    "pourquoi": "Les entreprises déclarent et paient chaque semaine des « taxes » qu'aucune loi ne crée : ni taux, ni base de calcul, ni délai, ni sanction n'apparaissent dans le corpus. Le Code civil évoque même des « peines fiscales » (Article 6-2) sans qu'aucun impôt n'existe.\nUne taxe sans texte est contestable par principe, et chaque entreprise peut calculer son impôt à sa façon. Le « décret sur le suivi comptable » cité dans la pratique n'est pas non plus dans le corpus.\nLe décret fixe la règle déjà appliquée (un pourcentage du chiffre d'affaires de la semaine) et laisse le taux à un arrêté du Gouverneur, pour pouvoir l'ajuster sans réécrire le décret. Les subventions et prêts d'État sont exclus du chiffre d'affaires. À noter : un impôt sur le chiffre d'affaires est dû même une semaine où l'entreprise perd de l'argent.",
+    "effets": {
+      "entreprises": "Une déclaration et un paiement chaque semaine, selon une règle écrite.",
+      "doj": "Le défaut de déclaration et la sous-déclaration ont une sanction claire."
+    },
+    "apres": "Article 1 :\nToute entreprise déclare chaque semaine au Gouvernement de l'État de San Andreas son chiffre d'affaires de la semaine écoulée, du lundi au dimanche. Le chiffre d'affaires est le total des sommes encaissées au titre de l'activité de l'entreprise, hors subventions et prêts d'État.\n\nArticle 2 :\nL'entreprise est redevable d'un impôt égal à un pourcentage de ce chiffre d'affaires. Le taux est fixé par arrêté du Gouverneur, inscrit au corpus juridique ; un nouveau taux s'applique à partir de la semaine qui suit son inscription.\n\nArticle 3 :\nL'impôt est réglé dans les 72 heures suivant la fin de la semaine déclarée. À défaut, il est majoré de 10 %.\n\nArticle 4 :\nL'entreprise conserve le relevé de ses mouvements des quatre dernières semaines et le transmet au Gouvernement sur demande.\n\nArticle 5 :\nUne déclaration minorée entraîne le paiement de l'impôt dû, majoré de 50 %, sans préjudice des poursuites prévues au Livret des Peines.\n\nArticle 6 :\nLes associations déclarées sont exonérées de cet impôt (article 1-121.8 du Code civil).\n\nArticle 7 :\nLe présent décret entre en vigueur le jour de sa publication."
+  },
+  {
+    "id": "infractions-economiques",
+    "titre": "Nouvelles infractions : abus de biens sociaux et fausse facture",
+    "salve": 4,
+    "texte": "Code pénal",
+    "article": "Article Fraude, escroquerie et criminalité financière :",
+    "resume": "Utiliser l'argent d'une entreprise au profit d'un dirigeant et émettre une fausse facture deviennent punissables.",
+    "changements": [
+      "Nouvelle ligne « Abus de biens sociaux » : Délit majeur, de 1 000 $ à 4 000 $, remboursement à l'entreprise.",
+      "Nouvelle ligne « Fausse facture » : Délit majeur, de 750 $ à 3 000 $.",
+      "Deux nouvelles définitions au Lexique.",
+      "Les sommes issues de ces infractions entrent dans le champ du blanchiment, qui exige une origine illégale."
+    ],
+    "pourquoi": "Rien ne punit aujourd'hui une fausse facture, un avantage déguisé versé à un dirigeant ou une vente à perte de l'entreprise à son patron. Le blanchiment ne s'applique pas non plus, puisqu'il exige une origine illégale et que ces opérations ne sont illégales nulle part.\nCes montages permettent de contourner toute règle sur les salaires ou sur l'impôt sans aucun risque, et d'appauvrir une entreprise au détriment de ses associés et de ses salariés.\nLes deux lignes proposées comblent ce vide. Une fois ces opérations illégales, l'argent qui en provient devient aussi d'origine illégale : le blanchiment s'applique à ceux qui tentent de le dissimuler.",
+    "effets": {
+      "entreprises": "Les associés et salariés sont protégés contre le détournement des fonds de l'entreprise.",
+      "lspd": "Une base écrite pour enquêter sur les montages financiers."
+    },
+    "apres": "Abus de biens sociaux : Délit majeur, de 1 000 $ à 4 000 $, remboursement des sommes à l'entreprise\nLexique : Utiliser les biens, l'argent ou le crédit d'une entreprise contre son intérêt, au profit d'un dirigeant ou d'un proche (avantage non déclaré, vente à perte à un dirigeant, dépense personnelle payée par l'entreprise).\n\nFausse facture : Délit majeur, de 750 $ à 3 000 $\nLexique : Émettre ou utiliser une facture qui ne correspond à aucune prestation réelle, ou dont le montant ne correspond pas à la prestation."
+  },
+  {
+    "id": "decret-mcca",
+    "titre": "Décret relatif au Bureau du M.C.C.A.",
+    "salve": 4,
+    "texte": "Décret",
+    "resume": "Le Bureau du M.C.C.A. est défini, ses agents doivent être commissionnés par écrit, et une licence est accordée ou refusée sous 72 heures pour un motif écrit.",
+    "changements": [
+      "Le Bureau devient un département du Gouvernement, dirigé par un directeur nommé par le Gouverneur.",
+      "Seuls les agents commissionnés par écrit peuvent effectuer un contrôle.",
+      "Réponse à une demande de licence sous 72 heures ; sans réponse, la licence est accordée.",
+      "Refus motivé, pour quatre motifs seulement, avec recours devant le Juge sous 7 jours."
+    ],
+    "pourquoi": "Le Code du travail confie au Bureau du M.C.C.A. les déclarations de loteries et de jeux d'argent et les licences de compétition (Articles 434 et 435), sans jamais le définir : on ne sait ni à qui il rend compte, ni qui peut contrôler en son nom, ni dans quel délai une licence est accordée, ni pour quels motifs elle peut être refusée.\nN'importe qui peut donc se présenter comme agent du M.C.C.A., et une licence peut rester sans réponse ou être refusée sans raison, ce qui bloque une entreprise ou un événement sans aucun recours.\nLe décret donne au Bureau une existence légale, encadre ses agents et fixe une procédure de licence prévisible. La règle de l'accord tacite après 72 heures évite qu'un silence bloque un projet.",
+    "effets": {
+      "entreprises": "Une réponse garantie sous 72 heures, des motifs de refus connus à l'avance et un recours.",
+      "lspd": "Les agents du M.C.C.A. sont identifiables par leur commission."
+    },
+    "apres": "Article 1 :\nLe Bureau du M.C.C.A. est un département du Gouvernement de l'État de San Andreas, placé sous l'autorité du Gouverneur et dirigé par un directeur nommé par lui.\n\nArticle 2 :\nLe Bureau reçoit les déclarations de loteries et de jeux d'argent, délivre les licences de compétition (articles 434 et 435 du Code du Travail et des Entreprises) et contrôle leur respect.\n\nArticle 3 :\nSeuls les agents commissionnés par écrit par le directeur peuvent effectuer un contrôle au nom du Bureau. L'agent présente sa commission à toute personne contrôlée qui la demande. La liste des agents commissionnés est tenue à jour par le Bureau.\n\nArticle 4 :\nToute demande de licence est adressée par écrit au Bureau, qui y répond dans un délai de 72 heures. À défaut de réponse dans ce délai, la licence est réputée accordée.\n\nArticle 5 :\nLe refus de licence est écrit et motivé. Il ne peut être fondé que sur l'un des motifs suivants :\n- dossier incomplet ;\n- organisateur condamné pour un Crime dans les 30 derniers jours ;\n- activité contraire à la loi ;\n- risque pour la sécurité publique, notamment en période de DEFCON 3 ou supérieur.\n\nArticle 6 :\nLe refus de licence et toute sanction prononcée par le Bureau peuvent être contestés devant le Juge dans un délai de 7 jours.\n\nArticle 7 :\nLe présent décret entre en vigueur le jour de sa publication."
+  },
+  {
+    "id": "sanctions-entreprises",
+    "titre": "Qui sanctionne les entreprises",
+    "salve": 4,
+    "texte": "Code du travail",
+    "article": "Article 123 :",
+    "resume": "Les manquements administratifs des entreprises sont sanctionnés par le Gouvernement ou le Bureau du M.C.C.A., avec recours devant le Juge ; les infractions du Livret restent au LSPD, au parquet et au Juge.",
+    "changements": [
+      "Article 123 : partage écrit entre sanctions administratives (Gouvernement, M.C.C.A.) et sanctions pénales (LSPD, Procureur, Juge).",
+      "Toute amende administrative est contestable devant le Juge sous 7 jours.",
+      "Article 423 : le courrier d'amende pour abus publicitaire mentionne ce délai de contestation.",
+      "Fautes corrigées dans l'Article 423 (« sera envoyer », ponctuation)."
+    ],
+    "pourquoi": "Selon le texte qu'on lit, une entreprise est sanctionnée « devant les tribunaux » (Article 123), par un courrier d'amende dont on ignore l'auteur (Article 423), par la police (lignes du Livret comme l'employé non contractualisé ou le refus de transmission de comptabilité), par le Gouverneur (qui impose la gestion comptable, Article 45) ou par le M.C.C.A. (licences).\nUne entreprise ne sait donc ni qui peut la sanctionner, ni comment contester. Deux autorités peuvent aussi la sanctionner pour le même fait.\nLa correction répartit clairement les rôles, sans en créer de nouveaux : l'administratif au Gouvernement et au M.C.C.A., le pénal au circuit judiciaire, et un recours unique devant le Juge.",
+    "effets": {
+      "entreprises": "Une seule autorité par type de manquement, et un recours toujours possible.",
+      "doj": "Le Juge tranche les contestations d'amendes administratives.",
+      "lspd": "La police intervient seulement sur les infractions du Livret."
+    },
+    "avant": "Les acteurs institutionnels ou non-institutionnels sont contraints d’appliquer la loi en toute circonstance, sans quoi des sanctions seront prises à l’égard des faits reprochés et démontrés devant les tribunaux.\n\nArticle 423 :\nEn cas d’infraction un mail sera envoyer au PDG de la société incriminée comprenant :\n - Les annonces en cause;\n - Le montant de l'amende à payer;\n - Une date limite pour payer l’amende.",
+    "apres": "Les acteurs institutionnels ou non-institutionnels sont contraints d’appliquer la loi en toute circonstance.\nLes manquements administratifs d'une entreprise (déclarations, comptabilité, impôt, publicité, licences) sont constatés par le Gouvernement ou, dans son domaine, par le Bureau du M.C.C.A., qui prononcent l'amende prévue par le texte applicable.\nLes infractions du Livret des Peines commises par une entreprise ou ses dirigeants relèvent du LSPD, du Procureur et du Juge.\nToute amende administrative peut être contestée devant le Juge dans un délai de 7 jours à compter de sa notification.\n\nArticle 423 :\nEn cas d’infraction, un courrier est envoyé au PDG de la société incriminée, comprenant :\n - les annonces en cause ;\n - le montant de l'amende à payer ;\n - une date limite pour payer l’amende ;\n - le délai de 7 jours pour la contester devant le Juge."
+  },
+  {
+    "id": "statut-avocat",
+    "titre": "Décret relatif à la profession d'avocat",
+    "salve": 4,
+    "texte": "Décret",
+    "resume": "La profession d'avocat reçoit un cadre écrit : admission par examen et serment, tableau des avocats, secret professionnel, conflits d'intérêts et discipline par le Juge.",
+    "changements": [
+      "Admission par un examen organisé par le DOJ et un serment prêté devant le Juge.",
+      "Le DOJ tient le tableau des avocats inscrits.",
+      "Secret professionnel et interdiction de défendre deux parties opposées.",
+      "Discipline prononcée par le Juge : avertissement, suspension ou radiation."
+    ],
+    "pourquoi": "Le Code du travail parle d'un avocat « ayant obtenu son barreau à San Andreas » (Article 314) et l'avocat est obligatoire en cas d'arrestation, mais aucun texte ne dit comment on devient avocat, quels sont ses devoirs, ni comment il peut être sanctionné. Le secret professionnel n'existe nulle part.\nN'importe qui peut donc se dire avocat, et un avocat qui manque à ses devoirs ne risque rien. Inversement, ce qu'un client confie à son avocat peut être saisi et utilisé contre lui.\nLe décret pose un cadre simple. Par transparence : cette proposition est rédigée par un joueur avocat (Javier Mendosa) et le secret professionnel profite aux avocats. C'est pourquoi la discipline est confiée au Juge, et non aux avocats eux-mêmes, et le secret tombe si l'avocat participe à l'infraction.",
+    "effets": {
+      "doj": "Le DOJ organise l'examen et tient le tableau ; le Juge reçoit le serment et prononce la discipline.",
+      "entreprises": "Seul un avocat inscrit au tableau peut valider leurs contrats."
+    },
+    "apres": "Article 1 :\nL'accès à la profession d'avocat au Barreau de San Andreas est subordonné à la réussite d'un examen organisé par le DOJ et à une prestation de serment devant le Juge.\n\nArticle 2 :\nLe DOJ tient le tableau des avocats inscrits. Seul un avocat inscrit peut assister une personne arrêtée, représenter une partie en justice ou valider un contrat de travail.\n\nArticle 3 :\nLes échanges entre l'avocat et son client sont couverts par le secret professionnel. Ils ne peuvent être saisis ni utilisés comme preuve, sauf si l'avocat participe lui-même à l'infraction.\n\nArticle 4 :\nUn avocat ne peut défendre, dans une même affaire, deux parties aux intérêts opposés, ni plaider dans une affaire où il est témoin ou partie.\n\nArticle 5 :\nSaisi par le Procureur ou par un client, le Juge peut, après avoir entendu l'avocat, prononcer un avertissement, une suspension de 14 jours au plus ou une radiation du tableau.\n\nArticle 6 :\nLe présent décret entre en vigueur le jour de sa publication."
+  },
+  {
+    "id": "cpp-108-casier-judiciaire",
+    "titre": "C.P.P. : casier judiciaire",
+    "salve": 1,
+    "texte": "Code de procédure pénale",
+    "article": "Article 108 :",
+    "resume": "Le DOJ tient un casier pour chaque citoyen. Il ne s'efface plus automatiquement : l'effacement est accordé une seule fois, sur demande, après jugement.",
+    "changements": [
+      "Contenu : date, ligne du Livret, sanction ; consultable par le LSPD, le parquet, le Juge et l'avocat de l'intéressé.",
+      "L'effacement automatique après 30 jours est supprimé.",
+      "Effacement sur demande au Juge, une fois la peine exécutée, après étude du dossier et avis du Procureur, une seule fois par citoyen.",
+      "Une condamnation effacée ne compte plus pour la récidive."
+    ],
+    "pourquoi": "Aucun registre des condamnations n'existe. Sans lui, impossible de prouver une récidive, ni, à l'inverse, de montrer qu'un accusé a un casier vierge. Chaque agent et chaque juge se fie à sa mémoire.\nLa première version effaçait automatiquement les infractions légères après 30 jours. Suite à la remarque de la fondatrice, l'effacement devient exceptionnel : il faut le demander, le Juge étudie le dossier et statue, et un citoyen ne peut en bénéficier qu'une seule fois.\nUn casier qui s'efface tout seul vide la récidive de son sens ; un effacement unique et jugé récompense un personnage qui a réellement changé, sans permettre de repartir de zéro à chaque fois.",
+    "effets": {
+      "lspd": "Consultation du casier lors des interpellations.",
+      "doj": "Le DOJ tient le casier ; le Juge statue sur les demandes d'effacement, après avis du Procureur."
+    },
+    "apres": "Casier judiciaire\nLe DOJ tient un casier pour chaque citoyen, mentionnant la date, la ligne du Livret des Peines et la sanction prononcée. Il est consultable par le LSPD, le parquet, le Juge et l'avocat de l'intéressé.\nUne fois sa peine exécutée, le citoyen peut demander au Juge l'effacement de son casier. Le Juge étudie le dossier, entend le Procureur et statue par jugement. L'effacement ne peut être accordé qu'une seule fois par citoyen.\nUne condamnation effacée n'est plus prise en compte pour la récidive."
   }
 ]
