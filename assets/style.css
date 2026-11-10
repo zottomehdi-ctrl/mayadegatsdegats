@@ -1813,6 +1813,147 @@ kbd {
   color: var(--on-validee);
 }
 
+/* Ajouter une proposition à la main */
+
+.btn--ajouter .icone,
+.btn--petit .icone { width: 15px; height: 15px; }
+.btn--petit { padding: 6px 12px; font-size: 13.5px; }
+.btn--icone { padding: 6px; }
+.btn--danger { color: var(--st-refusee-texte); }
+.btn--danger:hover:not(:disabled) { border-color: var(--st-refusee); background: var(--st-refusee-fond); }
+
+.badge--manuelle {
+  border: 1px solid var(--border-strong);
+  color: var(--muted);
+}
+
+.gestion {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.gestion--figee { color: var(--muted); font-size: 14px; }
+.histo-manuel { --st: var(--muted); }
+.histo-libelle { color: var(--muted); font-size: 14px; }
+.histo-libelle time { font: inherit; }
+
+.bandeau--info {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+}
+
+.formulaire {
+  display: grid;
+  gap: 28px;
+  max-width: 820px;
+}
+
+.formulaire-note { color: var(--muted); font-size: 14px; }
+.requis { color: var(--st-refusee-texte); }
+
+.formulaire-groupe {
+  display: grid;
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.formulaire-groupe legend {
+  margin-bottom: 14px;
+  padding: 0;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.legende-note { color: var(--muted); font-size: 14px; font-weight: 400; }
+.champ-groupe { display: grid; gap: 6px; min-width: 0; }
+.champ-groupe .champ-label { margin-bottom: 0; }
+.champ-aide { color: var(--muted); font-size: 13.5px; }
+
+.champ-ligne {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.champ-ligne--etroite { grid-template-columns: minmax(0, 12rem) minmax(0, 1fr); align-items: end; }
+select.champ { appearance: auto; }
+.champ--texte { font: 400 15px/1.6 var(--mono); }
+.champ[aria-invalid="true"] { border-color: var(--st-refusee); }
+
+.champ-message { font-size: 13.5px; color: var(--muted); }
+.champ-message:empty { display: none; }
+.champ-message--erreur { color: var(--st-refusee-texte); font-weight: 500; }
+
+.case {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.case input { width: 18px; height: 18px; accent-color: var(--accent); }
+.points-saisie { display: grid; gap: 8px; }
+
+.point-saisie {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.point-saisie-num { color: var(--muted); font: 500 13px var(--mono); }
+.formulaire-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.apercu { margin-top: 48px; }
+
+.apercu-contenu {
+  padding: 24px 28px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-grand);
+}
+
+.a-remplir { color: var(--muted); }
+
+.manuelles { margin-top: 56px; }
+
+.manuelles-export {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+  margin-bottom: 16px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.manuelles-export p { max-width: 62ch; }
+
+.manuelle {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 12px 20px;
+}
+
+.manuelle-id { color: var(--muted); font: 500 13px var(--mono); }
+.manuelle-titre { font-weight: 500; }
+.manuelle-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.note { color: var(--muted); font-size: 13.5px; }
+
+@media (max-width: 760px) {
+  .champ-ligne,
+  .champ-ligne--etroite { grid-template-columns: minmax(0, 1fr); }
+  .manuelle { grid-template-columns: auto minmax(0, 1fr); }
+  .apercu-contenu { padding: 18px 16px; }
+}
+
 /* Panneau des palettes */
 
 .panneau {

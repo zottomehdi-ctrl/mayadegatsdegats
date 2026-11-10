@@ -1,5 +1,7 @@
 import { diffTextes } from './diff.js';
-import { analyserRegistre, sansAccents } from './registre.js';
+import {
+  CHANGEMENTS_MAX, EFFETS, TEXTES, analyserRegistre, formeCanonique, sansAccents, validerProposition,
+} from './registre.js';
 
 const STATUTS = {
   attente: { libelle: 'En attente', compteur: 'En attente' },
@@ -63,6 +65,7 @@ const CLES = {
   mode: 'liaison-maya:mode-rediscuter',
   vues: 'liaison-maya:vues',
   accueil: 'liaison-maya:accueil-ferme',
+  brouillon: 'liaison-maya:brouillon-ajout',
 };
 
 const TITRES = {
@@ -70,6 +73,7 @@ const TITRES = {
   rediscuter: 'À rediscuter',
   valides: 'Textes validés',
   archives: 'Archives',
+  ajouter: 'Ajouter',
 };
 
 const DELAI_ANNULATION = 5000;
@@ -87,6 +91,8 @@ const ICONES = {
   fermer: svg('<path d="M4.5 4.5l7 7M11.5 4.5l-7 7"/>'),
   alerte: svg('<circle cx="8" cy="8" r="5.75"/><path d="M8 5v3.4M8 10.8v.1"/>'),
   coche: svg('<path d="M3.4 8.4l3.1 3 6.1-6.6"/>'),
+  plus: svg('<path d="M8 3.2v9.6M3.2 8h9.6"/>'),
+  plume: svg('<path d="M11.2 2.8l2 2-7.4 7.4-2.8.8.8-2.8z"/><path d="M9.8 4.2l2 2"/>'),
 };
 
 const FMT_DATE_HEURE = new Intl.DateTimeFormat('fr-FR', {
@@ -98,6 +104,10 @@ const schemaSombre = window.matchMedia ? window.matchMedia('(prefers-color-schem
 
 const etat = {
   propositions: [],
+  fichier: [],
+  manuelles: new Map(),
+  erreurManuelles: null,
+  ajout: null,
   decisions: {},
   erreurs: [],
   remarques: [],
@@ -127,6 +137,8 @@ async function demarrer() {
   window.addEventListener('hashchange', () => rendre());
   document.addEventListener('click', surClic);
   document.addEventListener('input', surSaisie);
+  document.addEventListener('change', surSaisie);
+  document.addEventListener('submit', surEnvoi);
   document.addEventListener('keydown', surTouche);
   initialiserPalettes();
   rendre();
@@ -135,17 +147,15 @@ async function demarrer() {
 }
 
 async function charger() {
-  const [contenu, decisions] = await Promise.allSettled([
+  const [contenu, decisions, manuelles] = await Promise.allSettled([
     chargerTexte('contenu/propositions.json'),
     chargerJson('/api/decisions'),
+    chargerJson('/api/propositions'),
   ]);
 
   if (contenu.status === 'fulfilled') {
     const resultat = analyserRegistre(contenu.value);
-    etat.propositions = resultat.propositions.map((p) => ({
-      ...p,
-      recherche: sansAccents(`${p.titre} ${p.article} ${p.texte} ${p.groupe}`),
-    }));
+    etat.fichier = resultat.propositions.map(avecRecherche);
     etat.erreurs = resultat.erreurs;
     etat.remarques = resultat.remarques;
     etat.fatal = resultat.fatal;
@@ -160,8 +170,53 @@ async function charger() {
     etat.erreurDecisions = "Les décisions n'ont pas pu être chargées et ne peuvent pas être enregistrées. Le site doit être servi par Netlify, ou par « netlify dev » en local.";
   }
 
+  if (manuelles.status === 'fulfilled' && Array.isArray(manuelles.value?.propositions)) {
+    etat.manuelles = new Map(manuelles.value.propositions.map((entree) => [entree.proposition.id, entree]));
+  } else {
+    etat.erreurManuelles = "Les propositions ajoutées à la main n'ont pas pu être chargées : l'ajout et la modification sont indisponibles.";
+  }
+
+  assembler();
   etat.chargement = false;
 }
+
+async function rechargerManuelles() {
+  try {
+    const { propositions } = await chargerJson('/api/propositions');
+    etat.manuelles = new Map(propositions.map((entree) => [entree.proposition.id, entree]));
+    etat.erreurManuelles = null;
+    assembler();
+  } catch {
+    /* les données affichées restent celles du dernier chargement */
+  }
+}
+
+function avecRecherche(p) {
+  return { ...p, recherche: sansAccents(`${p.titre} ${p.article} ${p.texte} ${p.groupe}`) };
+}
+
+// Le registre : les propositions du fichier, puis celles ajoutées à la main (dans l'ordre de leur numéro).
+// Une proposition ajoutée à la main puis intégrée au fichier (même id) n'apparaît qu'une fois, celle du fichier.
+function assembler() {
+  const idsFichier = new Set(etat.fichier.map((p) => p.id));
+  const manuelles = [];
+  for (const entree of etat.manuelles.values()) {
+    if (idsFichier.has(entree.proposition.id)) continue;
+    const { proposition } = validerProposition(entree.proposition, { numero: etat.fichier.length + manuelles.length + 1, manuelle: true });
+    if (!proposition) continue;
+    manuelles.push(avecRecherche({
+      ...proposition,
+      manuelle: true,
+      ajouteeLe: entree.ajouteeLe,
+      modifieeLe: entree.modifieeLe ?? null,
+      version: entree.modifieeLe ?? entree.ajouteeLe,
+    }));
+  }
+  etat.propositions = [...etat.fichier, ...manuelles];
+}
+
+const estIntegree = (id) => etat.fichier.some((p) => p.id === id);
+const estModifiable = (p) => Boolean(p?.manuelle && !decisionDe(p.id) && !etat.erreurManuelles);
 
 async function chargerTexte(url) {
   const reponse = await fetch(url, { cache: 'no-store' });
@@ -247,11 +302,8 @@ function lireRoute() {
   if (morceaux[0] === 'rediscuter') return { vue: 'rediscuter' };
   if (morceaux[0] === 'valides') return { vue: 'valides' };
   if (morceaux[0] === 'archives') return { vue: 'archives' };
-  if (morceaux[0] === 'proposition' && morceaux[1]) {
-    let id = morceaux[1];
-    try { id = decodeURIComponent(id); } catch { /* id laissé tel quel */ }
-    return { vue: 'detail', id };
-  }
+  if (morceaux[0] === 'ajouter') return { vue: 'ajouter', id: morceaux[1] ? decoder(morceaux[1]) : null };
+  if (morceaux[0] === 'proposition' && morceaux[1]) return { vue: 'detail', id: decoder(morceaux[1]) };
   return { vue: 'recap' };
 }
 
@@ -262,7 +314,7 @@ function rendre({ garderPosition = false } = {}) {
 
   const cle = `${route.vue}:${route.id ?? ''}`;
   const nouvelleVue = cle !== etat.derniereVue;
-  if (route.vue !== 'detail') etat.derniereListe = location.hash || '#/';
+  if (route.vue !== 'detail' && !(route.vue === 'ajouter' && route.id)) etat.derniereListe = location.hash || '#/';
 
   let contenu;
   let titre = TITRES[route.vue];
@@ -272,6 +324,9 @@ function rendre({ garderPosition = false } = {}) {
     contenu = vueValides();
   } else if (route.vue === 'archives') {
     contenu = vueArchives();
+  } else if (route.vue === 'ajouter') {
+    titre = route.id ? 'Modifier une proposition' : 'Ajouter une proposition';
+    contenu = vueAjouter(route.id);
   } else if (route.vue === 'detail') {
     const p = trouver(route.id);
     titre = p ? p.titre : 'Proposition introuvable';
@@ -298,6 +353,7 @@ function rendre({ garderPosition = false } = {}) {
     etat.derniereVue = cle;
     if (!garderPosition) window.scrollTo(0, 0);
   }
+  if (route.vue === 'ajouter') majFormulaire();
 }
 
 function majNav(vue) {
@@ -404,9 +460,12 @@ function vueRecap() {
   };
 
   return `
-    <header class="page-tete">
-      <h1>Récapitulatif</h1>
-      <p class="chapo"><strong>Salve ${salveCourante()} en cours.</strong> Les propositions en attente, validées ou à rediscuter, groupées par texte. Les traitées et les refusées sont rangées dans les Archives.</p>
+    <header class="page-tete page-tete--scinde">
+      <div>
+        <h1>Récapitulatif</h1>
+        <p class="chapo"><strong>Salve ${salveCourante()} en cours.</strong> Les propositions en attente, validées ou à rediscuter, groupées par texte. Les traitées et les refusées sont rangées dans les Archives.</p>
+      </div>
+      <a class="btn btn--plein btn--ajouter" href="#/ajouter">${ICONES.plus}<span>Ajouter une proposition</span></a>
     </header>
     <section class="priorite" aria-labelledby="titre-priorite">
       <div class="section-tete">
@@ -476,7 +535,7 @@ function ligne(p, avecTexte) {
   const sous = [avecTexte ? esc(p.texte) : '', p.article ? `<span class="mono">${esc(p.article)}</span>` : '']
     .filter(Boolean)
     .join('<span class="sep" aria-hidden="true">·</span>');
-  const marques = `${estNouvelle(p.id) ? badgeNouveau() : ''}${p.urgent ? badgeUrgent() : ''}`;
+  const marques = `${estNouvelle(p.id) ? badgeNouveau() : ''}${p.urgent ? badgeUrgent() : ''}${p.manuelle ? badgeManuelle() : ''}`;
   return `
     <a class="ligne ligne--${statutDe(p.id)}" href="${lienFiche(p.id)}">
       <span class="ligne-corps">
@@ -503,9 +562,11 @@ function vueDetail(id) {
         <div class="meta">
           ${metaTexte(p)}
           ${p.urgent ? badgeUrgent() : ''}
+          ${p.manuelle ? badgeManuelle() : ''}
           ${pastille(statutDe(p.id))}
         </div>
         <h1 class="fiche-titre">${esc(p.titre)}</h1>
+        ${gestionManuelle(p)}
       </header>
       ${blocsProposition(p, 2)}
       ${blocDecision(p)}
@@ -513,8 +574,23 @@ function vueDetail(id) {
     </article>`;
 }
 
+// Proposition ajoutée à la main : modifiable et supprimable tant qu'aucune décision n'a été prise.
+function gestionManuelle(p) {
+  if (!p.manuelle) return '';
+  if (decisionDe(p.id)) {
+    return '<p class="gestion gestion--figee">Une décision a été prise : le texte de cette proposition ne peut plus être modifié.</p>';
+  }
+  if (etat.erreurManuelles) return '';
+  const bloque = Boolean(etat.enCours);
+  return `
+    <div class="gestion">
+      <a class="btn btn--petit" href="#/ajouter/${encodeURIComponent(p.id)}">${ICONES.plume}<span>Modifier</span></a>
+      <button type="button" class="btn btn--petit btn--danger" data-action="supprimer-manuelle" data-id="${esc(p.id)}"${bloque ? ' disabled' : ''}>${ICONES.refusee}<span>Supprimer</span></button>
+    </div>`;
+}
+
 function lienRetour() {
-  const libelles = { '#/rediscuter': 'À rediscuter', '#/valides': 'Textes validés', '#/archives': 'Archives' };
+  const libelles = { '#/rediscuter': 'À rediscuter', '#/valides': 'Textes validés', '#/archives': 'Archives', '#/ajouter': 'Ajouter' };
   const libelle = libelles[etat.derniereListe] ?? 'Récapitulatif';
   return `<a class="retour" href="${esc(etat.derniereListe)}"><span aria-hidden="true">←</span> ${libelle}</a>`;
 }
@@ -524,6 +600,7 @@ function metaTexte(p) {
 }
 
 // Ordre fixe : En une phrase, Ce qui change, Pourquoi, Effet en jeu, Avant / Après.
+// Dans l'aperçu du formulaire, un champ encore vide est remplacé par une indication grisée.
 function blocsProposition(p, niveau) {
   const h = `h${niveau}`;
   const bloc = (titre, contenu) => `
@@ -536,9 +613,11 @@ function blocsProposition(p, niveau) {
     : '';
   return `
     <div class="blocs">
-      ${bloc('En une phrase', `<p class="resume">${esc(p.resume)}</p>`)}
-      ${bloc('Ce qui change', `<ul class="changements">${p.changements.map((c) => `<li>${esc(c)}</li>`).join('')}</ul>`)}
-      ${bloc('Pourquoi', `<p class="prose">${esc(p.pourquoi)}</p>`)}
+      ${bloc('En une phrase', `<p class="resume">${p.resume ? esc(p.resume) : aRemplir('Le changement, en une phrase.')}</p>`)}
+      ${bloc('Ce qui change', p.changements.length
+        ? `<ul class="changements">${p.changements.map((c) => `<li>${esc(c)}</li>`).join('')}</ul>`
+        : `<p>${aRemplir('Les points concrets qui changent.')}</p>`)}
+      ${bloc('Pourquoi', `<p class="prose">${p.pourquoi ? esc(p.pourquoi) : aRemplir('La justification, en quelques lignes.')}</p>`)}
       ${effets}
       ${blocAvantApres(p, niveau)}
     </div>`;
@@ -565,7 +644,8 @@ function blocAvantApres(p, niveau) {
     corps = `<div class="comparaison">${colonne('avant', 'Texte actuel', `<div class="corps">${avant}</div>`)}${colonne('apres', 'Texte proposé', `<p class="abroge">${abroge}</p>`)}</div>`;
   } else {
     legende = '';
-    corps = `<div class="comparaison comparaison--seule">${colonne('apres', 'Texte ajouté (aucun texte actuel)', `<div class="corps">${corpsHtml(p.apres)}</div>`)}</div>`;
+    const texte = p.apres ? corpsHtml(p.apres) : aRemplir('Le texte proposé s\'affichera ici.');
+    corps = `<div class="comparaison comparaison--seule">${colonne('apres', 'Texte ajouté (aucun texte actuel)', `<div class="corps">${texte}</div>`)}</div>`;
   }
 
   return `
@@ -624,18 +704,34 @@ function boutonDecision(id, statut, actif) {
     </span>`;
 }
 
+// Historique dans l'ordre chronologique : la première ligne est l'événement le plus ancien.
 function blocHistorique(p) {
-  const historique = decisionDe(p.id)?.historique ?? [];
-  if (!historique.length) return '';
-  const entrees = [...historique].reverse().map((entree) => {
-    const statut = STATUTS[entree.statut] ? entree.statut : 'attente';
+  const evenements = [];
+  if (p.manuelle) {
+    evenements.push({ type: 'ajout', date: p.ajouteeLe });
+    if (p.modifieeLe) evenements.push({ type: 'modification', date: p.modifieeLe });
+  }
+  for (const entree of decisionDe(p.id)?.historique ?? []) evenements.push({ type: 'decision', ...entree });
+  if (!evenements.length) return '';
+  evenements.sort((a, b) => horodatage(a.date) - horodatage(b.date));
+
+  const entrees = evenements.map((evenement) => {
+    const temps = `<time datetime="${esc(evenement.date)}">${dateHeure(evenement.date)}</time>`;
+    if (evenement.type !== 'decision') {
+      const libelle = evenement.type === 'ajout' ? 'Ajoutée à la main' : 'Modifiée';
+      return `
+        <li class="histo-manuel">
+          <div class="histo-ligne"><span class="histo-libelle">${libelle} le ${temps}</span></div>
+        </li>`;
+    }
+    const statut = STATUTS[evenement.statut] ? evenement.statut : 'attente';
     return `
       <li class="st-${statut}">
         <div class="histo-ligne">
-          <time datetime="${esc(entree.date)}">${dateHeure(entree.date)}</time>
+          ${temps}
           ${pastille(statut)}
         </div>
-        ${entree.commentaire ? `<p class="histo-commentaire">${esc(entree.commentaire)}</p>` : ''}
+        ${evenement.commentaire ? `<p class="histo-commentaire">${esc(evenement.commentaire)}</p>` : ''}
       </li>`;
   }).join('');
   return `
@@ -731,6 +827,7 @@ function cartePoint(p, index) {
             ${metaTexte(p)}
             ${nouvelle ? badgeNouveau() : ''}
             ${p.urgent ? badgeUrgent() : ''}
+            ${p.manuelle ? badgeManuelle() : ''}
           </div>
           <h2 class="point-titre" id="point-${p.id}"><a href="${lienFiche(p.id)}">${esc(p.titre)}</a></h2>
           <p class="point-date">Renvoyée le ${dateHeure(decision.renvoyeLe ?? decision.date)}</p>
@@ -798,6 +895,7 @@ function carteValide(p) {
           <div class="meta">
             ${metaTexte(p)}
             ${pastille('validee')}
+            ${p.manuelle ? badgeManuelle() : ''}
             <span>Validée le ${dateLongue(decision.date)}</span>
           </div>
           <h4 class="valide-titre"><a href="${lienFiche(p.id)}" class="lien-discret">${esc(p.titre)}</a></h4>
@@ -874,6 +972,7 @@ function carteArchive(p) {
       <div class="meta">
         ${pastille(statut)}
         ${metaTexte(p)}
+        ${p.manuelle ? badgeManuelle() : ''}
         <span>${STATUTS[statut].libelle} le ${dateLongue(decision.date)}</span>
       </div>
       <h3 class="archive-titre"><a href="${lienFiche(p.id)}" class="lien-discret">${esc(p.titre)}</a></h3>
@@ -887,7 +986,7 @@ function carteArchive(p) {
 function texteDiscord(p) {
   const decision = decisionDe(p.id);
   const lignes = [`**${echapperDiscord(p.titre)}**`, p.texte, ''];
-  if (p.article) lignes.push(`**${p.article}**`);
+  if (p.article) lignes.push(`**${echapperDiscord(p.article)}**`);
   lignes.push(p.apres
     ? formaterDiscord(p.apres)
     : (p.article ? "L'article est abrogé." : 'Le texte est abrogé.'));
@@ -916,14 +1015,10 @@ function formaterDiscord(texte) {
     .join('\n');
 }
 
-async function copier(id, bouton) {
-  const p = trouver(id);
-  if (!p) return;
-  const texte = texteDiscord(p);
-  let reussi = false;
+async function copierTexte(texte) {
   try {
     await navigator.clipboard.writeText(texte);
-    reussi = true;
+    return true;
   } catch {
     const zone = document.createElement('textarea');
     zone.value = texte;
@@ -932,9 +1027,17 @@ async function copier(id, bouton) {
     zone.style.opacity = '0';
     document.body.appendChild(zone);
     zone.select();
+    let reussi = false;
     try { reussi = document.execCommand('copy'); } catch { reussi = false; }
     zone.remove();
+    return reussi;
   }
+}
+
+async function copier(id, bouton) {
+  const p = trouver(id);
+  if (!p) return;
+  const reussi = await copierTexte(texteDiscord(p));
   if (!reussi) {
     afficherToast('La copie a échoué. Sélectionnez le texte et copiez-le manuellement.', { erreur: true });
     return;
@@ -943,6 +1046,529 @@ async function copier(id, bouton) {
   clearTimeout(bouton.minuteur);
   bouton.minuteur = setTimeout(() => { bouton.textContent = 'Copier le texte'; }, 2000);
   afficherToast('Texte copié, prêt à coller sur Discord.');
+}
+
+/* Ajouter une proposition à la main */
+
+const minuteurs = { brouillon: null, formulaire: null };
+
+function champsVides() {
+  return {
+    titre: '', texte: '', article: '', salve: '', urgent: false, resume: '', changements: [''],
+    pourquoi: '', effets: Object.fromEntries(EFFETS.map(([cle]) => [cle, ''])), avant: '', apres: '',
+  };
+}
+
+function champsNeufs() {
+  const champs = champsVides();
+  champs.salve = String(salveCourante());
+  return champs;
+}
+
+// Champs du formulaire d'après une proposition enregistrée (forme du fichier).
+function champsDepuis(proposition) {
+  const champs = champsVides();
+  for (const cle of ['titre', 'texte', 'article', 'resume', 'pourquoi', 'avant', 'apres']) champs[cle] = proposition[cle] ?? '';
+  champs.salve = proposition.salve ? String(proposition.salve) : '';
+  champs.urgent = proposition.urgent === true;
+  if (Array.isArray(proposition.changements) && proposition.changements.length) champs.changements = [...proposition.changements];
+  for (const [cle] of EFFETS) champs.effets[cle] = proposition.effets?.[cle] ?? '';
+  return champs;
+}
+
+// Brouillon relu depuis le navigateur : seules les valeurs du bon type sont reprises.
+function nettoyerChamps(brut) {
+  const champs = champsVides();
+  if (!brut || typeof brut !== 'object') return champs;
+  for (const cle of ['titre', 'texte', 'article', 'salve', 'resume', 'pourquoi', 'avant', 'apres']) {
+    if (typeof brut[cle] === 'string') champs[cle] = brut[cle];
+  }
+  champs.urgent = brut.urgent === true;
+  if (Array.isArray(brut.changements)) {
+    const points = brut.changements.filter((point) => typeof point === 'string').slice(0, CHANGEMENTS_MAX);
+    if (points.length) champs.changements = points;
+  }
+  for (const [cle] of EFFETS) if (typeof brut.effets?.[cle] === 'string') champs.effets[cle] = brut.effets[cle];
+  return champs;
+}
+
+const estRempli = (valeur) => typeof valeur === 'string' && valeur.trim() !== '';
+
+function estVide(champs) {
+  return !champs.urgent
+    && !['titre', 'texte', 'article', 'resume', 'pourquoi', 'avant', 'apres'].some((cle) => estRempli(champs[cle]))
+    && !champs.changements.some(estRempli)
+    && !EFFETS.some(([cle]) => estRempli(champs.effets[cle]));
+}
+
+// Ce que le formulaire envoie : la proposition au format du fichier, champs vides omis.
+// Les textes actuel et proposé partent tels quels (espaces et alinéas compris).
+function versProposition(champs) {
+  const brut = {};
+  if (estRempli(champs.titre)) brut.titre = champs.titre;
+  const salve = champs.salve.trim();
+  brut.salve = !salve ? salveCourante() : (/^\d+$/.test(salve) ? Number(salve) : salve);
+  if (estRempli(champs.texte)) brut.texte = champs.texte;
+  if (estRempli(champs.article)) brut.article = champs.article;
+  if (champs.urgent) brut.urgent = true;
+  if (estRempli(champs.resume)) brut.resume = champs.resume;
+  const points = champs.changements.filter(estRempli);
+  if (points.length) brut.changements = points;
+  if (estRempli(champs.pourquoi)) brut.pourquoi = champs.pourquoi;
+  const effets = Object.fromEntries(EFFETS.map(([cle]) => [cle, champs.effets[cle]]).filter(([, valeur]) => estRempli(valeur)));
+  if (Object.keys(effets).length) brut.effets = effets;
+  if (estRempli(champs.avant)) brut.avant = champs.avant;
+  if (estRempli(champs.apres)) brut.apres = champs.apres;
+  return brut;
+}
+
+// Brouillon gardé dans le navigateur (une clé pour l'ajout, une par proposition modifiée).
+const cleBrouillon = (cible) => `${CLES.brouillon}:${cible}`;
+
+function lireBrouillon(cible) {
+  try {
+    const valeur = JSON.parse(localStorage.getItem(cleBrouillon(cible)) ?? 'null');
+    if (!valeur || typeof valeur !== 'object') return null;
+    return { version: typeof valeur.version === 'string' ? valeur.version : null, champs: nettoyerChamps(valeur.champs) };
+  } catch {
+    return null;
+  }
+}
+
+function sauverBrouillon() {
+  clearTimeout(minuteurs.brouillon);
+  const ajout = etat.ajout;
+  if (!ajout) return;
+  minuteurs.brouillon = setTimeout(() => {
+    if (ajout.cible === 'nouveau' && estVide(ajout.champs)) effacerBrouillon(ajout.cible);
+    else ecrire(cleBrouillon(ajout.cible), JSON.stringify({ version: ajout.version, champs: ajout.champs }));
+  }, 250);
+}
+
+function effacerBrouillon(cible) {
+  clearTimeout(minuteurs.brouillon);
+  try {
+    localStorage.removeItem(cleBrouillon(cible));
+  } catch {
+    /* stockage indisponible : rien à effacer */
+  }
+}
+
+function preparerFormulaire(id) {
+  const cible = id ?? 'nouveau';
+  if (etat.ajout?.cible === cible) return etat.ajout;
+  const entree = id ? etat.manuelles.get(id) : null;
+  const version = entree ? (entree.modifieeLe ?? entree.ajouteeLe) : null;
+  const brouillon = lireBrouillon(cible);
+  const reprise = id ? brouillon?.version === version : brouillon && !estVide(brouillon.champs);
+  let champs;
+  if (reprise) champs = brouillon.champs;
+  else champs = id ? champsDepuis(entree?.proposition ?? {}) : champsNeufs();
+  etat.ajout = { cible, version, champs, soumis: false, erreursServeur: [], envoi: false, repris: Boolean(reprise) };
+  return etat.ajout;
+}
+
+function vueAjouter(id) {
+  const modification = Boolean(id);
+  const p = modification ? trouver(id) : null;
+  const tete = `
+    <header class="page-tete">
+      <h1>${modification ? 'Modifier la proposition' : 'Ajouter une proposition'}</h1>
+      <p class="chapo">${modification
+        ? "Le texte reste modifiable tant qu'aucune décision n'a été prise."
+        : "La proposition rejoint le registre comme les autres : récapitulatif, décisions, textes validés et archives. Elle reste modifiable tant qu'aucune décision n'a été prise."}</p>
+    </header>`;
+
+  if (etat.erreurManuelles) {
+    return `${tete}<p class="bandeau bandeau--erreur" role="alert"><span class="bandeau-titre">${ICONES.alerte}${esc(etat.erreurManuelles)}</span></p>${listeManuelles()}`;
+  }
+  if (modification && (!p || !p.manuelle)) {
+    return tete + vide('Cette proposition ne peut pas être modifiée ici.', 'Seules les propositions ajoutées à la main se modifient depuis le site.', '<a class="btn" href="#/ajouter">Revenir à l\'onglet Ajouter</a>');
+  }
+  if (modification && decisionDe(id)) {
+    return tete + vide('Une décision a été prise sur cette proposition.', 'Son texte ne peut plus être modifié.', `<a class="btn" href="${lienFiche(id)}">Voir la proposition</a>`);
+  }
+
+  const ajout = preparerFormulaire(id);
+  return `${tete}
+    ${ajout.repris ? '<p class="bandeau bandeau--info" role="status">Brouillon retrouvé : la saisie reprend où elle s\'était arrêtée.</p>' : ''}
+    ${formulaireAjout(ajout)}
+    <section class="apercu" aria-labelledby="titre-apercu">
+      <div class="section-tete">
+        <h2 id="titre-apercu">Aperçu</h2>
+        <span class="compte">tel que la fiche s'affichera</span>
+      </div>
+      <div id="apercu-contenu" class="apercu-contenu"></div>
+    </section>
+    ${modification ? '' : listeManuelles()}`;
+}
+
+function formulaireAjout(ajout) {
+  const c = ajout.champs;
+  const modification = ajout.cible !== 'nouveau';
+  const message = (cle) => `<p class="champ-message" id="message-${slugChamp(cle)}" data-message="${cle}"></p>`;
+  const decrit = (cle, aide) => `aria-describedby="${aide ? `aide-${slugChamp(cle)} ` : ''}message-${slugChamp(cle)}"`;
+  const etiquette = (cle, libelle, requis) => `<label class="champ-label" for="ajout-${slugChamp(cle)}">${libelle}${requis ? ' <span class="requis" aria-hidden="true">*</span>' : ''}</label>`;
+  const aide = (cle, texte) => (texte ? `<p class="champ-aide" id="aide-${slugChamp(cle)}">${texte}</p>` : '');
+
+  const ligne = (cle, libelle, { requis = false, texteAide = '', type = 'text', attributs = '' } = {}) => `
+    <div class="champ-groupe">
+      ${etiquette(cle, libelle, requis)}
+      ${aide(cle, texteAide)}
+      <input class="champ" type="${type}" id="ajout-${slugChamp(cle)}" data-champ="${cle}" value="${esc(valeurChamp(c, cle))}" ${decrit(cle, texteAide)}${requis ? ' aria-required="true"' : ''} ${attributs}>
+      ${message(cle)}
+    </div>`;
+
+  const zone = (cle, libelle, { requis = false, texteAide = '', lignes = 4, mono = false } = {}) => `
+    <div class="champ-groupe">
+      ${etiquette(cle, libelle, requis)}
+      ${aide(cle, texteAide)}
+      <textarea class="champ${mono ? ' champ--texte' : ''}" id="ajout-${slugChamp(cle)}" data-champ="${cle}" rows="${lignes}" ${decrit(cle, texteAide)}${requis ? ' aria-required="true"' : ''}${mono ? ' spellcheck="false"' : ''}>${esc(valeurChamp(c, cle))}</textarea>
+      ${message(cle)}
+    </div>`;
+
+  const options = [
+    `<option value=""${c.texte ? '' : ' selected'}>Choisir le texte…</option>`,
+    ...TEXTES.map((t) => `<option value="${esc(t)}"${c.texte === t ? ' selected' : ''}>${esc(t)}</option>`),
+  ].join('');
+
+  const points = c.changements.map((point, i) => `
+    <div class="point-saisie">
+      <span class="point-saisie-num" aria-hidden="true">${i + 1}</span>
+      <input class="champ" type="text" id="ajout-changements-${i}" data-champ="changements.${i}" value="${esc(point)}" aria-label="Point ${i + 1}" aria-describedby="message-changements">
+      ${c.changements.length > 1 ? `<button type="button" class="btn btn--petit btn--icone" data-action="retirer-point" data-index="${i}" aria-label="Retirer le point ${i + 1}">${ICONES.fermer}</button>` : ''}
+    </div>`).join('');
+
+  const bloque = ajout.envoi;
+  return `
+    <form class="formulaire" id="form-ajout" novalidate>
+      <p class="formulaire-note">Les champs marqués d'un astérisque <span class="requis" aria-hidden="true">*</span> sont obligatoires. La saisie est gardée en brouillon sur cet appareil.</p>
+      <p class="champ-message champ-message--general" data-message="general" role="alert"></p>
+
+      <fieldset class="formulaire-groupe">
+        <legend>Identification</legend>
+        ${ligne('titre', 'Titre court', { requis: true })}
+        <div class="champ-ligne">
+          <div class="champ-groupe">
+            ${etiquette('texte', 'Texte concerné', true)}
+            <select class="champ" id="ajout-texte" data-champ="texte" ${decrit('texte')} aria-required="true">${options}</select>
+            ${message('texte')}
+          </div>
+          ${ligne('article', 'Article', { texteAide: 'Sous la forme « Article 12 : ». Facultatif pour un décret.', attributs: 'autocomplete="off" spellcheck="false"' })}
+        </div>
+        <div class="champ-ligne champ-ligne--etroite">
+          ${ligne('salve', 'Salve', { type: 'text', texteAide: `Salve en cours : ${salveCourante()}.`, attributs: 'inputmode="numeric" autocomplete="off"' })}
+          <div class="champ-groupe champ-groupe--case">
+            <label class="case">
+              <input type="checkbox" id="ajout-urgent" data-champ="urgent"${c.urgent ? ' checked' : ''} aria-describedby="message-urgent">
+              <span>Urgente : à traiter en priorité</span>
+            </label>
+            ${message('urgent')}
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="formulaire-groupe">
+        <legend>La proposition</legend>
+        ${zone('resume', 'En une phrase', { requis: true, lignes: 2 })}
+        <div class="champ-groupe" role="group" aria-labelledby="libelle-changements">
+          <p class="champ-label" id="libelle-changements">Ce qui change <span class="requis" aria-hidden="true">*</span></p>
+          <p class="champ-aide">De 1 à ${CHANGEMENTS_MAX} points concrets.</p>
+          <div class="points-saisie">${points}</div>
+          ${c.changements.length < CHANGEMENTS_MAX ? `<button type="button" class="btn btn--petit" data-action="ajouter-point">${ICONES.plus}<span>Ajouter un point</span></button>` : ''}
+          ${message('changements')}
+        </div>
+        ${zone('pourquoi', 'Pourquoi', { requis: true, lignes: 5 })}
+      </fieldset>
+
+      <fieldset class="formulaire-groupe">
+        <legend>Effet en jeu <span class="legende-note">facultatif</span></legend>
+        ${EFFETS.map(([cle, libelle]) => zone(`effets.${cle}`, libelle, { lignes: 2 })).join('')}
+        ${message('effets')}
+      </fieldset>
+
+      <fieldset class="formulaire-groupe">
+        <legend>Texte actuel et texte proposé</legend>
+        ${zone('avant', 'Texte actuel', { texteAide: 'Laissez vide pour un ajout pur. Les retours à la ligne et les espaces sont conservés tels quels.', lignes: 6, mono: true })}
+        ${zone('apres', 'Texte proposé', { texteAide: 'Laissez vide pour une abrogation (avec le texte actuel rempli).', lignes: 6, mono: true })}
+      </fieldset>
+
+      <div class="formulaire-actions">
+        <button type="submit" class="btn btn--plein" id="ajout-envoyer"${bloque ? ' disabled' : ''}>${bloque ? 'Enregistrement…' : (modification ? 'Enregistrer les modifications' : 'Ajouter la proposition')}</button>
+        ${modification
+          ? `<button type="button" class="btn" data-action="abandonner-modification">Abandonner les modifications</button>`
+          : '<button type="button" class="btn" data-action="vider-formulaire">Vider le formulaire</button>'}
+      </div>
+    </form>`;
+}
+
+function slugChamp(cle) {
+  return cle.replace(/\./g, '-');
+}
+
+function valeurChamp(champs, cle) {
+  if (cle.startsWith('effets.')) return champs.effets[cle.slice(7)] ?? '';
+  return champs[cle] ?? '';
+}
+
+// Contrôle en direct : mêmes règles que le serveur (assets/registre.js).
+function majFormulaire() {
+  const ajout = etat.ajout;
+  const form = document.getElementById('form-ajout');
+  if (!ajout || !form) return null;
+  const resultat = validerProposition(versProposition(ajout.champs), { manuelle: true });
+  afficherMessages(form, resultat);
+  const apercu = document.getElementById('apercu-contenu');
+  if (apercu) apercu.innerHTML = apercuFiche(resultat.apercu);
+  return resultat;
+}
+
+function planifierMajFormulaire() {
+  clearTimeout(minuteurs.formulaire);
+  minuteurs.formulaire = setTimeout(majFormulaire, 150);
+}
+
+// Les messages passent par textContent : le texte saisi n'est jamais interprété comme du HTML.
+function afficherMessages(form, { erreurs, remarques }) {
+  const ajout = etat.ajout;
+  const messages = new Map();
+  const ajouter = (champ, texte, erreur) => {
+    const cle = champ && form.querySelector(`[data-message="${CSS.escape(champ)}"]`) ? champ : 'general';
+    const message = messages.get(cle) ?? { textes: [], erreur: false };
+    if (!message.textes.includes(texte)) message.textes.push(texte);
+    message.erreur ||= erreur;
+    messages.set(cle, message);
+  };
+  const erreursVisibles = [
+    ...(ajout.soumis ? erreurs.map((e) => ({ champ: e.champ, texte: e.aide })) : []),
+    ...ajout.erreursServeur.map((e) => ({ champ: e.champ, texte: e.message })),
+  ];
+  for (const e of erreursVisibles) ajouter(e.champ, e.texte, true);
+  for (const r of remarques) ajouter(r.champ, r.aide, false);
+
+  const nombre = erreursVisibles.length;
+  if (nombre) {
+    const resume = nombre > 1 ? `${nombre} points à corriger avant l'envoi.` : 'Un point à corriger avant l\'envoi.';
+    const general = messages.get('general');
+    messages.set('general', { textes: [resume, ...(general?.textes ?? [])], erreur: true });
+  }
+
+  form.querySelectorAll('[data-message]').forEach((element) => {
+    const message = messages.get(element.dataset.message);
+    element.textContent = message ? message.textes.join(' ') : '';
+    element.classList.toggle('champ-message--erreur', Boolean(message?.erreur));
+  });
+  const enErreur = [...messages].filter(([, m]) => m.erreur).map(([cle]) => cle);
+  form.querySelectorAll('[data-champ]').forEach((champ) => {
+    const cle = champ.dataset.champ;
+    const touche = enErreur.some((e) => cle === e || cle.startsWith(`${e}.`) || (e === 'changements' && cle === 'changements.0'));
+    if (touche) champ.setAttribute('aria-invalid', 'true');
+    else champ.removeAttribute('aria-invalid');
+  });
+}
+
+function aRemplir(texte) {
+  return `<span class="a-remplir">${texte}</span>`;
+}
+
+// Aperçu en direct : la fiche telle qu'elle s'affichera, avec les mêmes fonctions de rendu.
+function apercuFiche(p) {
+  if (!p) return vide('Aperçu indisponible.');
+  const texte = p.texte ? `<span class="meta-texte">${esc(p.texte)}</span>` : `<span class="meta-texte">${aRemplir('Texte concerné')}</span>`;
+  return `
+    <article class="fiche fiche--apercu">
+      <header class="fiche-tete">
+        <div class="meta">
+          ${texte}${p.article ? `<span class="article">${esc(p.article)}</span>` : ''}
+          ${p.urgent ? badgeUrgent() : ''}
+          ${badgeManuelle()}
+          ${pastille('attente')}
+        </div>
+        <h3 class="fiche-titre">${p.titre ? esc(p.titre) : aRemplir('Titre de la proposition')}</h3>
+      </header>
+      ${blocsProposition(p, 4)}
+    </article>`;
+}
+
+function listeManuelles() {
+  const entrees = [...etat.manuelles.values()];
+  const aExporter = entrees.filter((entree) => !estIntegree(entree.proposition.id)).length;
+  const lignes = entrees.map((entree) => {
+    const id = entree.proposition.id;
+    const p = trouver(id);
+    let actions;
+    if (estIntegree(id)) actions = '<span class="note">Intégrée au fichier</span>';
+    else if (p && estModifiable(p)) {
+      actions = `
+        <a class="btn btn--petit" href="#/ajouter/${encodeURIComponent(id)}">${ICONES.plume}<span>Modifier</span></a>
+        <button type="button" class="btn btn--petit btn--danger" data-action="supprimer-manuelle" data-id="${esc(id)}"${etat.enCours ? ' disabled' : ''}>${ICONES.refusee}<span>Supprimer</span></button>`;
+    } else actions = '<span class="note">Décision prise : texte figé</span>';
+    return `
+      <li class="manuelle">
+        <span class="manuelle-id">${esc(id)}</span>
+        <a class="manuelle-titre lien-discret" href="${lienFiche(id)}">${esc(entree.proposition.titre)}</a>
+        ${pastille(statutDe(id))}
+        <span class="manuelle-actions">${actions}</span>
+      </li>`;
+  }).join('');
+
+  return `
+    <section class="manuelles" aria-labelledby="titre-manuelles">
+      <div class="section-tete">
+        <h2 id="titre-manuelles">Propositions ajoutées à la main</h2>
+        <span class="compte">${entrees.length}</span>
+      </div>
+      <div class="manuelles-export">
+        <p>« Exporter en JSON » copie les propositions ajoutées à la main au format de contenu/propositions.json, avec leur identifiant : une fois collées dans le fichier, elles gardent leurs décisions.</p>
+        <button type="button" class="btn" data-action="exporter-manuelles"${aExporter && !etat.erreurManuelles ? '' : ' disabled'}>Exporter en JSON</button>
+      </div>
+      ${entrees.length ? `<ul class="liste manuelles-liste">${lignes}</ul>` : '<p class="priorite-vide">Aucune proposition ajoutée à la main pour l\'instant.</p>'}
+    </section>`;
+}
+
+async function envoyerManuelle(corps) {
+  const reponse = await fetch('/api/propositions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(corps),
+  });
+  const donnees = await reponse.json().catch(() => null);
+  if (!reponse.ok || !donnees) {
+    const err = new Error(donnees?.erreur ?? `erreur ${reponse.status}`);
+    err.status = reponse.status;
+    err.erreurs = Array.isArray(donnees?.erreurs) ? donnees.erreurs : null;
+    throw err;
+  }
+  return donnees;
+}
+
+async function envoyerAjout() {
+  const ajout = etat.ajout;
+  const form = document.getElementById('form-ajout');
+  if (!ajout || !form || ajout.envoi) return;
+  ajout.soumis = true;
+  ajout.erreursServeur = [];
+  const resultat = majFormulaire();
+  if (resultat?.erreurs.length) {
+    focaliserErreur(form);
+    return;
+  }
+
+  ajout.envoi = true;
+  majBoutonEnvoi(ajout);
+  const proposition = versProposition(ajout.champs);
+  const modification = ajout.cible !== 'nouveau';
+  try {
+    const { entree } = await envoyerManuelle(modification
+      ? { action: 'modifier', id: ajout.cible, version: ajout.version, proposition }
+      : { action: 'ajouter', proposition });
+    const id = entree.proposition.id;
+    etat.manuelles.set(id, entree);
+    assembler();
+    effacerBrouillon(ajout.cible);
+    etat.ajout = null;
+    afficherToast(`« ${tronquer(entree.proposition.titre)} » : ${modification ? 'modifications enregistrées' : 'proposition ajoutée'}.`);
+    location.hash = lienFiche(id);
+  } catch (err) {
+    ajout.envoi = false;
+    majBoutonEnvoi(ajout);
+    if (err.erreurs) {
+      ajout.erreursServeur = err.erreurs;
+      majFormulaire();
+      focaliserErreur(form);
+    } else {
+      afficherToast(`La proposition n'a pas été enregistrée : ${err.message}.`, { erreur: true });
+      if (err.status === 409) {
+        await rechargerManuelles();
+        rendre({ garderPosition: true });
+      }
+    }
+  }
+}
+
+function majBoutonEnvoi(ajout) {
+  const bouton = document.getElementById('ajout-envoyer');
+  if (!bouton) return;
+  bouton.disabled = ajout.envoi;
+  bouton.textContent = ajout.envoi ? 'Enregistrement…' : (ajout.cible !== 'nouveau' ? 'Enregistrer les modifications' : 'Ajouter la proposition');
+}
+
+function focaliserErreur(form) {
+  const champ = form.querySelector('[aria-invalid="true"]') ?? form.querySelector('[data-message="general"]');
+  if (!champ) return;
+  const doux = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  champ.scrollIntoView({ block: 'center', behavior: doux ? 'smooth' : 'auto' });
+  if (champ.matches('[data-champ]')) champ.focus({ preventScroll: true });
+}
+
+async function supprimerManuelle(id) {
+  const p = trouver(id);
+  if (!p || !estModifiable(p) || etat.enCours) return;
+  etat.enCours = id;
+  try {
+    const { supprimeeLe } = await envoyerManuelle({ action: 'supprimer', id, version: p.version });
+    etat.manuelles.delete(id);
+    assembler();
+    effacerBrouillon(id);
+    if (etat.ajout?.cible === id) etat.ajout = null;
+    if (lireRoute().id === id) location.hash = '#/ajouter';
+    afficherToast(`« ${tronquer(p.titre)} » : proposition supprimée.`, { annuler: () => restaurerManuelle(id, supprimeeLe) });
+  } catch (err) {
+    afficherToast(`La proposition n'a pas été supprimée : ${err.message}.`, { erreur: true });
+    await rechargerManuelles();
+  } finally {
+    etat.enCours = null;
+    rendre({ garderPosition: true });
+  }
+}
+
+async function restaurerManuelle(id, supprimeeLe) {
+  if (etat.enCours) return;
+  etat.enCours = id;
+  try {
+    const { entree } = await envoyerManuelle({ action: 'restaurer', id, supprimeeLe });
+    etat.manuelles.set(id, entree);
+    assembler();
+    afficherToast('Suppression annulée.');
+  } catch (err) {
+    afficherToast(`L'annulation a échoué : ${err.message}.`, { erreur: true });
+  } finally {
+    etat.enCours = null;
+    rendre({ garderPosition: true });
+  }
+}
+
+// Copie les propositions ajoutées à la main, pas encore intégrées au fichier, au format exact de contenu/propositions.json.
+async function exporterManuelles() {
+  const liste = [];
+  for (const entree of etat.manuelles.values()) {
+    if (estIntegree(entree.proposition.id)) continue;
+    const { proposition } = validerProposition(entree.proposition, { manuelle: true });
+    if (proposition) liste.push(formeCanonique(proposition));
+  }
+  if (!liste.length) {
+    afficherToast('Aucune proposition à exporter.');
+    return;
+  }
+  const reussi = await copierTexte(JSON.stringify(liste, null, 2));
+  if (!reussi) {
+    afficherToast("La copie a échoué : votre navigateur bloque l'accès au presse-papiers.", { erreur: true });
+    return;
+  }
+  const n = liste.length;
+  afficherToast(`${n} ${n > 1 ? 'propositions copiées' : 'proposition copiée'} au format de contenu/propositions.json.`);
+}
+
+function majChamp(champ) {
+  const ajout = etat.ajout;
+  const cle = champ.dataset.champ;
+  const valeur = champ.type === 'checkbox' ? champ.checked : champ.value;
+  if (cle.startsWith('changements.')) ajout.champs.changements[Number(cle.slice(12))] = valeur;
+  else if (cle.startsWith('effets.')) ajout.champs.effets[cle.slice(7)] = valeur;
+  else ajout.champs[cle] = valeur;
+  ajout.erreursServeur = [];
+  sauverBrouillon();
+  planifierMajFormulaire();
 }
 
 /* Décisions */
@@ -969,7 +1595,7 @@ async function decider(id, statut) {
 
   try {
     const avant = statutDe(id);
-    const decision = await envoyer({ id, statut, commentaire });
+    const decision = await envoyer({ id, statut, commentaire, ...(p.manuelle ? { version: p.version } : {}) });
     if (vue === 'rediscuter' && statut !== 'rediscuter') await faireSortir(id);
     etat.decisions[id] = decision;
     delete etat.brouillons[id];
@@ -980,6 +1606,7 @@ async function decider(id, statut) {
     });
   } catch (err) {
     afficherToast(`La décision n'a pas été enregistrée : ${err.message}.`, { erreur: true });
+    if (p.manuelle) await rechargerManuelles();
   } finally {
     etat.enCours = null;
     rendre({ garderPosition: true });
@@ -1243,13 +1870,64 @@ function surClic(e) {
     const annuler = toast.annuler;
     masquerToast();
     annuler?.();
+  } else if (action === 'supprimer-manuelle') {
+    supprimerManuelle(el.dataset.id);
+  } else if (action === 'exporter-manuelles') {
+    exporterManuelles();
+  } else if (action === 'ajouter-point' && etat.ajout) {
+    const points = etat.ajout.champs.changements;
+    if (points.length >= CHANGEMENTS_MAX) return;
+    points.push('');
+    sauverBrouillon();
+    rendre({ garderPosition: true });
+    document.getElementById(`ajout-changements-${points.length - 1}`)?.focus();
+  } else if (action === 'retirer-point' && etat.ajout) {
+    const points = etat.ajout.champs.changements;
+    const index = Number(el.dataset.index);
+    if (points.length <= 1 || !Number.isInteger(index)) return;
+    points.splice(index, 1);
+    sauverBrouillon();
+    rendre({ garderPosition: true });
+    document.getElementById(`ajout-changements-${Math.max(0, index - 1)}`)?.focus();
+  } else if (action === 'vider-formulaire' && etat.ajout) {
+    const ajout = etat.ajout;
+    const anciens = structuredClone(ajout.champs);
+    Object.assign(ajout, { champs: champsNeufs(), soumis: false, erreursServeur: [], repris: false });
+    effacerBrouillon(ajout.cible);
+    rendre({ garderPosition: true });
+    afficherToast('Formulaire vidé.', {
+      annuler: () => {
+        if (etat.ajout !== ajout) return;
+        ajout.champs = anciens;
+        sauverBrouillon();
+        rendre({ garderPosition: true });
+      },
+    });
+  } else if (action === 'abandonner-modification' && etat.ajout) {
+    const id = etat.ajout.cible;
+    effacerBrouillon(id);
+    etat.ajout = null;
+    location.hash = lienFiche(id);
   }
+}
+
+function surEnvoi(e) {
+  if (e.target.id !== 'form-ajout') return;
+  e.preventDefault();
+  envoyerAjout();
 }
 
 function surSaisie(e) {
   if (e.target.id === 'recherche') {
-    etat.recherche = e.target.value;
-    majListeRecap();
+    if (e.type === 'input') {
+      etat.recherche = e.target.value;
+      majListeRecap();
+    }
+    return;
+  }
+  const champForm = e.target.closest?.('#form-ajout [data-champ]');
+  if (champForm) {
+    if (etat.ajout && (e.type === 'input' || champForm.type === 'checkbox' || champForm.tagName === 'SELECT')) majChamp(champForm);
     return;
   }
   const champ = e.target.closest?.('[data-brouillon]');
@@ -1325,13 +2003,17 @@ function badgeNouveau() {
   return '<span class="badge badge--nouveau">Nouveau</span>';
 }
 
+function badgeManuelle() {
+  return '<span class="badge badge--manuelle">Ajoutée à la main</span>';
+}
+
 function vide(titre, texte = '', action = '') {
   return `<div class="vide"><p class="vide-titre">${titre}</p>${texte ? `<p>${texte}</p>` : ''}${action}</div>`;
 }
 
 function cleFocus(element) {
   if (!element || element === document.body) return null;
-  if (element.id && element.closest('#app') && /^(INPUT|TEXTAREA)$/.test(element.tagName)) return `#${CSS.escape(element.id)}`;
+  if (element.id && element.closest('#app') && /^(INPUT|TEXTAREA|SELECT)$/.test(element.tagName)) return `#${CSS.escape(element.id)}`;
   const cible = element.closest?.('[data-action]');
   if (!cible || !cible.closest('#app')) return null;
   const { action, statut, mode, filtre, id } = cible.dataset;
@@ -1345,6 +2027,14 @@ function cleFocus(element) {
 
 function lienFiche(id) {
   return `#/proposition/${encodeURIComponent(id)}`;
+}
+
+function decoder(morceau) {
+  try {
+    return decodeURIComponent(morceau);
+  } catch {
+    return morceau;
+  }
 }
 
 function slug(texte) {

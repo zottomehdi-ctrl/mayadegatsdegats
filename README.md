@@ -4,8 +4,10 @@ Registre des propositions de textes du serveur GTA RP Last Gate (État de San An
 
 Les propositions arrivent par salves. Les propositions traitées et refusées sont rangées dans l'onglet Archives, groupées par salve.
 
-- `contenu/propositions.json` : toutes les propositions. C'est le seul fichier à modifier.
+- `contenu/propositions.json` : les propositions publiées. C'est le seul fichier à modifier pour ajouter des propositions en lot.
 - `netlify/functions/decisions.mjs` : enregistre les décisions dans Netlify Blobs, une clé par `id` de proposition.
+- `netlify/functions/propositions.mjs` : enregistre les propositions ajoutées à la main depuis l'onglet « Ajouter » (magasin Netlify Blobs `propositions-manuelles`).
+- `netlify/commun.mjs` : en-têtes et noms de magasins partagés par les deux fonctions.
 - `netlify/decisions-initiales.mjs` : décisions de départ, reprises du site en ligne au 12 octobre 2026. Elles s'affichent tant qu'aucune décision n'a été prise sur le site pour la proposition ; une décision prise ensuite passe devant.
 - `assets/registre.js` : lecture et vérification du fichier, partagées par le site et par `npm run verifier`.
 - `index.html`, `assets/` : le site.
@@ -52,7 +54,7 @@ Remplacer `contenu/propositions.json`, lancer `npm run verifier`, puis commit et
 
 | Champ | Obligatoire | Contenu |
 | --- | --- | --- |
-| `id` | oui | Clé interne en slug (minuscules, chiffres, tirets), unique, jamais affichée. Ne jamais la modifier ni la réutiliser : les décisions y sont rattachées. |
+| `id` | oui | Clé interne en slug (minuscules, chiffres, tirets), unique, jamais affichée. Ne jamais la modifier ni la réutiliser : les décisions y sont rattachées. Une proposition ajoutée à la main puis exportée garde son id `M-12`. |
 | `titre` | oui | Titre court. |
 | `texte` | oui | `Code pénal`, `Code de procédure pénale`, `Code de police`, `Code de la route`, `Code du travail`, `Code civil`, `Code électoral`, `Constitution`, `Décret` ou `Autre`. |
 | `article` | oui, sauf pour un décret | Sous la forme « Article 12 : », ou « Article Préambule : » pour une partie non numérotée. |
@@ -78,6 +80,16 @@ Remplacer `contenu/propositions.json`, lancer `npm run verifier`, puis commit et
 | Archives | Les propositions traitées et refusées, groupées par salve (la plus récente en premier), avec un filtre Toutes / Traitées / Refusées. |
 
 - Les propositions d'exemple ont un `id` qui commence par `exemple-`. Pour les retirer, il suffit de les supprimer du fichier.
+
+## Ajouter une proposition depuis le site
+
+L'onglet « Ajouter » (ou le bouton « Ajouter une proposition » du Récapitulatif) ouvre un formulaire avec les mêmes champs que le fichier, un aperçu en direct de la fiche et les mêmes contrôles que `npm run verifier`, appliqués dans le navigateur puis par le serveur. La saisie est gardée en brouillon sur l'appareil.
+
+- La proposition reçoit un id `M-1`, `M-2`… (jamais réutilisé) et se comporte ensuite comme les autres : récapitulatif, décisions, historique, Textes validés, Archives. Un badge « Ajoutée à la main » la signale.
+- Elle reste modifiable et supprimable tant qu'aucune décision n'a été prise ; la suppression s'annule pendant quelques secondes avec « Annuler ».
+- « Exporter en JSON » copie les propositions ajoutées à la main au format exact du fichier. Collez-les dans `contenu/propositions.json` en gardant leur id (leurs décisions suivent), contrôlez avec `npm run verifier`, puis publiez : la version du fichier remplace alors celle ajoutée à la main.
+- Pour contrôler un export avant de le coller : `npm run verifier -- export.json`.
+- Limites : 200 propositions ajoutées à la main, longueur maximale par champ, tout champ inconnu est refusé.
 
 ## Palettes
 

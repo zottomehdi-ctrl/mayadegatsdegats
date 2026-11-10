@@ -1,17 +1,21 @@
 import { getStore } from "@netlify/blobs";
 import DECISIONS_INITIALES from "../decisions-initiales.mjs";
+import { RE_ID_MANUEL } from "../../assets/registre.js";
+import { STORE_DECISIONS, STORE_MANUELLES, reponse, versionDe } from "../commun.mjs";
 
 // Décisions de la fondatrice, stockées dans Netlify Blobs (magasin « decisions »),
 // une clé par id de proposition (slug interne, jamais affiché). Le contenu des propositions n'est jamais touché.
 //
 //   GET  /api/decisions  ->  { "<id>": { statut, commentaire, date, renvoyeLe, historique, precedent }, ... }
-//   POST /api/decisions  <-  { id, statut: "validee" | "traitee" | "refusee" | "rediscuter", commentaire }
-//                            (« traitee » : seulement pour une proposition validée, ou déjà traitée)
+//   POST /api/decisions  <-  { id, statut: "validee" | "traitee" | "refusee" | "rediscuter", commentaire, version }
+//                            (« traitee » : seulement pour une proposition validée, ou déjà traitée ;
+//                             « version » : pour une proposition ajoutée à la main, la date de la version lue)
 //                        ->  la décision enregistrée
 //   POST /api/decisions  <-  { id, annuler: "<date de la décision à annuler>" }
 //                        ->  { decision }  (la décision rétablie, ou null si la proposition repasse en attente)
 
 const STATUTS = ["validee", "traitee", "refusee", "rediscuter"];
+// Slug du fichier contenu/propositions.json, ou « M-12 » pour une proposition ajoutée à la main.
 const ID_VALIDE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const ID_LONGUEUR_MAX = 100;
 const COMMENTAIRE_MAX = 2000;
@@ -20,16 +24,6 @@ const HISTORIQUE_MAX = 200;
 // Les décisions de départ (netlify/decisions-initiales.mjs) sont servies tant qu'aucune décision
 // n'est enregistrée dans Netlify Blobs pour l'id. Une décision prise sur le site passe devant,
 // et son annulation ramène à la décision de départ.
-
-const reponse = (donnees, status = 200) =>
-  new Response(JSON.stringify(donnees), {
-    status,
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-      "Cache-Control": "no-store",
-      "X-Robots-Tag": "noindex, nofollow",
-    },
-  });
 
 const etatDe = (decision) => ({
   statut: decision.statut,
@@ -40,7 +34,7 @@ const etatDe = (decision) => ({
 
 export default async (req) => {
   try {
-    const store = getStore({ name: "decisions", consistency: "strong" });
+    const store = getStore({ name: STORE_DECISIONS, consistency: "strong" });
 
     if (req.method === "GET") {
       const { blobs } = await store.list();
@@ -64,8 +58,18 @@ export default async (req) => {
     }
 
     const id = typeof corps?.id === "string" ? corps.id.trim() : "";
-    if (!ID_VALIDE.test(id) || id.length > ID_LONGUEUR_MAX) {
+    if (!(ID_VALIDE.test(id) || RE_ID_MANUEL.test(id)) || id.length > ID_LONGUEUR_MAX) {
       return reponse({ erreur: "id de proposition invalide" }, 400);
+    }
+
+    // Proposition ajoutée à la main : on ne décide ni sur une proposition supprimée,
+    // ni sur une version modifiée depuis qu'elle a été lue.
+    if (RE_ID_MANUEL.test(id) && corps.annuler === undefined) {
+      const manuelle = await getStore({ name: STORE_MANUELLES, consistency: "strong" }).get(id, { type: "json" });
+      if (manuelle?.supprimeeLe) return reponse({ erreur: "cette proposition a été supprimée" }, 409);
+      if (manuelle && corps.version !== undefined && corps.version !== versionDe(manuelle)) {
+        return reponse({ erreur: "la proposition a été modifiée entre-temps : rechargez la page avant de décider" }, 409);
+      }
     }
 
     const enregistree = await store.get(id, { type: "json" });

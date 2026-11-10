@@ -1,15 +1,19 @@
 // Vérifie contenu/propositions.json avant publication : npm run verifier
+// Un autre fichier au même format (par exemple un export de l'onglet « Ajouter ») :
+// npm run verifier -- chemin/vers/fichier.json
 // Les règles sont celles du site (assets/registre.js).
 import { readFileSync } from 'node:fs';
 import { analyserRegistre } from '../assets/registre.js';
 
-const FICHIER = new URL('../contenu/propositions.json', import.meta.url);
+const chemin = process.argv[2];
+const FICHIER = chemin ?? new URL('../contenu/propositions.json', import.meta.url);
+const NOM = chemin ?? 'contenu/propositions.json';
 
 let source;
 try {
   source = readFileSync(FICHIER, 'utf8');
 } catch (err) {
-  console.error(`ERREUR     impossible de lire contenu/propositions.json : ${err.message}`);
+  console.error(`ERREUR     impossible de lire ${NOM} : ${err.message}`);
   process.exit(1);
 }
 

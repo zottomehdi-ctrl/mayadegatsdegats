@@ -1,5 +1,6 @@
-// Lecture et vérification de contenu/propositions.json.
-// Partagé par le site (navigateur) et par `npm run verifier` (Node).
+// Lecture et vérification des propositions.
+// Partagé par le site (navigateur), par `npm run verifier` (Node) et par la fonction
+// netlify/functions/propositions.mjs, qui contrôle les propositions ajoutées à la main.
 
 export const TEXTES = [
   'Code pénal',
@@ -22,8 +23,26 @@ export const EFFETS = [
 
 export const LONGUEUR_ID_MAX = 100;
 export const CHANGEMENTS_MAX = 4;
+export const SALVE_MAX = 999;
 
-const CHAMPS = ['id', 'titre', 'texte', 'article', 'urgent', 'salve', 'resume', 'changements', 'pourquoi', 'effets', 'avant', 'apres'];
+// Longueurs maximales d'une proposition ajoutée à la main (en caractères).
+export const LIMITES = {
+  titre: 160,
+  article: 120,
+  resume: 500,
+  changement: 400,
+  pourquoi: 4000,
+  effet: 800,
+  avant: 12000,
+  apres: 12000,
+};
+
+// Ordre des champs dans contenu/propositions.json (et dans l'export des propositions ajoutées à la main).
+export const CHAMPS = ['id', 'titre', 'salve', 'texte', 'article', 'urgent', 'resume', 'changements', 'pourquoi', 'effets', 'avant', 'apres'];
+
+// Identifiant d'une proposition ajoutée à la main : « M- » suivi d'un numéro. La majuscule le distingue
+// des slugs du fichier, toujours en minuscules : aucune collision possible avec un id présent ou futur.
+export const RE_ID_MANUEL = /^M-[1-9][0-9]{0,5}$/;
 const RE_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const SUFFIXES = '(?: (?:bis|ter|quater|quinquies|sexies))?';
 // « Article 12 : », « Article 12 bis : » ou, pour un texte non numéroté, « Article Préambule : ».
@@ -91,10 +110,10 @@ export function analyserRegistre(source) {
   const propositions = [];
   const ids = new Map();
   for (const { valeur, numero } of elements) {
-    const resultat = validerProposition(valeur, numero);
-    remarques.push(...resultat.remarques);
+    const resultat = validerProposition(valeur, { numero });
+    remarques.push(...resultat.remarques.map((r) => `${resultat.nom} : ${r.message}`));
     if (resultat.erreurs.length) {
-      erreurs.push(...resultat.erreurs);
+      erreurs.push(...resultat.erreurs.map((e) => `${resultat.nom} : ${e.message}`));
       continue;
     }
     const p = resultat.proposition;
@@ -109,73 +128,96 @@ export function analyserRegistre(source) {
   return { propositions, erreurs, remarques, fatal: propositions.length === 0 && erreurs.length > 0 };
 }
 
-function validerProposition(brut, numero) {
+// Vérifie une proposition.
+// Renvoie { erreurs, remarques, nom, apercu, proposition } :
+// - erreurs et remarques : { champ, message, aide } ; « message » est rédigé pour le fichier JSON
+//   (repris par npm run verifier), « aide » pour le formulaire du site ;
+// - apercu : la proposition lue au mieux, même incomplète (aperçu en direct du formulaire) ;
+// - proposition : la même, seulement s'il n'y a aucune erreur.
+// Avec { manuelle: true } (proposition ajoutée à la main, contrôlée par le formulaire et par le serveur) :
+// l'id est facultatif (attribué par le serveur), tout champ inconnu est refusé et les longueurs sont limitées.
+export function validerProposition(brut, { numero = 1, manuelle = false } = {}) {
   const erreurs = [];
   const remarques = [];
   const titreBrut = brut && typeof brut === 'object' && typeof brut.titre === 'string' ? brut.titre.trim() : '';
   const nom = `Proposition n° ${numero}${titreBrut ? ` (« ${titreBrut} »)` : ''}`;
-  const erreur = (message) => erreurs.push(`${nom} : ${message}`);
-  const remarque = (message) => remarques.push(`${nom} : ${message}`);
+  const erreur = (champ, message, aide = message) => erreurs.push({ champ, message, aide });
+  const remarque = (champ, message, aide = message) => remarques.push({ champ, message, aide });
+  const enErreur = (champ) => erreurs.some((e) => e.champ === champ);
+  const OBLIGATOIRE = 'Ce champ est obligatoire.';
 
   if (!brut || typeof brut !== 'object' || Array.isArray(brut)) {
-    erreur('doit être un objet entre accolades { }.');
-    return { erreurs, remarques, nom };
+    erreur('', 'doit être un objet entre accolades { }.', 'La proposition est illisible.');
+    return { erreurs, remarques, nom, apercu: null, proposition: null };
   }
 
   for (const cle of Object.keys(brut)) {
-    if (!CHAMPS.includes(cle)) remarque(`champ inconnu « ${cle} », ignoré.`);
-    else if (brut[cle] === '') remarque(`le champ « ${cle} » est vide : omettez-le plutôt que de le laisser à "".`);
+    if (!CHAMPS.includes(cle)) {
+      if (manuelle) erreur(cle, `champ inconnu « ${cle} ».`, `Champ inconnu : « ${cle} ».`);
+      else remarque(cle, `champ inconnu « ${cle} », ignoré.`);
+    } else if (brut[cle] === '' && !manuelle) {
+      remarque(cle, `le champ « ${cle} » est vide : omettez-le plutôt que de le laisser à "".`);
+    }
   }
 
-  const lireTexte = (cle, { obligatoire = false, garderEspaces = false } = {}) => {
+  const limiter = (cle, chaine, limite = LIMITES[cle]) => {
+    if (manuelle && limite && chaine.length > limite) {
+      erreur(cle, `le champ « ${cle} » dépasse ${limite} caractères (${chaine.length}).`, `Ce texte est trop long : ${chaine.length} caractères, pour ${limite} au plus.`);
+    }
+  };
+
+  const lireTexte = (cle, { obligatoire = false, garderEspaces = false, aide = OBLIGATOIRE } = {}) => {
     const valeur = brut[cle];
     if (valeur === undefined || valeur === null || valeur === '') {
-      if (obligatoire) erreur(`il manque le champ « ${cle} ».`);
+      if (obligatoire) erreur(cle, `il manque le champ « ${cle} ».`, aide);
       return '';
     }
     let chaine;
     if (typeof valeur === 'string') {
       chaine = valeur;
-    } else if (Array.isArray(valeur) && valeur.every((ligne) => typeof ligne === 'string')) {
-      remarque(`le champ « ${cle} » est une liste de lignes : écrivez plutôt une seule chaîne avec \\n.`);
+    } else if (!manuelle && Array.isArray(valeur) && valeur.every((ligne) => typeof ligne === 'string')) {
+      remarque(cle, `le champ « ${cle} » est une liste de lignes : écrivez plutôt une seule chaîne avec \\n.`);
       chaine = valeur.join('\n');
     } else {
-      erreur(`le champ « ${cle} » doit être un texte entre guillemets.`);
+      erreur(cle, `le champ « ${cle} » doit être un texte entre guillemets.`, 'Ce champ doit être un texte.');
       return '';
     }
     chaine = chaine.replace(/\r\n?/g, '\n');
     if (!garderEspaces) chaine = chaine.trim();
-    if (obligatoire && !chaine.trim()) erreur(`le champ « ${cle} » est vide.`);
+    if (obligatoire && !chaine.trim()) erreur(cle, `le champ « ${cle} » est vide.`, aide);
+    limiter(cle, chaine);
     return chaine;
   };
 
-  // id : clé interne, jamais affichée
+  // id : clé interne, jamais affichée. Slug en minuscules, ou « M-12 » pour une proposition ajoutée à la main.
   let id = '';
   if (brut.id === undefined || brut.id === null || brut.id === '') {
-    erreur('il manque le champ « id ».');
-  } else if (typeof brut.id !== 'string' || !RE_SLUG.test(brut.id) || brut.id.length > LONGUEUR_ID_MAX) {
-    erreur(`le champ « id » doit être un slug en minuscules, chiffres et tirets (par exemple vol-a-main-armee), de ${LONGUEUR_ID_MAX} caractères au plus.`);
+    if (!manuelle) erreur('id', 'il manque le champ « id ».');
+  } else if (manuelle && (typeof brut.id !== 'string' || !RE_ID_MANUEL.test(brut.id))) {
+    erreur('id', 'le champ « id » d\'une proposition ajoutée à la main est de la forme M-12.', 'Identifiant invalide.');
+  } else if (typeof brut.id !== 'string' || !(RE_SLUG.test(brut.id) || RE_ID_MANUEL.test(brut.id)) || brut.id.length > LONGUEUR_ID_MAX) {
+    erreur('id', `le champ « id » doit être un slug en minuscules, chiffres et tirets (par exemple vol-a-main-armee), de ${LONGUEUR_ID_MAX} caractères au plus.`);
   } else {
     id = brut.id;
   }
 
-  const titre = lireTexte('titre', { obligatoire: true });
+  const titre = lireTexte('titre', { obligatoire: true, aide: 'Indiquez un titre court.' });
 
   // texte concerné
   let texteConcerne = '';
   if (brut.texte === undefined || brut.texte === null || brut.texte === '') {
-    erreur(`il manque le champ « texte » (${TEXTES.join(', ')}).`);
+    erreur('texte', `il manque le champ « texte » (${TEXTES.join(', ')}).`, 'Choisissez le texte concerné.');
   } else if (typeof brut.texte !== 'string') {
-    erreur(`le champ « texte » doit être l'une de ces valeurs : ${TEXTES.join(', ')}.`);
+    erreur('texte', `le champ « texte » doit être l'une de ces valeurs : ${TEXTES.join(', ')}.`, 'Choisissez le texte concerné dans la liste.');
   } else {
     texteConcerne = TEXTES.find((t) => t === brut.texte.trim()) ?? '';
     if (!texteConcerne) {
       const approchant = TEXTES.find((t) => sansAccents(t) === sansAccents(brut.texte.trim()));
-      if (approchant) {
+      if (approchant && !manuelle) {
         texteConcerne = approchant;
-        remarque(`« texte » vaut « ${brut.texte} » : écrivez exactement « ${approchant} ».`);
+        remarque('texte', `« texte » vaut « ${brut.texte} » : écrivez exactement « ${approchant} ».`);
       } else {
-        erreur(`le champ « texte » vaut « ${brut.texte} » ; valeurs possibles : ${TEXTES.join(', ')}.`);
+        erreur('texte', `le champ « texte » vaut « ${brut.texte} » ; valeurs possibles : ${TEXTES.join(', ')}.`, 'Choisissez le texte concerné dans la liste.');
       }
     }
   }
@@ -183,21 +225,25 @@ function validerProposition(brut, numero) {
   // article : obligatoire sauf pour un décret
   let article = '';
   if (brut.article === undefined || brut.article === null || brut.article === '') {
-    if (texteConcerne && texteConcerne !== 'Décret') erreur('il manque le champ « article » (par exemple « Article 12 : »).');
+    if (texteConcerne && texteConcerne !== 'Décret') {
+      erreur('article', 'il manque le champ « article » (par exemple « Article 12 : »).', 'Indiquez l\'article, par exemple « Article 12 : ». Il n\'est facultatif que pour un décret.');
+    }
   } else if (typeof brut.article !== 'string' && typeof brut.article !== 'number') {
-    erreur('le champ « article » doit être un texte, par exemple « Article 12 : ».');
+    erreur('article', 'le champ « article » doit être un texte, par exemple « Article 12 : ».', 'Indiquez l\'article sous la forme « Article 12 : ».');
   } else {
     article = normaliserArticle(brut.article);
     if (!article) {
-      erreur('le champ « article » est vide.');
+      erreur('article', 'le champ « article » est vide.', 'Indiquez l\'article sous la forme « Article 12 : ».');
     } else if (String(brut.article).trim() !== article || !RE_ARTICLE_CONFORME.test(article)) {
-      remarque(`l'article « ${brut.article} » est affiché « ${article} » : écrivez-le directement sous cette forme.`);
+      remarque('article', `l'article « ${brut.article} » est affiché « ${article} » : écrivez-le directement sous cette forme.`, `Sera enregistré sous la forme « ${article} ».`);
     }
+    limiter('article', article);
   }
 
   // urgent
   if (brut.urgent !== undefined && typeof brut.urgent !== 'boolean') {
-    remarque('« urgent » doit valoir true ou false, sans guillemets. La proposition est traitée comme non urgente.');
+    if (manuelle) erreur('urgent', '« urgent » doit valoir true ou false.', 'Valeur invalide.');
+    else remarque('urgent', '« urgent » doit valoir true ou false, sans guillemets. La proposition est traitée comme non urgente.');
   }
   const urgent = brut.urgent === true;
 
@@ -205,103 +251,133 @@ function validerProposition(brut, numero) {
   let salve = 1;
   if (brut.salve !== undefined && brut.salve !== null) {
     if (typeof brut.salve !== 'number' || !Number.isInteger(brut.salve) || brut.salve < 1) {
-      erreur(`« salve » vaut ${JSON.stringify(brut.salve)} : ce doit être un nombre entier supérieur ou égal à 1, sans guillemets (par exemple 2).`);
+      erreur('salve', `« salve » vaut ${JSON.stringify(brut.salve)} : ce doit être un nombre entier supérieur ou égal à 1, sans guillemets (par exemple 2).`, 'La salve est un nombre entier, 1 ou plus.');
+    } else if (manuelle && brut.salve > SALVE_MAX) {
+      erreur('salve', `« salve » vaut ${brut.salve} : ${SALVE_MAX} au plus.`, `La salve ne peut pas dépasser ${SALVE_MAX}.`);
     } else {
       salve = brut.salve;
     }
   }
 
-  const resume = lireTexte('resume', { obligatoire: true });
+  const resume = lireTexte('resume', { obligatoire: true, aide: 'Résumez le changement en une phrase.' });
 
   // changements : 1 à 4 points
   let changements = [];
+  const AIDE_CHANGEMENTS = 'Indiquez au moins un point concret.';
   if (brut.changements === undefined || brut.changements === null || brut.changements === '') {
-    erreur('il manque le champ « changements » (1 à 4 points).');
-  } else if (typeof brut.changements === 'string') {
-    remarque('« changements » doit être une liste de points entre crochets [ ].');
+    erreur('changements', 'il manque le champ « changements » (1 à 4 points).', AIDE_CHANGEMENTS);
+  } else if (typeof brut.changements === 'string' && !manuelle) {
+    remarque('changements', '« changements » doit être une liste de points entre crochets [ ].');
     changements = [brut.changements.trim()].filter(Boolean);
   } else if (Array.isArray(brut.changements)) {
     if (brut.changements.some((point) => typeof point !== 'string')) {
-      erreur('chaque point de « changements » doit être un texte entre guillemets.');
+      erreur('changements', 'chaque point de « changements » doit être un texte entre guillemets.', 'Chaque point doit être un texte.');
     } else {
       changements = brut.changements.map((point) => point.replace(/\r\n?/g, '\n').trim()).filter(Boolean);
-      if (changements.length < brut.changements.length) remarque('« changements » contient des points vides, ignorés.');
+      if (changements.length < brut.changements.length && !manuelle) remarque('changements', '« changements » contient des points vides, ignorés.');
+      if (manuelle) {
+        for (const point of changements) limiter('changements', point, LIMITES.changement);
+      }
     }
   } else {
-    erreur('« changements » doit être une liste de points entre crochets [ ].');
+    erreur('changements', '« changements » doit être une liste de points entre crochets [ ].', AIDE_CHANGEMENTS);
   }
   if (Array.isArray(brut.changements) || typeof brut.changements === 'string') {
-    if (!changements.length && !erreurs.some((e) => e.includes('changements'))) erreur('« changements » doit contenir au moins un point.');
-    if (changements.length > CHANGEMENTS_MAX) remarque(`« changements » contient ${changements.length} points ; ${CHANGEMENTS_MAX} au plus sont conseillés.`);
+    if (!changements.length && !enErreur('changements')) erreur('changements', '« changements » doit contenir au moins un point.', AIDE_CHANGEMENTS);
+    if (changements.length > CHANGEMENTS_MAX) {
+      if (manuelle) erreur('changements', `« changements » contient ${changements.length} points ; ${CHANGEMENTS_MAX} au plus.`, `${CHANGEMENTS_MAX} points au plus.`);
+      else remarque('changements', `« changements » contient ${changements.length} points ; ${CHANGEMENTS_MAX} au plus sont conseillés.`);
+    }
   }
 
-  const pourquoi = lireTexte('pourquoi', { obligatoire: true });
+  const pourquoi = lireTexte('pourquoi', { obligatoire: true, aide: 'Expliquez pourquoi en quelques lignes.' });
 
   // effets en jeu : sous-champs facultatifs
   const effets = [];
   if (brut.effets !== undefined && brut.effets !== null) {
     if (typeof brut.effets !== 'object' || Array.isArray(brut.effets)) {
-      remarque('« effets » doit être un objet avec lspd, doj et/ou entreprises. Il est ignoré.');
+      if (manuelle) erreur('effets', '« effets » doit être un objet avec lspd, doj et/ou entreprises.', 'Valeur invalide.');
+      else remarque('effets', '« effets » doit être un objet avec lspd, doj et/ou entreprises. Il est ignoré.');
     } else {
       for (const cle of Object.keys(brut.effets)) {
-        if (!EFFETS.some(([connu]) => connu === cle)) remarque(`« effets » contient un sous-champ inconnu « ${cle} », ignoré.`);
+        if (!EFFETS.some(([connu]) => connu === cle)) {
+          if (manuelle) erreur('effets', `« effets » contient un sous-champ inconnu « ${cle} ».`, `Champ inconnu : « effets.${cle} ».`);
+          else remarque('effets', `« effets » contient un sous-champ inconnu « ${cle} », ignoré.`);
+        }
       }
       for (const [cle, libelle] of EFFETS) {
         const valeur = brut.effets[cle];
         if (valeur === undefined || valeur === null) continue;
         if (typeof valeur !== 'string') {
-          remarque(`« effets.${cle} » doit être un texte. Il est ignoré.`);
+          if (manuelle) erreur(`effets.${cle}`, `« effets.${cle} » doit être un texte.`, 'Ce champ doit être un texte.');
+          else remarque(`effets.${cle}`, `« effets.${cle} » doit être un texte. Il est ignoré.`);
         } else if (!valeur.trim()) {
-          remarque(`« effets.${cle} » est vide : omettez-le.`);
+          if (!manuelle) remarque(`effets.${cle}`, `« effets.${cle} » est vide : omettez-le.`);
         } else {
-          effets.push([cle, libelle, valeur.replace(/\r\n?/g, '\n').trim()]);
+          const texteEffet = valeur.replace(/\r\n?/g, '\n').trim();
+          limiter(`effets.${cle}`, texteEffet, LIMITES.effet);
+          effets.push([cle, libelle, texteEffet]);
         }
       }
-      if (!Object.keys(brut.effets).length) remarque('« effets » est vide : omettez-le.');
+      if (!Object.keys(brut.effets).length && !manuelle) remarque('effets', '« effets » est vide : omettez-le.');
     }
   }
 
   // avant / après : les espaces et alinéas sont conservés tels quels
   const avant = lireTexte('avant', { garderEspaces: true });
   const apres = lireTexte('apres', { garderEspaces: true });
-  if (!apres.trim() && !avant.trim() && !erreurs.some((e) => e.includes('« apres »'))) {
-    erreur('il manque le champ « apres » (le texte proposé).');
+  if (!apres.trim() && !avant.trim() && !enErreur('apres')) {
+    erreur('apres', 'il manque le champ « apres » (le texte proposé).', 'Indiquez le texte proposé. Pour une abrogation, remplissez seulement le texte actuel.');
   }
 
   for (const [cle, valeur] of [['avant', avant], ['apres', apres]]) {
     valeur.split('\n').forEach((ligne, n) => {
       if (RE_LIGNE_ARTICLE.test(ligne) && !RE_LIGNE_CONFORME.test(ligne)) {
-        remarque(`« ${cle} », ligne ${n + 1} : « ${ligne.trim().slice(0, 48)} » ne suit pas le format « Article 12 : ».`);
+        remarque(cle, `« ${cle} », ligne ${n + 1} : « ${ligne.trim().slice(0, 48)} » ne suit pas le format « Article 12 : ».`, `Ligne ${n + 1} : « ${ligne.trim().slice(0, 48)} » ne suit pas le format « Article 12 : ».`);
       }
     });
   }
   if (article && /^\s*Article\b/.test(apres)) {
-    remarque('« apres » commence par « Article » alors que le champ « article » est rempli : l\'en-tête risque d\'apparaître deux fois.');
+    remarque('apres', '« apres » commence par « Article » alors que le champ « article » est rempli : l\'en-tête risque d\'apparaître deux fois.', 'Le texte commence par « Article » alors que l\'article est déjà indiqué : l\'en-tête risque d\'apparaître deux fois.');
   }
 
-  if (erreurs.length) return { erreurs, remarques, nom };
-
-  return {
-    erreurs,
-    remarques,
-    nom,
-    proposition: {
-      id,
-      titre,
-      texte: texteConcerne,
-      groupe: texteConcerne === 'Décret' ? 'Décrets' : texteConcerne,
-      article,
-      urgent,
-      salve,
-      resume,
-      changements,
-      pourquoi,
-      effets,
-      avant: avant.trim() ? avant : '',
-      apres: apres.trim() ? apres : '',
-      numero,
-    },
+  const apercu = {
+    id,
+    titre,
+    texte: texteConcerne,
+    groupe: texteConcerne === 'Décret' ? 'Décrets' : texteConcerne,
+    article,
+    urgent,
+    salve,
+    resume,
+    changements,
+    pourquoi,
+    effets,
+    avant: avant.trim() ? avant : '',
+    apres: apres.trim() ? apres : '',
+    numero,
   };
+
+  return { erreurs, remarques, nom, apercu, proposition: erreurs.length ? null : apercu };
+}
+
+// Forme d'une proposition vérifiée, telle qu'elle s'écrit dans contenu/propositions.json :
+// champs dans l'ordre du fichier, champs vides omis, « urgent » seulement s'il est vrai.
+export function formeCanonique(p) {
+  const objet = {};
+  if (p.id) objet.id = p.id;
+  objet.titre = p.titre;
+  objet.salve = p.salve;
+  objet.texte = p.texte;
+  if (p.article) objet.article = p.article;
+  if (p.urgent) objet.urgent = true;
+  objet.resume = p.resume;
+  objet.changements = [...p.changements];
+  objet.pourquoi = p.pourquoi;
+  if (p.effets.length) objet.effets = Object.fromEntries(p.effets.map(([cle, , texte]) => [cle, texte]));
+  if (p.avant) objet.avant = p.avant;
+  if (p.apres) objet.apres = p.apres;
+  return objet;
 }
 
 // Découpe une liste JSON mal formée en éléments de premier niveau, pour lire
