@@ -687,6 +687,8 @@ main {
 .etape {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
+  align-content: start;
+  align-items: baseline;
   gap: 4px 12px;
   padding: 16px 20px 4px 0;
 }
@@ -694,7 +696,6 @@ main {
 .etape + .etape { padding-left: 20px; border-left: 1px solid var(--border); }
 
 .etape-numero {
-  grid-row: span 2;
   color: var(--accent);
   font: 500 13px/1.6 var(--mono);
 }
@@ -702,6 +703,7 @@ main {
 .etape-titre { font-weight: 600; }
 
 .etape-texte {
+  grid-column: 2;
   color: var(--muted);
   font-size: 14.5px;
   line-height: 1.55;
@@ -826,11 +828,12 @@ main {
 .compteurs {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 1px;
   margin-bottom: 28px;
   overflow: hidden;
   border: 1px solid var(--border);
   border-radius: var(--radius-grand);
-  background: var(--surface);
+  background: var(--border); /* les filets entre compteurs sont l'espacement de 1 px de la grille */
 }
 
 .compteur {
@@ -843,8 +846,7 @@ main {
   min-height: 76px;
   padding: 12px 16px;
   border: 0;
-  border-left: 1px solid var(--border);
-  background: transparent;
+  background: var(--surface);
   color: var(--text);
   text-align: left;
   text-decoration: none;
@@ -852,7 +854,6 @@ main {
   transition: background-color var(--duree) var(--ease);
 }
 
-.compteur:first-child { border-left: 0; }
 .compteur--tous { --st: var(--accent); --st-texte: var(--text); }
 .compteur:hover { background: var(--surface-2); }
 
@@ -956,15 +957,30 @@ main {
   overflow-wrap: anywhere;
 }
 
+.ligne-corps { overflow: hidden; }
+
+/* Le point « · » précède chaque élément ; celui d'un élément qui ouvre une ligne tombe hors de la boîte et n'est pas dessiné. */
 .ligne-sous {
   display: flex;
   flex-wrap: wrap;
-  gap: 2px 8px;
+  gap: 2px 0;
+  margin-left: -17px;
   color: var(--muted);
   font-size: 13.5px;
 }
 
-.sep { color: var(--border-strong); }
+.ligne-sous > span {
+  position: relative;
+  margin-left: 17px;
+}
+
+.ligne-sous > span::before {
+  content: "·";
+  content: "·" / "";
+  position: absolute;
+  left: -11px;
+  color: var(--border-strong);
+}
 
 .ligne-marques {
   display: flex;
@@ -1441,10 +1457,13 @@ textarea.champ {
 /* Bouton « Décider » fixé en bas sur téléphone et tablette : il mène au panneau de décision. */
 .aller-decision {
   position: fixed;
-  left: 50%;
+  right: 0;
   bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  left: 0;
   z-index: 14;
-  display: inline-flex;
+  display: flex;
+  width: max-content;
+  margin-inline: auto;
   align-items: center;
   gap: 8px;
   min-height: 48px;
@@ -1457,7 +1476,6 @@ textarea.champ {
   font-size: 15px;
   font-weight: 500;
   cursor: pointer;
-  transform: translateX(-50%);
   transition: opacity var(--duree) var(--ease), transform var(--duree) var(--ease), visibility 0s;
 }
 
@@ -1468,12 +1486,12 @@ textarea.champ {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transform: translate(-50%, 12px);
+  transform: translateY(12px);
   transition: opacity var(--duree-courte) var(--ease-sortie), transform var(--duree-courte) var(--ease-sortie), visibility 0s linear var(--duree-courte);
 }
 
-/* Clavier et souris sur un écran étroit : le bouton passe au-dessus du rappel des raccourcis. */
-.avec-raccourcis .aller-decision { bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
+/* Clavier et souris sur un écran étroit : le bouton passe au-dessus du rappel des raccourcis (hauteur mesurée par le script). */
+.avec-raccourcis .aller-decision { bottom: calc(24px + var(--hauteur-raccourcis, 38px) + env(safe-area-inset-bottom, 0px)); }
 
 /* Historique : chronologique, de haut en bas */
 
@@ -1766,15 +1784,17 @@ textarea.champ {
 
 .raccourcis {
   position: fixed;
-  left: 50%;
+  right: 0;
   bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  left: 0;
   z-index: 15;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 6px 16px;
+  width: max-content;
   max-width: calc(100% - 32px);
-  margin: 0;
+  margin: 0 auto;
   padding: 7px 14px;
   border: 1px solid var(--border);
   border-radius: 999px;
@@ -1782,7 +1802,6 @@ textarea.champ {
   box-shadow: var(--ombre);
   color: var(--muted);
   font-size: 12.5px;
-  transform: translateX(-50%);
 }
 
 .raccourcis span {
@@ -1833,10 +1852,9 @@ kbd {
 .valide + .valide { margin-top: 14px; }
 
 .valide-tete {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
   gap: 14px 24px;
   margin-bottom: 18px;
 }
@@ -1853,9 +1871,23 @@ kbd {
 .valide-actions {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-start;
+  justify-content: flex-end;
   gap: 10px 14px;
 }
+
+.valide-actions :is(.btn, .btn-decision) { min-height: 44px; }
+
+/* « Copier le texte » et « Texte copié » occupent la même place : le bouton voisin ne bouge pas. */
+.btn-copier {
+  display: inline-grid;
+  place-items: center;
+}
+
+.btn-copier > span { grid-area: 1 / 1; }
+.btn-copier > .btn-copier-fait,
+.btn-copier.est-copie > .btn-copier-repos { visibility: hidden; }
+.btn-copier.est-copie > .btn-copier-fait { visibility: visible; }
 
 .valide .corps {
   max-width: 76ch;
@@ -2227,13 +2259,16 @@ select.champ option {
 
 .toast {
   position: fixed;
-  left: 50%;
+  right: 0;
   bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  left: 0;
   z-index: 30;
   display: flex;
   align-items: center;
   gap: 14px;
-  max-width: calc(100% - 32px);
+  width: max-content;
+  max-width: min(560px, calc(100% - 32px));
+  margin-inline: auto;
   overflow: hidden;
   padding: 10px 10px 10px 16px;
   border: 1px solid var(--border-strong);
@@ -2244,16 +2279,16 @@ select.champ option {
   font-size: 14px;
   opacity: 0;
   pointer-events: none;
-  transform: translate(-50%, 8px);
+  transform: translateY(8px);
   transition: opacity 140ms var(--ease-sortie), transform 140ms var(--ease-sortie);
 }
 
-.avec-raccourcis .toast { bottom: calc(70px + env(safe-area-inset-bottom, 0px)); }
+.avec-raccourcis .toast { bottom: calc(24px + var(--hauteur-raccourcis, 38px) + env(safe-area-inset-bottom, 0px)); }
 
 .toast--visible {
   opacity: 1;
   pointer-events: auto;
-  transform: translate(-50%, 0);
+  transform: none;
   transition: opacity var(--duree) var(--ease), transform var(--duree) var(--ease);
 }
 
@@ -2393,6 +2428,7 @@ select.champ option {
 
 .panneau-corps {
   overscroll-behavior: contain;
+  scroll-padding-block: 12px;
   display: grid;
   flex: 1;
   align-content: start;
@@ -2652,21 +2688,20 @@ select.champ option {
 /* Sous 1180 px, le bouton « Décider » reste visible : le message de confirmation passe au-dessus. */
 @media (max-width: 1179px) {
   .avec-decider:not(.decision-en-vue) .toast { bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
-  .avec-decider.avec-raccourcis:not(.decision-en-vue) .toast { bottom: calc(122px + env(safe-area-inset-bottom, 0px)); }
+  .avec-decider.avec-raccourcis:not(.decision-en-vue) .toast { bottom: calc(82px + var(--hauteur-raccourcis, 38px) + env(safe-area-inset-bottom, 0px)); }
 }
 
 /* Tablette et mobile */
 
 @media (max-width: 1000px) {
   .compteurs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .compteur:nth-child(3n + 1) { border-left: 0; }
-  .compteur:nth-child(n + 4) { border-top: 1px solid var(--border); }
 }
 
 @media (max-width: 860px) {
   .comparaison { grid-template-columns: minmax(0, 1fr); }
   .colonne + .colonne { border-left: 0; border-top: 1px solid var(--border); }
   .etapes { grid-template-columns: minmax(0, 1fr); }
+  .etape { padding: 14px 0; }
   .etape + .etape { padding-left: 0; border-left: 0; border-top: 1px solid var(--border); }
 }
 
@@ -2683,7 +2718,7 @@ select.champ option {
   }
 
   .ligne-marques {
-    grid-column: 1;
+    grid-column: 1 / -1;
     grid-row: 2;
     justify-content: flex-start;
   }
@@ -2786,6 +2821,8 @@ select.champ option {
   .btn-decision { justify-content: center; }
 
   .valide-tete .btn { width: 100%; }
+  .valide-tete { grid-template-columns: minmax(0, 1fr); }
+  .valide-actions { justify-content: flex-start; }
   .restants { text-align: left; }
   .segment { width: 100%; }
   .segment button { flex: 1; padding-inline: 8px; }
@@ -2811,6 +2848,11 @@ select.champ option {
   .panneau-corps,
   .panneau-pied { padding-inline: 16px; }
   .grille-palettes { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Petit téléphone : compteurs sur deux colonnes, chaque libellé tient sur une ligne. */
+@media (max-width: 420px) {
+  .compteurs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 380px) {

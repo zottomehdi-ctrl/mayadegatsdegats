@@ -142,6 +142,12 @@ async function demarrer() {
   document.addEventListener('focusout', surSortie);
   window.addEventListener('pagehide', surFermeture);
   window.addEventListener('resize', () => requestAnimationFrame(mesurerPanneaux));
+  if ('ResizeObserver' in window) {
+    new ResizeObserver(([entree]) => {
+      const hauteur = entree.borderBoxSize?.[0]?.blockSize ?? entree.target.offsetHeight;
+      if (hauteur) document.documentElement.style.setProperty('--hauteur-raccourcis', `${Math.round(hauteur)}px`);
+    }).observe(document.getElementById('raccourcis'));
+  }
   window.addEventListener('beforeunload', surDepart);
   document.addEventListener('pointerdown', () => { pointeur.bas = true; }, true);
   document.addEventListener('pointerup', relacherPointeur, true);
@@ -621,9 +627,9 @@ function majListeRecap() {
 }
 
 function ligne(p, avecTexte) {
-  const sous = [avecTexte ? esc(p.texte) : '', p.article ? `<span class="mono">${esc(p.article)}</span>` : '']
+  const sous = [avecTexte ? `<span>${esc(p.texte)}</span>` : '', p.article ? `<span class="mono">${esc(p.article)}</span>` : '']
     .filter(Boolean)
-    .join('<span class="sep" aria-hidden="true">·</span>');
+    .join('');
   const marques = `${estNouvelle(p.id) ? badgeNouveau() : ''}${p.urgent ? badgeUrgent() : ''}${p.manuelle ? badgeManuelle() : ''}`;
   return `
     <a class="ligne ligne--${statutDe(p.id)}" href="${lienFiche(p.id)}">
@@ -641,7 +647,9 @@ function ligne(p, avecTexte) {
 function vueDetail(id) {
   const p = trouver(id);
   if (!p) {
-    return `${lienRetour()}${vide("Cette proposition n'existe pas ou a été retirée du registre.", '', `<a class="btn" href="${esc(etat.derniereListe)}">Revenir à la liste</a>`)}`;
+    return `${lienRetour()}
+      <header class="page-tete"><h1>Proposition introuvable</h1></header>
+      ${vide("Cette proposition n'existe pas ou a été retirée du registre.", '', `<a class="btn" href="${esc(etat.derniereListe)}">Revenir à la liste</a>`)}`;
   }
   marquerVue(p.id);
   return `
@@ -999,7 +1007,7 @@ function carteValide(p) {
           <h4 class="valide-titre"><a href="${lienFiche(p.id)}" class="lien-discret">${esc(p.titre)}</a></h4>
         </div>
         <div class="valide-actions">
-          <button type="button" class="btn" data-action="copier" data-id="${esc(p.id)}">Copier le texte</button>
+          <button type="button" class="btn btn-copier" data-action="copier" data-id="${esc(p.id)}"><span class="btn-copier-repos">Copier le texte</span><span class="btn-copier-fait" aria-hidden="true">Texte copié</span></button>
           ${boutonDecision(p.id, 'traitee', false)}
         </div>
       </div>
@@ -1141,9 +1149,9 @@ async function copier(id, bouton) {
     afficherToast('La copie a échoué. Sélectionnez le texte et copiez-le manuellement.', { erreur: true });
     return;
   }
-  bouton.textContent = 'Texte copié';
+  bouton.classList.add('est-copie');
   clearTimeout(bouton.minuteur);
-  bouton.minuteur = setTimeout(() => { bouton.textContent = 'Copier le texte'; }, 2000);
+  bouton.minuteur = setTimeout(() => bouton.classList.remove('est-copie'), 2000);
   afficherToast('Texte copié, prêt à coller sur Discord.');
 }
 
