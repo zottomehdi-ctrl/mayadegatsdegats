@@ -2015,7 +2015,7 @@ function apercuPalette(cle) {
     <span class="carte-apercu" data-palette="${cle}" aria-hidden="true">
       <span class="apercu-surface">
         <span class="apercu-titre">Révision des peines</span>
-        <span class="apercu-texte">Le vol est puni d'une amende de 7 500 $.</span>
+        <span class="apercu-texte">Le vol est puni d'une amende de 7 500 $.</span>
         <span class="apercu-bouton">Valider</span>
         <span class="apercu-statuts">${ORDRE_STATUTS.map(pastille).join('')}</span>
       </span>

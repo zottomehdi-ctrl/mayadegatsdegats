@@ -431,6 +431,7 @@ button, a, select, input, textarea { touch-action: manipulation; }
 
 .nav-lien--ajouter {
   margin-left: auto;
+  margin-right: -12px;
   color: var(--accent);
 }
 
@@ -1201,7 +1202,7 @@ main {
 
 .colonne-titre {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
   margin: 0 -22px 16px;
   padding: 11px 22px;
@@ -1212,6 +1213,8 @@ main {
 
 .colonne-titre::before {
   content: "";
+  flex: none;
+  margin-top: calc((1.4em - 8px) / 2);
   width: 8px;
   height: 8px;
   border-radius: 2px;
@@ -1424,6 +1427,19 @@ textarea.champ {
   transform: none;
   transition-timing-function: var(--ease);
   transition-delay: 250ms;
+}
+
+/* Tablette à la souris (boutons sur deux rangées) : l'explication s'ouvre sous le groupe de boutons. */
+@media (hover: hover) and (max-width: 1179px) {
+  .fiche-decision .boutons { position: relative; }
+  .fiche-decision .choix { position: static; }
+
+  .fiche-decision .choix .infobulle {
+    top: calc(100% + 8px);
+    right: auto;
+    bottom: auto;
+    left: 0;
+  }
 }
 
 /* Écrans tactiles : pas de survol, l'explication s'affiche sous chaque bouton. */
@@ -2545,6 +2561,8 @@ select.champ option {
 }
 
 .carte-pied {
+  flex: 1;
+  min-height: 66px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -2681,6 +2699,7 @@ select.champ option {
 @media (min-width: 1180px) {
   :is(.fiche-decision, .point-decision)[data-collant] {
     position: sticky;
+    z-index: 2;
     top: calc(var(--hauteur-barre) + 24px);
   }
 }
@@ -2698,6 +2717,7 @@ select.champ option {
 }
 
 @media (max-width: 860px) {
+  .panneau { width: 100%; border-left: 0; }
   .comparaison { grid-template-columns: minmax(0, 1fr); }
   .colonne + .colonne { border-left: 0; border-top: 1px solid var(--border); }
   .etapes { grid-template-columns: minmax(0, 1fr); }
@@ -2752,6 +2772,7 @@ select.champ option {
 @media (min-width: 641px) and (max-width: 860px) {
   .nav-lien { padding: 0 10px; }
   .nav-lien:first-child { margin-left: -10px; }
+  .nav-lien--ajouter { margin-right: -10px; }
   .nav-lien:not(.nav-lien--ajouter) .icone { display: none; }
 }
 
@@ -2793,13 +2814,14 @@ select.champ option {
   .nav-compte {
     position: absolute;
     top: 4px;
-    left: calc(50% + 6px);
+    left: calc(50% + 11px);
     min-width: 18px;
     padding: 2px 5px;
     font-size: 11px;
   }
 
-  .nav-lien--ajouter { margin-left: 0; }
+  .nav-lien--ajouter { margin: 0; }
+  .nav-lien:focus-visible { outline-offset: -2px; }
 }
 
 @media (max-width: 560px) {
