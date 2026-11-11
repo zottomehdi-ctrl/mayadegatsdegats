@@ -139,6 +139,10 @@ async function demarrer() {
   document.addEventListener('input', surSaisie);
   document.addEventListener('change', surSaisie);
   document.addEventListener('submit', surEnvoi);
+  document.addEventListener('focusout', surSortie);
+  document.addEventListener('pointerdown', () => { pointeur.bas = true; }, true);
+  document.addEventListener('pointerup', relacherPointeur, true);
+  document.addEventListener('pointercancel', relacherPointeur, true);
   document.addEventListener('keydown', surTouche);
   initialiserPalettes();
   rendre();
@@ -340,20 +344,70 @@ function rendre({ garderPosition = false } = {}) {
   document.title = `${titre} · Liaison Maya`;
   majRaccourcis(route);
 
+  let restaure = false;
   if (focus) {
     const element = document.querySelector(focus);
     if (element) {
       element.focus({ preventScroll: true });
+      restaure = true;
       if (typeof element.setSelectionRange === 'function' && typeof element.value === 'string') {
         element.setSelectionRange(element.value.length, element.value.length);
       }
     }
   }
   if (nouvelleVue) {
+    const premiere = etat.derniereVue === null;
     etat.derniereVue = cle;
     if (!garderPosition) window.scrollTo(0, 0);
+    // Nouvelle page : le focus passe au contenu, comme après un chargement (sauf à l'ouverture du site).
+    if (!premiere && !restaure) document.getElementById('app').focus({ preventScroll: true });
   }
+  majBarreCollante();
+  majAllerDecision(route);
   if (route.vue === 'ajouter') majFormulaire();
+}
+
+// Hauteur de la barre collante du mode « un point à la fois » : le panneau de décision se cale dessous.
+const observateurs = { barre: null, decision: null };
+
+function majBarreCollante() {
+  observateurs.barre?.disconnect();
+  const barre = document.querySelector('.barre-mode--collante');
+  const poser = () => document.documentElement.style.setProperty('--hauteur-barre', `${barre ? barre.offsetHeight : 0}px`);
+  poser();
+  if (barre && 'ResizeObserver' in window) {
+    observateurs.barre = new ResizeObserver(poser);
+    observateurs.barre.observe(barre);
+  }
+}
+
+// Bouton « Décider » (téléphone et tablette) : visible sur une fiche et en mode « un point à la fois »,
+// tant que le panneau de décision n'est pas à l'écran.
+function cibleDecision(route) {
+  if (route.vue === 'detail') return document.querySelector('.fiche-decision');
+  if (route.vue === 'rediscuter' && etat.unParUn) return document.querySelector('.point-decision');
+  return null;
+}
+
+function majAllerDecision(route) {
+  observateurs.decision?.disconnect();
+  const cible = cibleDecision(route);
+  document.getElementById('aller-decision').hidden = !cible;
+  document.body.classList.toggle('avec-decider', Boolean(cible));
+  document.body.classList.remove('decision-en-vue');
+  if (!cible || !('IntersectionObserver' in window)) return;
+  observateurs.decision = new IntersectionObserver(([entree]) => {
+    document.body.classList.toggle('decision-en-vue', entree.isIntersecting);
+  });
+  observateurs.decision.observe(cible);
+}
+
+function allerDecision() {
+  const cible = cibleDecision(lireRoute());
+  if (!cible) return;
+  const doux = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  cible.scrollIntoView({ block: 'start', behavior: doux ? 'smooth' : 'auto' });
+  cible.querySelector('.decision-titre')?.focus({ preventScroll: true });
 }
 
 function majNav(vue) {
@@ -462,8 +516,9 @@ function vueRecap() {
   return `
     <header class="page-tete page-tete--scinde">
       <div>
+        <p class="surtitre">Salve ${salveCourante()} en cours</p>
         <h1>Récapitulatif</h1>
-        <p class="chapo"><strong>Salve ${salveCourante()} en cours.</strong> Les propositions en attente, validées ou à rediscuter, groupées par texte. Les traitées et les refusées sont rangées dans les Archives.</p>
+        <p class="chapo">Les propositions en attente, validées ou à rediscuter, groupées par texte. Les traitées et les refusées sont rangées dans les Archives.</p>
       </div>
       <a class="btn btn--plein btn--ajouter" href="#/ajouter">${ICONES.plus}<span>Ajouter une proposition</span></a>
     </header>
@@ -558,19 +613,21 @@ function vueDetail(id) {
   return `
     <article class="fiche fiche--${statutDe(p.id)}">
       ${lienRetour()}
-      <header class="fiche-tete">
-        <div class="meta">
-          ${metaTexte(p)}
-          ${p.urgent ? badgeUrgent() : ''}
-          ${p.manuelle ? badgeManuelle() : ''}
-          ${pastille(statutDe(p.id))}
-        </div>
-        <h1 class="fiche-titre">${esc(p.titre)}</h1>
-        ${gestionManuelle(p)}
-      </header>
-      ${blocsProposition(p, 2)}
-      ${blocDecision(p)}
-      ${blocHistorique(p)}
+      <div class="fiche-grille">
+        <header class="fiche-tete">
+          <div class="meta">
+            ${metaTexte(p)}
+            ${p.urgent ? badgeUrgent() : ''}
+            ${p.manuelle ? badgeManuelle() : ''}
+            ${pastille(statutDe(p.id))}
+          </div>
+          <h1 class="fiche-titre">${esc(p.titre)}</h1>
+          ${gestionManuelle(p)}
+        </header>
+        <div class="fiche-contenu">${blocsProposition(p, 2)}</div>
+        <div class="fiche-decision">${blocDecision(p)}</div>
+        ${blocHistorique(p)}
+      </div>
     </article>`;
 }
 
@@ -670,7 +727,7 @@ function blocDecision(p) {
 
   return `
     <section class="decision" aria-labelledby="titre-decision">
-      <h2 class="decision-titre" id="titre-decision">Votre décision</h2>
+      <h2 class="decision-titre" id="titre-decision" tabindex="-1">Votre décision</h2>
       <p class="decision-etat">${situation}</p>
       ${commentaire}
       ${champCommentaire(p.id)}
@@ -753,6 +810,7 @@ function vueRediscuter() {
   const tete = `
     <header class="page-tete page-tete--scinde">
       <div>
+        <p class="surtitre">Séance d'appel</p>
         <h1>À rediscuter</h1>
         <p class="chapo">Les points renvoyés en appel, dans l'ordre où ils ont été renvoyés. Un point tranché quitte la liste.</p>
       </div>
@@ -782,9 +840,9 @@ function vueRediscuter() {
         </div>
       </div>
       <div class="pager">
-        <button type="button" class="btn" data-action="precedent"${etat.indexPoint === 0 ? ' disabled' : ''}><span aria-hidden="true">←</span> Précédent</button>
+        <button type="button" class="btn" data-action="precedent"${etat.indexPoint === 0 ? ' disabled' : ''}><span aria-hidden="true">←</span><span class="pager-libelle">Précédent</span></button>
         <span class="pager-pos">${etat.indexPoint + 1} sur ${total}</span>
-        <button type="button" class="btn btn--plein" data-action="suivant"${etat.indexPoint >= total - 1 ? ' disabled' : ''}>Suivant <span aria-hidden="true">→</span></button>
+        <button type="button" class="btn btn--plein" data-action="suivant"${etat.indexPoint >= total - 1 ? ' disabled' : ''}><span class="pager-libelle">Suivant</span><span aria-hidden="true">→</span></button>
       </div>`;
   }
 
@@ -820,26 +878,31 @@ function cartePoint(p, index) {
 
   return `
     <article class="point" data-point="${esc(p.id)}" aria-labelledby="point-${p.id}">
-      <header class="point-tete">
-        <span class="point-num" aria-hidden="true">${index + 1}</span>
-        <div>
-          <div class="meta">
-            ${metaTexte(p)}
-            ${nouvelle ? badgeNouveau() : ''}
-            ${p.urgent ? badgeUrgent() : ''}
-            ${p.manuelle ? badgeManuelle() : ''}
+      <div class="point-grille">
+        <header class="point-tete">
+          <span class="point-num" aria-hidden="true">${index + 1}</span>
+          <div>
+            <div class="meta">
+              ${metaTexte(p)}
+              ${nouvelle ? badgeNouveau() : ''}
+              ${p.urgent ? badgeUrgent() : ''}
+              ${p.manuelle ? badgeManuelle() : ''}
+            </div>
+            <h2 class="point-titre" id="point-${p.id}"><a href="${lienFiche(p.id)}">${esc(p.titre)}</a></h2>
+            <p class="point-date">Renvoyée le ${dateHeure(decision.renvoyeLe ?? decision.date)}</p>
           </div>
-          <h2 class="point-titre" id="point-${p.id}"><a href="${lienFiche(p.id)}">${esc(p.titre)}</a></h2>
-          <p class="point-date">Renvoyée le ${dateHeure(decision.renvoyeLe ?? decision.date)}</p>
+        </header>
+        <div class="point-contenu">
+          ${commentaire}
+          ${blocsProposition(p, 3)}
         </div>
-      </header>
-      ${commentaire}
-      ${blocsProposition(p, 3)}
-      <div class="point-decision">
-        ${champCommentaire(p.id)}
-        <div class="boutons">
-          ${boutonDecision(p.id, 'validee', false)}
-          ${boutonDecision(p.id, 'refusee', false)}
+        <div class="point-decision">
+          <h3 class="decision-titre" tabindex="-1">Votre décision</h3>
+          ${champCommentaire(p.id)}
+          <div class="boutons">
+            ${boutonDecision(p.id, 'validee', false)}
+            ${boutonDecision(p.id, 'refusee', false)}
+          </div>
         </div>
       </div>
     </article>`;
@@ -853,6 +916,7 @@ function vueValides() {
 
   const tete = `
     <header class="page-tete">
+      <p class="surtitre">À appliquer sur le serveur</p>
       <h1>Textes validés</h1>
       <p class="chapo">Les textes validés à appliquer sur le serveur, classés par texte puis par date de validation, prêts à coller sur Discord. Une fois marqués comme traités, ils rejoignent les Archives.</p>
     </header>`;
@@ -922,6 +986,7 @@ function vueArchives() {
   const archivees = propositionsArchivees();
   const tete = `
     <header class="page-tete">
+      <p class="surtitre">Traitées et refusées</p>
       <h1>Archives</h1>
       <p class="chapo">Les propositions traitées et refusées, groupées par salve, de la plus récente à la plus ancienne. Une traitée remise en validée retourne dans « Textes validés » ; une refusée peut encore être validée ou renvoyée en appel.</p>
     </header>`;
@@ -1164,7 +1229,7 @@ function preparerFormulaire(id) {
   let champs;
   if (reprise) champs = brouillon.champs;
   else champs = id ? champsDepuis(entree?.proposition ?? {}) : champsNeufs();
-  etat.ajout = { cible, version, champs, soumis: false, erreursServeur: [], envoi: false, repris: Boolean(reprise) };
+  etat.ajout = { cible, version, champs, soumis: false, touches: new Set(), resume: null, erreursServeur: [], envoi: false, repris: Boolean(reprise) };
   return etat.ajout;
 }
 
@@ -1173,6 +1238,7 @@ function vueAjouter(id) {
   const p = modification ? trouver(id) : null;
   const tete = `
     <header class="page-tete">
+      <p class="surtitre">${modification ? `Proposition ${esc(id)}` : 'Nouvelle proposition'}</p>
       <h1>${modification ? 'Modifier la proposition' : 'Ajouter une proposition'}</h1>
       <p class="chapo">${modification
         ? "Le texte reste modifiable tant qu'aucune décision n'a été prise."
@@ -1243,7 +1309,11 @@ function formulaireAjout(ajout) {
   return `
     <form class="formulaire" id="form-ajout" novalidate>
       <p class="formulaire-note">Les champs marqués d'un astérisque <span class="requis" aria-hidden="true">*</span> sont obligatoires. La saisie est gardée en brouillon sur cet appareil.</p>
-      <p class="champ-message champ-message--general" data-message="general" role="alert"></p>
+      <div class="resume-erreurs" id="resume-erreurs" tabindex="-1" role="group" aria-labelledby="resume-erreurs-titre" hidden>
+        <p class="resume-erreurs-titre" id="resume-erreurs-titre"></p>
+        <ul></ul>
+      </div>
+      <p class="champ-message" data-message="general"></p>
 
       <fieldset class="formulaire-groupe">
         <legend>Identification</legend>
@@ -1251,7 +1321,7 @@ function formulaireAjout(ajout) {
         <div class="champ-ligne">
           <div class="champ-groupe">
             ${etiquette('texte', 'Texte concerné', true)}
-            <select class="champ" id="ajout-texte" data-champ="texte" ${decrit('texte')} aria-required="true">${options}</select>
+            <span class="selection"><select class="champ" id="ajout-texte" data-champ="texte" ${decrit('texte')} aria-required="true">${options}</select></span>
             ${message('texte')}
           </div>
           ${ligne('article', 'Article', { texteAide: 'Sous la forme « Article 12 : ». Facultatif pour un décret.', attributs: 'autocomplete="off" spellcheck="false"' })}
@@ -1316,6 +1386,8 @@ function majFormulaire() {
   const ajout = etat.ajout;
   const form = document.getElementById('form-ajout');
   if (!ajout || !form) return null;
+  // Après un nouveau rendu du formulaire (ajout d'un point…), le récapitulatif du dernier envoi revient.
+  if (ajout.resume?.length && !form.querySelector('#resume-erreurs li')) etablirResume(form, ajout.resume);
   const resultat = validerProposition(versProposition(ajout.champs), { manuelle: true });
   afficherMessages(form, resultat);
   const apercu = document.getElementById('apercu-contenu');
@@ -1328,30 +1400,42 @@ function planifierMajFormulaire() {
   minuteurs.formulaire = setTimeout(majFormulaire, 150);
 }
 
-// Les messages passent par textContent : le texte saisi n'est jamais interprété comme du HTML.
+// Libellés des champs dans le récapitulatif des erreurs.
+const LIBELLES_CHAMPS = {
+  titre: 'Titre court',
+  texte: 'Texte concerné',
+  article: 'Article',
+  salve: 'Salve',
+  urgent: 'Urgente',
+  resume: 'En une phrase',
+  changements: 'Ce qui change',
+  pourquoi: 'Pourquoi',
+  effets: 'Effet en jeu',
+  ...Object.fromEntries(EFFETS.map(([cle, libelle]) => [`effets.${cle}`, `Effet en jeu, ${libelle}`])),
+  avant: 'Texte actuel',
+  apres: 'Texte proposé',
+};
+
+// « changements.2 » relève du champ « changements ».
+const racineChamp = (cle) => (cle.startsWith('changements.') ? 'changements' : cle);
+
+// Messages sous chaque champ. Une erreur s'affiche une fois le champ quitté, ou après un premier envoi.
+// Tout passe par textContent : le texte saisi n'est jamais interprété comme du HTML.
 function afficherMessages(form, { erreurs, remarques }) {
   const ajout = etat.ajout;
   const messages = new Map();
   const ajouter = (champ, texte, erreur) => {
     const cle = champ && form.querySelector(`[data-message="${CSS.escape(champ)}"]`) ? champ : 'general';
+    if (cle === 'general' && erreur) return; // erreur sans champ : elle figure dans le récapitulatif
     const message = messages.get(cle) ?? { textes: [], erreur: false };
     if (!message.textes.includes(texte)) message.textes.push(texte);
     message.erreur ||= erreur;
     messages.set(cle, message);
   };
-  const erreursVisibles = [
-    ...(ajout.soumis ? erreurs.map((e) => ({ champ: e.champ, texte: e.aide })) : []),
-    ...ajout.erreursServeur.map((e) => ({ champ: e.champ, texte: e.message })),
-  ];
-  for (const e of erreursVisibles) ajouter(e.champ, e.texte, true);
+  const visible = (e) => ajout.soumis || ajout.touches.has(e.champ);
+  for (const e of erreurs.filter(visible)) ajouter(e.champ, e.aide, true);
+  for (const e of ajout.erreursServeur) ajouter(e.champ, e.message, true);
   for (const r of remarques) ajouter(r.champ, r.aide, false);
-
-  const nombre = erreursVisibles.length;
-  if (nombre) {
-    const resume = nombre > 1 ? `${nombre} points à corriger avant l'envoi.` : 'Un point à corriger avant l\'envoi.';
-    const general = messages.get('general');
-    messages.set('general', { textes: [resume, ...(general?.textes ?? [])], erreur: true });
-  }
 
   form.querySelectorAll('[data-message]').forEach((element) => {
     const message = messages.get(element.dataset.message);
@@ -1365,6 +1449,67 @@ function afficherMessages(form, { erreurs, remarques }) {
     if (touche) champ.setAttribute('aria-invalid', 'true');
     else champ.removeAttribute('aria-invalid');
   });
+
+  // Récapitulatif : une ligne corrigée depuis l'envoi est barrée, sans décaler la page.
+  const restantes = new Set([...erreurs, ...ajout.erreursServeur].map((e) => e.champ));
+  form.querySelectorAll('#resume-erreurs li[data-erreur-champ]').forEach((li) => {
+    li.classList.toggle('resume-erreurs-corrige', !restantes.has(li.dataset.erreurChamp));
+  });
+}
+
+// Champ à atteindre depuis le récapitulatif : le premier élément de saisie concerné.
+function cibleChamp(form, champ) {
+  if (!champ) return null;
+  return [...form.querySelectorAll('[data-champ]')].find((el) => el.dataset.champ === champ || el.dataset.champ.startsWith(`${champ}.`)) ?? null;
+}
+
+// Établi à chaque envoi refusé : un lien par point à corriger, dans l'ordre du formulaire.
+function etablirResume(form, erreurs) {
+  if (etat.ajout) etat.ajout.resume = erreurs;
+  const resume = form.querySelector('#resume-erreurs');
+  if (!resume) return;
+  const champs = [...form.querySelectorAll('[data-champ]')];
+  const rang = (champ) => {
+    const cible = cibleChamp(form, champ);
+    return cible ? champs.indexOf(cible) : -1;
+  };
+  const vues = new Set();
+  const liste = erreurs
+    .filter(({ champ, texte }) => {
+      const cle = `${champ}\n${texte}`;
+      if (vues.has(cle)) return false;
+      vues.add(cle);
+      return true;
+    })
+    .sort((a, b) => rang(a.champ) - rang(b.champ));
+
+  resume.querySelector('ul').replaceChildren(...liste.map(({ champ, texte }) => {
+    const li = document.createElement('li');
+    const cible = cibleChamp(form, champ);
+    if (cible) {
+      li.dataset.erreurChamp = champ;
+      const bouton = document.createElement('button');
+      bouton.type = 'button';
+      bouton.dataset.action = 'aller-champ';
+      bouton.dataset.cible = cible.id;
+      bouton.textContent = `${LIBELLES_CHAMPS[champ] ?? champ} : ${texte}`;
+      li.append(bouton);
+    } else {
+      li.textContent = texte;
+    }
+    return li;
+  }));
+  const n = liste.length;
+  resume.querySelector('.resume-erreurs-titre').textContent = n > 1 ? `${n} points à corriger avant l'envoi` : 'Un point à corriger avant l\'envoi';
+  resume.hidden = n === 0;
+}
+
+function allerChamp(id) {
+  const champ = id && document.getElementById(id);
+  if (!champ) return;
+  const doux = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  champ.scrollIntoView({ block: 'center', behavior: doux ? 'smooth' : 'auto' });
+  champ.focus({ preventScroll: true });
 }
 
 function aRemplir(texte) {
@@ -1450,9 +1595,11 @@ async function envoyerAjout() {
   ajout.erreursServeur = [];
   const resultat = majFormulaire();
   if (resultat?.erreurs.length) {
+    etablirResume(form, resultat.erreurs.map((e) => ({ champ: e.champ, texte: e.aide })));
     focaliserErreur(form);
     return;
   }
+  etablirResume(form, []);
 
   ajout.envoi = true;
   majBoutonEnvoi(ajout);
@@ -1475,6 +1622,7 @@ async function envoyerAjout() {
     if (err.erreurs) {
       ajout.erreursServeur = err.erreurs;
       majFormulaire();
+      etablirResume(form, err.erreurs.map((e) => ({ champ: e.champ, texte: e.message })));
       focaliserErreur(form);
     } else {
       afficherToast(`La proposition n'a pas été enregistrée : ${err.message}.`, { erreur: true });
@@ -1493,12 +1641,13 @@ function majBoutonEnvoi(ajout) {
   bouton.textContent = ajout.envoi ? 'Enregistrement…' : (ajout.cible !== 'nouveau' ? 'Enregistrer les modifications' : 'Ajouter la proposition');
 }
 
+// Après un envoi refusé, le focus va au récapitulatif : il est lu en entier, avec un lien par champ.
 function focaliserErreur(form) {
-  const champ = form.querySelector('[aria-invalid="true"]') ?? form.querySelector('[data-message="general"]');
-  if (!champ) return;
+  const resume = form.querySelector('#resume-erreurs');
+  if (!resume || resume.hidden) return;
   const doux = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  champ.scrollIntoView({ block: 'center', behavior: doux ? 'smooth' : 'auto' });
-  if (champ.matches('[data-champ]')) champ.focus({ preventScroll: true });
+  resume.scrollIntoView({ block: 'start', behavior: doux ? 'smooth' : 'auto' });
+  resume.focus({ preventScroll: true });
 }
 
 async function supprimerManuelle(id) {
@@ -1692,8 +1841,7 @@ function resoudrePalette(cle) {
 function poserPalette(cle) {
   const palette = resoudrePalette(cle);
   const racine = document.documentElement;
-  if (racine.dataset.palette === palette) return;
-  racine.dataset.palette = palette;
+  if (racine.dataset.palette !== palette) racine.dataset.palette = palette;
   const fond = getComputedStyle(racine).getPropertyValue('--bg').trim();
   if (fond) document.querySelector('meta[name="theme-color"]')?.setAttribute('content', fond);
 }
@@ -1870,6 +2018,12 @@ function surClic(e) {
     const annuler = toast.annuler;
     masquerToast();
     annuler?.();
+  } else if (action === 'aller-contenu') {
+    document.getElementById('app').focus();
+  } else if (action === 'aller-decision') {
+    allerDecision();
+  } else if (action === 'aller-champ') {
+    allerChamp(el.dataset.cible);
   } else if (action === 'supprimer-manuelle') {
     supprimerManuelle(el.dataset.id);
   } else if (action === 'exporter-manuelles') {
@@ -1892,7 +2046,7 @@ function surClic(e) {
   } else if (action === 'vider-formulaire' && etat.ajout) {
     const ajout = etat.ajout;
     const anciens = structuredClone(ajout.champs);
-    Object.assign(ajout, { champs: champsNeufs(), soumis: false, erreursServeur: [], repris: false });
+    Object.assign(ajout, { champs: champsNeufs(), soumis: false, touches: new Set(), resume: null, erreursServeur: [], repris: false });
     effacerBrouillon(ajout.cible);
     rendre({ garderPosition: true });
     afficherToast('Formulaire vidé.', {
@@ -1915,6 +2069,25 @@ function surEnvoi(e) {
   if (e.target.id !== 'form-ajout') return;
   e.preventDefault();
   envoyerAjout();
+}
+
+// Un message qui apparaît sous le champ quitté décale la suite du formulaire : pendant un clic,
+// l'affichage attend que le bouton soit relâché, pour que le clic atteigne bien sa cible.
+const pointeur = { bas: false, enAttente: false };
+
+function relacherPointeur() {
+  pointeur.bas = false;
+  if (!pointeur.enAttente) return;
+  pointeur.enAttente = false;
+  setTimeout(majFormulaire, 0);
+}
+
+function surSortie(e) {
+  const champ = e.target.closest?.('#form-ajout [data-champ]');
+  if (!champ || !etat.ajout) return;
+  etat.ajout.touches.add(racineChamp(champ.dataset.champ));
+  if (pointeur.bas) pointeur.enAttente = true;
+  else majFormulaire();
 }
 
 function surSaisie(e) {

@@ -26,6 +26,7 @@
   <script type="module" src="assets/app.js"></script>
 </head>
 <body>
+  <button type="button" class="lien-evitement" data-action="aller-contenu">Aller au contenu</button>
   <header class="entete">
     <div class="cadre entete-haut">
       <a class="marque" href="#/">
@@ -49,11 +50,11 @@
     </div>
     <nav class="nav" aria-label="Sections">
       <div class="cadre nav-cadre">
-        <a class="nav-lien" href="#/" data-vue="recap">Récapitulatif</a>
-        <a class="nav-lien" href="#/rediscuter" data-vue="rediscuter">À rediscuter <span class="nav-compte" id="compte-rediscuter"></span></a>
-        <a class="nav-lien" href="#/valides" data-vue="valides">Textes validés</a>
-        <a class="nav-lien" href="#/archives" data-vue="archives">Archives <span class="nav-compte nav-compte--neutre" id="compte-archives"></span></a>
-        <a class="nav-lien nav-lien--ajouter" href="#/ajouter" data-vue="ajouter"><svg class="icone" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M8 3.2v9.6M3.2 8h9.6"/></svg>Ajouter</a>
+        <a class="nav-lien" href="#/" data-vue="recap"><svg class="icone" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 4.5h7M6 8h7M6 11.5h7"/><path d="M3 4.5h.01M3 8h.01M3 11.5h.01"/></svg><span class="nav-long">Récapitulatif</span><span class="nav-court" aria-hidden="true">Récap</span></a>
+        <a class="nav-lien" href="#/rediscuter" data-vue="rediscuter"><svg class="icone" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 3.8L3.4 6.4 6 9"/><path d="M3.6 6.4h6.1a2.9 2.9 0 0 1 0 5.8H7.2"/></svg><span class="nav-long">À rediscuter</span><span class="nav-court" aria-hidden="true">Rediscuter</span> <span class="nav-compte" id="compte-rediscuter"></span></a>
+        <a class="nav-lien" href="#/valides" data-vue="valides"><svg class="icone" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 2.5h5.2L12 5.3v8.2H4z"/><path d="M9 2.5v3h3"/><path d="M6 9.4l1.4 1.4 2.6-2.8"/></svg><span class="nav-long">Textes validés</span><span class="nav-court" aria-hidden="true">Validés</span></a>
+        <a class="nav-lien" href="#/archives" data-vue="archives"><svg class="icone" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="2.5" y="3" width="11" height="3" rx=".6"/><path d="M3.5 6v6.5h9V6"/><path d="M6.5 8.6h3"/></svg><span class="nav-long">Archives</span><span class="nav-court" aria-hidden="true">Archives</span> <span class="nav-compte nav-compte--neutre" id="compte-archives"></span></a>
+        <a class="nav-lien nav-lien--ajouter" href="#/ajouter" data-vue="ajouter"><svg class="icone" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 3.2v9.6M3.2 8h9.6"/></svg><span class="nav-long">Ajouter</span><span class="nav-court" aria-hidden="true">Ajouter</span></a>
       </div>
     </nav>
   </header>
@@ -72,6 +73,8 @@
     <button type="button" class="toast-annuler" data-action="annuler-toast" hidden>Annuler</button>
     <span class="toast-delai" aria-hidden="true"></span>
   </div>
+
+  <button type="button" class="aller-decision" id="aller-decision" data-action="aller-decision" hidden><svg class="icone" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 3v9.5M4 8.6l4 4 4-4"/></svg><span>Décider</span></button>
 
   <p class="raccourcis" id="raccourcis" hidden>
     <span><kbd>V</kbd> valider</span>
