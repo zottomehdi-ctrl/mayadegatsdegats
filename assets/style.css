@@ -192,6 +192,14 @@
 
 [hidden] { display: none !important; }
 
+/* Texte saisi ou issu du registre : un mot ou un lien trop long se coupe au lieu de déborder. */
+:is(.resume, .prose, .changements li, .effet dd, .corps, .meta, .meta-texte, .article, .ligne-titre, .ligne-sous,
+  .fiche-titre, .point-titre, .valide-titre, .archive-titre, .archive-resume, .manuelle-titre, .decision-commentaire,
+  .histo-commentaire, .commentaire-fondatrice-texte, .bandeau, .champ-message, .resume-erreurs li, .toast-message,
+  .vide, .chapo) {
+  overflow-wrap: anywhere;
+}
+
 html {
   font-synthesis: none;
   -webkit-tap-highlight-color: var(--selection);
@@ -223,6 +231,10 @@ button, a, select, input, textarea { touch-action: manipulation; }
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
+
+/* Zone principale et titres qui reçoivent le focus par le script (changement de page, « Décider ») :
+   rien à actionner, donc pas de contour, qui sinon se dessinait sous les onglets. */
+[tabindex="-1"]:focus { outline: none; }
 
 .cadre {
   width: 100%;
@@ -1074,7 +1086,7 @@ main {
   position: relative;
   padding-left: 30px;
   white-space: pre-wrap;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 
 .changements li::before {
@@ -1091,7 +1103,7 @@ main {
   max-width: 68ch;
   line-height: 1.7;
   white-space: pre-wrap;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 
 .effets {
@@ -1118,7 +1130,7 @@ main {
   font-size: 15px;
   line-height: 1.55;
   white-space: pre-wrap;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 
 .bloc--large {
@@ -1197,7 +1209,7 @@ main {
   font-size: 16px;
   line-height: 1.75;
   white-space: pre-wrap;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
   tab-size: 4;
 }
 
@@ -1273,7 +1285,7 @@ ins {
   border-radius: 0 var(--radius) var(--radius) 0;
   background: var(--st-fond);
   white-space: pre-wrap;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 
 .champ-label {
@@ -1518,7 +1530,7 @@ textarea.champ {
   color: var(--muted);
   font-size: 15px;
   white-space: pre-wrap;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 
 /* À rediscuter */
@@ -1734,7 +1746,7 @@ textarea.champ {
   font-size: 17.5px;
   line-height: 1.6;
   white-space: pre-wrap;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 
 .commentaire-fondatrice--vide .commentaire-fondatrice-texte {
@@ -1970,13 +1982,22 @@ kbd {
 .champ-ligne {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
+  gap: 6px 20px;
 }
 
-.champ-ligne--etroite {
-  grid-template-columns: minmax(0, 12rem) minmax(0, 1fr);
-  align-items: end;
+.champ-ligne--etroite { grid-template-columns: minmax(0, 12rem) minmax(0, 1fr); }
+
+/* Sous-grille : libellé, aide, champ et message sur les mêmes lignes dans les deux colonnes,
+   quel que soit le contenu de chacune (un champ n'est jamais étiré par son voisin). */
+.champ-ligne > .champ-groupe {
+  grid-row: span 4;
+  grid-template-rows: subgrid;
 }
+
+.champ-ligne > .champ-groupe > .champ-label { grid-row: 1; }
+.champ-ligne > .champ-groupe > .champ-aide { grid-row: 2; }
+.champ-ligne > .champ-groupe > :is(.champ, .selection, .case) { grid-row: 3; }
+.champ-ligne > .champ-groupe > .champ-message { grid-row: 4; }
 
 select.champ {
   appearance: none;
@@ -1988,6 +2009,7 @@ select.champ {
 .selection {
   position: relative;
   display: block;
+  align-self: start;
 }
 
 .selection::after {
@@ -2078,8 +2100,6 @@ select.champ option {
   color: var(--muted);
   text-decoration-line: line-through;
 }
-
-.champ-groupe--case { align-self: end; }
 
 .case {
   display: flex;
@@ -2571,13 +2591,15 @@ select.champ option {
     grid-template-areas: "tete decision" "contenu decision" "historique decision";
   }
 
-  .fiche-decision {
-    align-self: start;
-    position: sticky;
-    top: calc(var(--hauteur-barre) + 24px);
-  }
-
+  .fiche-decision { align-self: start; }
   .fiche-decision .decision { margin-top: 0; }
+
+  /* Un long commentaire précédent défile dans sa case : le panneau tient dans la fenêtre. */
+  .fiche-decision .decision-commentaire {
+    max-height: 9.6em;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
 
   .point-grille {
     grid-template-columns: minmax(0, 1fr) 19rem;
@@ -2586,8 +2608,6 @@ select.champ option {
 
   .point-decision {
     align-self: start;
-    position: sticky;
-    top: calc(var(--hauteur-barre) + 24px);
     margin-top: 0;
     padding: 20px;
     border: 1px solid var(--border);
@@ -2606,6 +2626,27 @@ select.champ option {
   .aller-decision { display: none; }
 
   .bloc:not(.bloc--large) { grid-template-columns: 9rem minmax(0, 1fr); }
+}
+
+/* Boutons empilés, à la souris : l'explication s'ouvre à gauche du bouton, sans masquer ses voisins. */
+@media (min-width: 1180px) and (hover: hover) {
+  :is(.fiche-decision, .point-decision) .choix .infobulle {
+    top: 50%;
+    right: calc(100% + 12px);
+    bottom: auto;
+    left: auto;
+    transform: translate(4px, -50%);
+  }
+
+  :is(.fiche-decision, .point-decision) .choix:is(:hover, :focus-within) .infobulle { transform: translate(0, -50%); }
+}
+
+/* Le panneau suit la lecture seulement s'il tient en entier dans la fenêtre (data-collant, posé par le script). */
+@media (min-width: 1180px) {
+  :is(.fiche-decision, .point-decision)[data-collant] {
+    position: sticky;
+    top: calc(var(--hauteur-barre) + 24px);
+  }
 }
 
 /* Sous 1180 px, le bouton « Décider » reste visible : le message de confirmation passe au-dessus. */
@@ -2655,7 +2696,17 @@ select.champ option {
   .colonne { padding: 0 16px 18px; }
   .colonne-titre { margin-inline: -16px; padding-inline: 16px; }
   .champ-ligne,
-  .champ-ligne--etroite { grid-template-columns: minmax(0, 1fr); }
+  .champ-ligne--etroite {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 20px;
+  }
+
+  .champ-ligne > .champ-groupe {
+    grid-row: auto;
+    grid-template-rows: none;
+  }
+
+  .champ-ligne > .champ-groupe > * { grid-row: auto; }
   .manuelle { grid-template-columns: auto minmax(0, 1fr); padding: 12px 16px; }
   .manuelle-actions { grid-column: 1 / -1; }
   .apercu-contenu { padding: 20px 16px 6px; }

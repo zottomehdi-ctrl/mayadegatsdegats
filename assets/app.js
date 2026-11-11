@@ -141,6 +141,7 @@ async function demarrer() {
   document.addEventListener('submit', surEnvoi);
   document.addEventListener('focusout', surSortie);
   window.addEventListener('pagehide', surFermeture);
+  window.addEventListener('resize', () => requestAnimationFrame(mesurerPanneaux));
   window.addEventListener('beforeunload', surDepart);
   document.addEventListener('pointerdown', () => { pointeur.bas = true; }, true);
   document.addEventListener('pointerup', relacherPointeur, true);
@@ -365,12 +366,13 @@ function rendre({ garderPosition = false } = {}) {
     if (!premiere && !restaure) document.getElementById('app').focus({ preventScroll: true });
   }
   majBarreCollante();
+  majPanneauxCollants();
   majAllerDecision(route);
   if (route.vue === 'ajouter') majFormulaire();
 }
 
 // Hauteur de la barre collante du mode « un point à la fois » : le panneau de décision se cale dessous.
-const observateurs = { barre: null, decision: null };
+const observateurs = { barre: null, decision: null, panneaux: null };
 
 function majBarreCollante() {
   observateurs.barre?.disconnect();
@@ -387,8 +389,30 @@ function majBarreCollante() {
   observateurs.barre = new ResizeObserver(([entree]) => {
     const hauteur = entree.borderBoxSize?.[0]?.blockSize ?? barre.offsetHeight;
     racine.style.setProperty('--hauteur-barre', `${Math.round(hauteur)}px`);
+    mesurerPanneaux();
   });
   observateurs.barre.observe(barre);
+}
+
+// Panneau de décision : il suit la lecture seulement s'il tient en entier dans la fenêtre,
+// sinon ses derniers boutons resteraient hors d'atteinte (écran de portable peu haut, long commentaire).
+function majPanneauxCollants() {
+  observateurs.panneaux?.disconnect();
+  const panneaux = [...document.querySelectorAll('.fiche-decision, .point-decision')];
+  if (!panneaux.length) return;
+  if ('ResizeObserver' in window) {
+    observateurs.panneaux = new ResizeObserver(() => requestAnimationFrame(mesurerPanneaux));
+    panneaux.forEach((panneau) => observateurs.panneaux.observe(panneau));
+  } else {
+    mesurerPanneaux();
+  }
+}
+
+function mesurerPanneaux() {
+  const haut = (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hauteur-barre')) || 0) + 24;
+  for (const panneau of document.querySelectorAll('.fiche-decision, .point-decision')) {
+    panneau.toggleAttribute('data-collant', panneau.offsetHeight + haut + 16 <= window.innerHeight);
+  }
 }
 
 // Bouton « Décider » (téléphone et tablette) : visible sur une fiche et en mode « un point à la fois »,
