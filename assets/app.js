@@ -140,6 +140,8 @@ async function demarrer() {
   document.addEventListener('change', surSaisie);
   document.addEventListener('submit', surEnvoi);
   document.addEventListener('focusout', surSortie);
+  window.addEventListener('pagehide', surFermeture);
+  window.addEventListener('beforeunload', surDepart);
   document.addEventListener('pointerdown', () => { pointeur.bas = true; }, true);
   document.addEventListener('pointerup', relacherPointeur, true);
   document.addEventListener('pointercancel', relacherPointeur, true);
@@ -372,13 +374,21 @@ const observateurs = { barre: null, decision: null };
 
 function majBarreCollante() {
   observateurs.barre?.disconnect();
+  const racine = document.documentElement;
   const barre = document.querySelector('.barre-mode--collante');
-  const poser = () => document.documentElement.style.setProperty('--hauteur-barre', `${barre ? barre.offsetHeight : 0}px`);
-  poser();
-  if (barre && 'ResizeObserver' in window) {
-    observateurs.barre = new ResizeObserver(poser);
-    observateurs.barre.observe(barre);
+  if (!barre) {
+    racine.style.setProperty('--hauteur-barre', '0px');
+    return;
   }
+  if (!('ResizeObserver' in window)) {
+    racine.style.setProperty('--hauteur-barre', `${barre.offsetHeight}px`);
+    return;
+  }
+  observateurs.barre = new ResizeObserver(([entree]) => {
+    const hauteur = entree.borderBoxSize?.[0]?.blockSize ?? barre.offsetHeight;
+    racine.style.setProperty('--hauteur-barre', `${Math.round(hauteur)}px`);
+  });
+  observateurs.barre.observe(barre);
 }
 
 // Bouton « Décider » (téléphone et tablette) : visible sur une fiche et en mode « un point à la fois »,
@@ -437,7 +447,7 @@ function bandeauAccueil() {
   if (!etat.accueil) return '';
   return `
     <section class="accueil" id="accueil" aria-labelledby="accueil-titre">
-      <h2 class="accueil-titre" id="accueil-titre" tabindex="-1">Bienvenue sur Liaison Maya</h2>
+      <p class="accueil-titre" id="accueil-titre" tabindex="-1">Bienvenue sur Liaison Maya</p>
       <p class="accueil-sous">Trois étapes pour traiter les propositions de textes.</p>
       <ol class="etapes">
         <li class="etape">
@@ -539,7 +549,7 @@ function vueRecap() {
       <label class="champ-label" for="recherche">Rechercher</label>
       <div class="recherche-champ">
         ${ICONES.recherche}
-        <input type="search" id="recherche" class="champ" value="${esc(etat.recherche)}" placeholder="Titre, article ou texte (ex. Code pénal)" autocomplete="off" spellcheck="false">
+        <input type="search" id="recherche" name="recherche" class="champ" value="${esc(etat.recherche)}" placeholder="Titre, article ou texte, par ex. Code pénal…" autocomplete="off" spellcheck="false">
       </div>
       <p class="recherche-statut" id="recherche-statut" role="status">${statutRecherche()}</p>
     </div>
@@ -748,7 +758,7 @@ function lienRemettre(id) {
 function champCommentaire(id) {
   return `
     <label class="champ-label" for="commentaire-${id}">Commentaire (facultatif)</label>
-    <textarea class="champ" id="commentaire-${id}" data-brouillon="${esc(id)}" rows="3" maxlength="2000" placeholder="Précisions, réserves, points à revoir">${esc(etat.brouillons[id] ?? '')}</textarea>`;
+    <textarea class="champ" id="commentaire-${id}" name="commentaire" autocomplete="off" data-brouillon="${esc(id)}" rows="3" maxlength="2000" placeholder="Précisions, réserves, points à revoir…">${esc(etat.brouillons[id] ?? '')}</textarea>`;
 }
 
 function boutonDecision(id, statut, actif) {
@@ -1204,10 +1214,28 @@ function sauverBrouillon() {
   clearTimeout(minuteurs.brouillon);
   const ajout = etat.ajout;
   if (!ajout) return;
-  minuteurs.brouillon = setTimeout(() => {
-    if (ajout.cible === 'nouveau' && estVide(ajout.champs)) effacerBrouillon(ajout.cible);
-    else ecrire(cleBrouillon(ajout.cible), JSON.stringify({ version: ajout.version, champs: ajout.champs }));
-  }, 250);
+  minuteurs.brouillon = setTimeout(() => ecrireBrouillon(ajout), 250);
+}
+
+function ecrireBrouillon(ajout) {
+  minuteurs.brouillon = null;
+  if (ajout.cible === 'nouveau' && estVide(ajout.champs)) effacerBrouillon(ajout.cible);
+  else ecrire(cleBrouillon(ajout.cible), JSON.stringify({ version: ajout.version, champs: ajout.champs }));
+}
+
+// L'onglet se ferme : le brouillon en attente est écrit tout de suite.
+function surFermeture() {
+  if (minuteurs.brouillon && etat.ajout) {
+    clearTimeout(minuteurs.brouillon);
+    ecrireBrouillon(etat.ajout);
+  }
+}
+
+// Un commentaire de décision saisi mais pas encore envoyé : le navigateur demande confirmation avant de quitter.
+function surDepart(e) {
+  if (!Object.values(etat.brouillons).some((texte) => texte.trim())) return;
+  e.preventDefault();
+  e.returnValue = '';
 }
 
 function effacerBrouillon(cible) {
@@ -1281,7 +1309,7 @@ function formulaireAjout(ajout) {
     <div class="champ-groupe">
       ${etiquette(cle, libelle, requis)}
       ${aide(cle, texteAide)}
-      <input class="champ" type="${type}" id="ajout-${slugChamp(cle)}" data-champ="${cle}" value="${esc(valeurChamp(c, cle))}" ${decrit(cle, texteAide)}${requis ? ' aria-required="true"' : ''} ${attributs}>
+      <input class="champ" type="${type}" id="ajout-${slugChamp(cle)}" name="${cle}" autocomplete="off" data-champ="${cle}" value="${esc(valeurChamp(c, cle))}" ${decrit(cle, texteAide)}${requis ? ' aria-required="true"' : ''} ${attributs}>
       ${message(cle)}
     </div>`;
 
@@ -1289,7 +1317,7 @@ function formulaireAjout(ajout) {
     <div class="champ-groupe">
       ${etiquette(cle, libelle, requis)}
       ${aide(cle, texteAide)}
-      <textarea class="champ${mono ? ' champ--texte' : ''}" id="ajout-${slugChamp(cle)}" data-champ="${cle}" rows="${lignes}" ${decrit(cle, texteAide)}${requis ? ' aria-required="true"' : ''}${mono ? ' spellcheck="false"' : ''}>${esc(valeurChamp(c, cle))}</textarea>
+      <textarea class="champ${mono ? ' champ--texte' : ''}" id="ajout-${slugChamp(cle)}" name="${cle}" autocomplete="off" data-champ="${cle}" rows="${lignes}" ${decrit(cle, texteAide)}${requis ? ' aria-required="true"' : ''}${mono ? ' spellcheck="false"' : ''}>${esc(valeurChamp(c, cle))}</textarea>
       ${message(cle)}
     </div>`;
 
@@ -1301,7 +1329,7 @@ function formulaireAjout(ajout) {
   const points = c.changements.map((point, i) => `
     <div class="point-saisie">
       <span class="point-saisie-num" aria-hidden="true">${i + 1}</span>
-      <input class="champ" type="text" id="ajout-changements-${i}" data-champ="changements.${i}" value="${esc(point)}" aria-label="Point ${i + 1}" aria-describedby="message-changements">
+      <input class="champ" type="text" id="ajout-changements-${i}" name="changements.${i}" autocomplete="off" data-champ="changements.${i}" value="${esc(point)}" aria-label="Point ${i + 1}" aria-describedby="message-changements">
       ${c.changements.length > 1 ? `<button type="button" class="btn btn--petit btn--icone" data-action="retirer-point" data-index="${i}" aria-label="Retirer le point ${i + 1}">${ICONES.fermer}</button>` : ''}
     </div>`).join('');
 
@@ -1321,7 +1349,7 @@ function formulaireAjout(ajout) {
         <div class="champ-ligne">
           <div class="champ-groupe">
             ${etiquette('texte', 'Texte concerné', true)}
-            <span class="selection"><select class="champ" id="ajout-texte" data-champ="texte" ${decrit('texte')} aria-required="true">${options}</select></span>
+            <span class="selection"><select class="champ" id="ajout-texte" name="texte" data-champ="texte" ${decrit('texte')} aria-required="true">${options}</select></span>
             ${message('texte')}
           </div>
           ${ligne('article', 'Article', { texteAide: 'Sous la forme « Article 12 : ». Facultatif pour un décret.', attributs: 'autocomplete="off" spellcheck="false"' })}
@@ -1330,7 +1358,7 @@ function formulaireAjout(ajout) {
           ${ligne('salve', 'Salve', { type: 'text', texteAide: `Salve en cours : ${salveCourante()}.`, attributs: 'inputmode="numeric" autocomplete="off"' })}
           <div class="champ-groupe champ-groupe--case">
             <label class="case">
-              <input type="checkbox" id="ajout-urgent" data-champ="urgent"${c.urgent ? ' checked' : ''} aria-describedby="message-urgent">
+              <input type="checkbox" id="ajout-urgent" name="urgent" data-champ="urgent"${c.urgent ? ' checked' : ''} aria-describedby="message-urgent">
               <span>Urgente : à traiter en priorité</span>
             </label>
             ${message('urgent')}
@@ -1492,7 +1520,7 @@ function etablirResume(form, erreurs) {
       bouton.type = 'button';
       bouton.dataset.action = 'aller-champ';
       bouton.dataset.cible = cible.id;
-      bouton.textContent = `${LIBELLES_CHAMPS[champ] ?? champ} : ${texte}`;
+      bouton.textContent = `${LIBELLES_CHAMPS[champ] ?? champ}\u00A0: ${texte}`;
       li.append(bouton);
     } else {
       li.textContent = texte;
@@ -1550,7 +1578,7 @@ function listeManuelles() {
     } else actions = '<span class="note">Décision prise : texte figé</span>';
     return `
       <li class="manuelle">
-        <span class="manuelle-id">${esc(id)}</span>
+        <span class="manuelle-id" translate="no">${esc(id)}</span>
         <a class="manuelle-titre lien-discret" href="${lienFiche(id)}">${esc(entree.proposition.titre)}</a>
         ${pastille(statutDe(id))}
         <span class="manuelle-actions">${actions}</span>
@@ -1641,11 +1669,18 @@ function majBoutonEnvoi(ajout) {
   bouton.textContent = ajout.envoi ? 'Enregistrement…' : (ajout.cible !== 'nouveau' ? 'Enregistrer les modifications' : 'Ajouter la proposition');
 }
 
-// Après un envoi refusé, le focus va au récapitulatif : il est lu en entier, avec un lien par champ.
+// Après un envoi refusé : le récapitulatif reste en tête du formulaire, le focus va au premier champ en erreur
+// (son message lui est rattaché par aria-describedby).
 function focaliserErreur(form) {
+  const champ = form.querySelector('[data-champ][aria-invalid="true"]');
+  const doux = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (champ) {
+    champ.scrollIntoView({ block: 'center', behavior: doux ? 'smooth' : 'auto' });
+    champ.focus({ preventScroll: true });
+    return;
+  }
   const resume = form.querySelector('#resume-erreurs');
   if (!resume || resume.hidden) return;
-  const doux = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   resume.scrollIntoView({ block: 'start', behavior: doux ? 'smooth' : 'auto' });
   resume.focus({ preventScroll: true });
 }
